@@ -2,8 +2,9 @@
 
 LIB_NAME=$1
 ROOT=$(pwd)
+
+SRC=$ROOT/../src
 DST=$ROOT/../processing-library/$LIB_NAME
-SRC=../src
 
 if [ -d "$DST/src" ]; then
 	rm -rf "$DST/src"
