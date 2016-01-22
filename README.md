@@ -7,3 +7,4 @@ this collection is comprised of the following tools:
 * **filter** a collection of filtering methods
 * **interpolation** the wonderful world between 0 and 1
 * **mesh** a collection of methods to create meshes ( not done yet )
+* **simulator** a collection of methods to simulate objects and device ( e.g screens, LEDisplays, ... )
