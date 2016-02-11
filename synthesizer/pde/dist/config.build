@@ -1,1 +1,2 @@
 LIB_NAME=synthesizer
+IO_EXAMPLE_PATHS=( examples sketches )

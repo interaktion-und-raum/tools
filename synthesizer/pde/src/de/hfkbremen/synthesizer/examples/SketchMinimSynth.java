@@ -16,8 +16,11 @@ public class SketchMinimSynth extends PApplet {
 
     private int mNote;
 
-    public void setup() {
+    public void settings() {
         size(640, 480);
+    }
+
+    public void setup() {
         background(255);
         mSynth = new SynthesizerMinim();
 

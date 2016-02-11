@@ -1,1 +1,2 @@
 LIB_NAME=skeleton
+IO_EXAMPLE_PATHS=( examples )

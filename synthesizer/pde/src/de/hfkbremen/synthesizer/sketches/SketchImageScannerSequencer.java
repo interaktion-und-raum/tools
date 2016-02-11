@@ -1,28 +1,31 @@
 package de.hfkbremen.synthesizer.sketches;
 
+import de.hfkbremen.synthesizer.Beat;
 import de.hfkbremen.synthesizer.Instrument;
 import de.hfkbremen.synthesizer.Scale;
 import de.hfkbremen.synthesizer.Synthesizer;
 import de.hfkbremen.synthesizer.SynthesizerJSyn;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.video.Capture;
 
-public class SketchImageScanner extends PApplet {
+public class SketchImageScannerSequencer extends PApplet {
+//@add import processing.video.Capture;
 
     private final Synthesizer mSynth = new SynthesizerJSyn();
     private final ArrayList<ImageSampler> mSamplers = new ArrayList();
-    private final Timer mTimer = new Timer();
-
     private Capture mCapture;
     private int mCurrentSampler = 0;
+    private Beat mBeat;
+    private int mLastNote = -1;
+
+    public void settings() {
+        size(1280, 720);
+    }
 
     public void setup() {
-        size(1280, 720);
         background(255);
 
         println("### available cameras:");
@@ -47,9 +50,7 @@ public class SketchImageScanner extends PApplet {
             mSamplers.get(i).y = height / 2;
         }
 
-        final int BPM = 120 * 4; // 16th
-        final int mPeriod = (int) (60.0f / BPM * 1000.0f);
-        mTimer.scheduleAtFixedRate(new StepTimerTask(), 1000, mPeriod);
+        mBeat = new Beat(this, 120 * 4);
     }
 
     public void draw() {
@@ -131,28 +132,22 @@ public class SketchImageScanner extends PApplet {
         }
     }
 
-    class StepTimerTask extends TimerTask {
-
-        int mLastNote = -1;
-
-        @Override
-        public void run() {
-            mCurrentSampler++;
-            mCurrentSampler %= mSamplers.size();
-            for (ImageSampler mSampler : mSamplers) {
-                mSampler.sample(mCapture);
-            }
-            float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
-            final int mSteps = 10;
-            final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A2, (int) (mBrightnessNorm * mSteps));
-            if (mNote != mLastNote) {
-                mSynth.noteOn(mNote, 127);
-            }
-            mLastNote = mNote;
+    public void beat(int pBeat) {
+        mCurrentSampler++;
+        mCurrentSampler %= mSamplers.size();
+        for (ImageSampler mSampler : mSamplers) {
+            mSampler.sample(mCapture);
         }
+        float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
+        final int mSteps = 10;
+        final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A2, (int) (mBrightnessNorm * mSteps));
+        if (mNote != mLastNote) {
+            mSynth.noteOn(mNote, 127);
+        }
+        mLastNote = mNote;
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchImageScanner.class.getName());
+        PApplet.main(SketchImageScannerSequencer.class.getName());
     }
 }

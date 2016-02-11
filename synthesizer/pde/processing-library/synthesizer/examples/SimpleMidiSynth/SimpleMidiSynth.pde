@@ -5,7 +5,7 @@ boolean mIsPlaying = false;
 int mNote = Scale.NOTE_A2;
 int mInstrument = 0;
 void settings() {
-            size(640, 480);
+    size(640, 480);
 }
 void setup() {
     background(255);

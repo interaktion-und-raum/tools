@@ -17,9 +17,9 @@ public class SketchSimpleMidiSynth extends PApplet {
     private int mInstrument = 0;
 
     public void settings() {
-                size(640, 480);
+        size(640, 480);
     }
-    
+
     public void setup() {
         background(255);
         SynthUtil.dumpMidiOutputDevices();

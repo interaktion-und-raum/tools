@@ -4,8 +4,10 @@ Synthesizer mSynth;
 Instrument mInstrument;
 boolean mIsPlaying = false;
 int mNote;
-void setup() {
+void settings() {
     size(640, 480);
+}
+void setup() {
     background(255);
     mSynth = new SynthesizerMinim();
     /* select instrument #2 */

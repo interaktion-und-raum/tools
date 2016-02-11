@@ -3,8 +3,10 @@
 # for further hints on `sed` read this: http://www.grymoire.com/Unix/Sed.html
 
 LIB_NAME=$1
-SRC_PATH="../src/de/hfkbremen/$LIB_NAME/examples/"
-OUTPUT_DIR="../processing-library/$LIB_NAME/examples"
+INPUT_FOLDER=$2
+OUTPUT_FOLDER=$2
+SRC_PATH="../src/de/hfkbremen/$LIB_NAME/$INPUT_FOLDER/"
+OUTPUT_DIR="../processing-library/$LIB_NAME/$OUTPUT_FOLDER"
 
 if [ -d "$OUTPUT_DIR" ]; then
 	rm -rf "$OUTPUT_DIR"
@@ -40,6 +42,8 @@ do
 			/static void main/,/}$/ {
 				D
 			}
+			# remove add-comment
+			s/\/\/@add//
 			# remove first and last line
 			/^class/ d
 			/^}/ d

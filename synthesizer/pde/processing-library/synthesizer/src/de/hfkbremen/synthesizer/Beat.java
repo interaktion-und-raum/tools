@@ -18,6 +18,11 @@ public class Beat {
 
     private TimerTask mTask;
 
+    public Beat(PApplet pPApplet, int pBPM) {
+        this(pPApplet);
+        bpm(pBPM);
+    }
+
     public Beat(PApplet pPApplet) {
         mPApplet = pPApplet;
         try {
