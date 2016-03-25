@@ -333,6 +333,7 @@ void CFOSynthesizer::amplifier() {
 void CFOSynthesizer::output2T3DAC() {
     sample += 32768;
     analogWrite(A14, sample >> 4);
+    /* @dpp added SPI communication with MCP4921 here for ATMEGA version */
 }
 
 /////////////////////////////////////

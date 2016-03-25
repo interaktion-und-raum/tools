@@ -22,6 +22,8 @@ public class SynthesizerMinim extends Synthesizer {
 
     private final Timer mTimer;
 
+    private boolean mIsPlaying = false;
+
     public SynthesizerMinim() {
         mMinim = new Minim(this);
         mOut = mMinim.getLineOut(Minim.MONO, 2048);
@@ -46,6 +48,7 @@ public class SynthesizerMinim extends Synthesizer {
     }
 
     public void noteOn(int pNote, int pVelocity) {
+        mIsPlaying = true;
         final float mFreq = note_to_frequency(clamp127(pNote));
         float mAmp = clamp127(pVelocity) / 127.0f;
         if (USE_AMP_FRACTION) {
@@ -57,7 +60,11 @@ public class SynthesizerMinim extends Synthesizer {
         }
     }
 
-    private final int getInstrumentID() {
+    public boolean isPlaying() {
+        return mIsPlaying;
+    }
+
+    private int getInstrumentID() {
         return Math.max(mInstrumentID, 0) % mInstruments.size();
     }
 
@@ -69,6 +76,7 @@ public class SynthesizerMinim extends Synthesizer {
         if (mInstruments.get(getInstrumentID()) instanceof InstrumentMinim) {
             InstrumentMinim mInstrument = (InstrumentMinim) mInstruments.get(getInstrumentID());
             mInstrument.noteOff();
+            mIsPlaying = false;
         }
     }
 

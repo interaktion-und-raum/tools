@@ -7,6 +7,8 @@ import com.softsynth.shared.time.TimeStamp;
 import static de.hfkbremen.synthesizer.Instrument.*;
 import static de.hfkbremen.synthesizer.SynthUtil.*;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SynthesizerJSyn extends Synthesizer {
 
@@ -19,6 +21,10 @@ public class SynthesizerJSyn extends Synthesizer {
     private int mInstrumentID;
 
     private static final boolean USE_AMP_FRACTION = false;
+
+    private final Timer mTimer;
+
+    private int mIsPlaying = 0;
 
     public SynthesizerJSyn() {
         this(false);
@@ -54,6 +60,12 @@ public class SynthesizerJSyn extends Synthesizer {
         mSynth.start(44100,
                      mDevice.getDefaultInputDeviceID(), 2,
                      mDevice.getDefaultOutputDeviceID(), 2);
+
+        mTimer = new Timer();
+    }
+
+    public boolean isPlaying() {
+        return mIsPlaying > 0;
     }
 
     public SynthesisEngine synth() {
@@ -78,6 +90,9 @@ public class SynthesizerJSyn extends Synthesizer {
     }
 
     public void noteOn(int pNote, int pVelocity, float pDuration) {
+        TimerTask mTask = new NoteOffTask();
+        mTimer.schedule(mTask, (long) (pDuration * 1000));
+        mIsPlaying++;
         final float mFreq = note_to_frequency(clamp127(pNote));
         float mAmp = clamp127(pVelocity) / 127.0f;
         if (USE_AMP_FRACTION) {
@@ -104,6 +119,7 @@ public class SynthesizerJSyn extends Synthesizer {
     }
 
     public void noteOn(int pNote, int pVelocity) {
+        mIsPlaying++;
         final float mFreq = note_to_frequency(clamp127(pNote));
         float mAmp = clamp127(pVelocity) / 127.0f;
         if (USE_AMP_FRACTION) {
@@ -119,7 +135,7 @@ public class SynthesizerJSyn extends Synthesizer {
         }
     }
 
-    private final int getInstrumentID() {
+    private int getInstrumentID() {
         return Math.max(mInstrumentID, 0) % mInstruments.size();
     }
 
@@ -128,6 +144,7 @@ public class SynthesizerJSyn extends Synthesizer {
     }
 
     public void noteOff() {
+        mIsPlaying--;
         if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSyn) {
             InstrumentJSyn mInstrument = (InstrumentJSyn) mInstruments.get(getInstrumentID());
             mInstrument.noteOff();
@@ -145,5 +162,15 @@ public class SynthesizerJSyn extends Synthesizer {
 
     public Instrument instrument() {
         return instruments().get(mInstrumentID);
+    }
+
+    public class NoteOffTask extends TimerTask {
+
+        public void run() {
+            mIsPlaying--;
+            if (mIsPlaying < 0) {
+                mIsPlaying = 0;
+            }
+        }
     }
 }

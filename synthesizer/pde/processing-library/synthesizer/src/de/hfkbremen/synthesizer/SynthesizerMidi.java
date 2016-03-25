@@ -10,12 +10,12 @@ public class SynthesizerMidi extends Synthesizer {
     private final Timer mTimer;
     private final MidiOutput mMidiOut;
     private int mLastPlayedNote = -1;
-
     private int mChannel;
 
     public SynthesizerMidi(String pMidiOutputDeviceName) {
         mTimer = new Timer();
         mMidiOut = RWMidi.getOutputDevice(getProperDeviceName(pMidiOutputDeviceName)).createOutput();
+        prepareExitHandler();
     }
 
     public ArrayList<Instrument> instruments() {
@@ -62,5 +62,23 @@ public class SynthesizerMidi extends Synthesizer {
 
     public Instrument instrument() {
         return null;
+    }
+
+    public boolean isPlaying() {
+        return (mLastPlayedNote != -1);
+    }
+
+    private void prepareExitHandler() {
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(
+                        new Runnable() {
+                    public void run() {
+                        for (int i = 0; i < 127; i++) {
+                            mMidiOut.sendNoteOff(mChannel, i, 0);
+                        }
+                    }
+                }
+                )
+        );
     }
 }

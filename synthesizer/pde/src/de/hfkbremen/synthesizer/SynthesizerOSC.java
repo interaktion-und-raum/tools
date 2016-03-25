@@ -13,6 +13,7 @@ public class SynthesizerOSC extends Synthesizer {
     private final OscP5 mOscP5;
     private final NetAddress mRemoteLocation;
     private final Timer mTimer;
+    private boolean mIsPlaying = false;
 
     public SynthesizerOSC(String pHostIP) {
         mOscP5 = new OscP5(this, 12000);
@@ -38,12 +39,14 @@ public class SynthesizerOSC extends Synthesizer {
     }
 
     public void noteOn(int pNote, int pVelocity) {
+        mIsPlaying = true;
         OscMessage m = new OscMessage("/note" + mChannel + "/on");
         m.add(pNote);
         mOscP5.send(m, mRemoteLocation);
     }
 
     public void noteOff(int pNote) {
+        mIsPlaying = false;
         OscMessage m = new OscMessage("/note" + mChannel + "/off");
         m.add(pNote);
         mOscP5.send(m, mRemoteLocation);
@@ -64,5 +67,9 @@ public class SynthesizerOSC extends Synthesizer {
 
     public ArrayList<Instrument> instruments() {
         return null;
+    }
+
+    public boolean isPlaying() {
+        return mIsPlaying;
     }
 }

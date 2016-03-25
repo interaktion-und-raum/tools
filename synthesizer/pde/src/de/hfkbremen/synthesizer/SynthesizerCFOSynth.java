@@ -171,7 +171,7 @@ public class SynthesizerCFOSynth extends Synthesizer {
     }
 
     public void noteOn(int pNote, int pVelocity, float pDuration) {
-
+        sendNoteOn(pNote, pVelocity);
     }
 
     public void noteOn(int pNote, int pVelocity) {
@@ -192,5 +192,9 @@ public class SynthesizerCFOSynth extends Synthesizer {
 
     public void noteOff() {
         sendNoteOff(mCurrentlyPlayingNote, 0);
+    }
+
+    public boolean isPlaying() {
+        return mCurrentlyPlayingNote != -1;
     }
 }
