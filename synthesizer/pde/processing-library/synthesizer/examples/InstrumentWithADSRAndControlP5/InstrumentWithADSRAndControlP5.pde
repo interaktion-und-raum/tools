@@ -1,4 +1,5 @@
 import de.hfkbremen.synthesizer.*;
+import controlP5.*;
 
 Synthesizer mSynth;
 ControlP5 cp5;

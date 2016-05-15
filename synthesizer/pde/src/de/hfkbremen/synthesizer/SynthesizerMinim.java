@@ -80,6 +80,9 @@ public class SynthesizerMinim extends Synthesizer {
         }
     }
 
+    public void controller(int pCC, int pValue) {
+    }
+
     public Instrument instrument(int pInstrumentID) {
         mInstrumentID = pInstrumentID;
         return instruments().get(mInstrumentID);

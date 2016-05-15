@@ -23,6 +23,8 @@ public abstract class Synthesizer {
 
     public abstract void noteOff();
 
+    public abstract void controller(int pCC, int pValue);
+
     public abstract boolean isPlaying();
 
     public abstract Instrument instrument(int pInstrumentID);
@@ -45,7 +47,7 @@ public abstract class Synthesizer {
     private static final int GUI_NUMBER_OF_ELEMENTS = 9;
 
     private static final String[] INSTRUMENT_FIELDS = new String[GUI_NUMBER_OF_ELEMENTS];
-    
+
     static {
         INSTRUMENT_FIELDS[GUI_ATTACK] = "attack";
         INSTRUMENT_FIELDS[GUI_DECAY] = "decay";

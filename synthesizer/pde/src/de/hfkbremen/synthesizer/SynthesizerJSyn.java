@@ -24,7 +24,7 @@ public class SynthesizerJSyn extends Synthesizer {
 
     private final Timer mTimer;
 
-    private int mIsPlaying = 0;
+    private boolean mIsPlaying = false;
 
     public SynthesizerJSyn() {
         this(false);
@@ -65,7 +65,7 @@ public class SynthesizerJSyn extends Synthesizer {
     }
 
     public boolean isPlaying() {
-        return mIsPlaying > 0;
+        return mIsPlaying;
     }
 
     public SynthesisEngine synth() {
@@ -92,7 +92,7 @@ public class SynthesizerJSyn extends Synthesizer {
     public void noteOn(int pNote, int pVelocity, float pDuration) {
         TimerTask mTask = new NoteOffTask();
         mTimer.schedule(mTask, (long) (pDuration * 1000));
-        mIsPlaying++;
+        mIsPlaying = true;
         final float mFreq = note_to_frequency(clamp127(pNote));
         float mAmp = clamp127(pVelocity) / 127.0f;
         if (USE_AMP_FRACTION) {
@@ -119,7 +119,7 @@ public class SynthesizerJSyn extends Synthesizer {
     }
 
     public void noteOn(int pNote, int pVelocity) {
-        mIsPlaying++;
+        mIsPlaying = true;
         final float mFreq = note_to_frequency(clamp127(pNote));
         float mAmp = clamp127(pVelocity) / 127.0f;
         if (USE_AMP_FRACTION) {
@@ -144,7 +144,7 @@ public class SynthesizerJSyn extends Synthesizer {
     }
 
     public void noteOff() {
-        mIsPlaying--;
+        mIsPlaying = false;
         if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSyn) {
             InstrumentJSyn mInstrument = (InstrumentJSyn) mInstruments.get(getInstrumentID());
             mInstrument.noteOff();
@@ -153,6 +153,9 @@ public class SynthesizerJSyn extends Synthesizer {
             InstrumentJSynAdv mInstrument = (InstrumentJSynAdv) mInstruments.get(getInstrumentID());
             mInstrument.noteOff();
         }
+    }
+
+    public void controller(int pCC, int pValue) {
     }
 
     public final Instrument instrument(int pInstrumentID) {
@@ -167,10 +170,7 @@ public class SynthesizerJSyn extends Synthesizer {
     public class NoteOffTask extends TimerTask {
 
         public void run() {
-            mIsPlaying--;
-            if (mIsPlaying < 0) {
-                mIsPlaying = 0;
-            }
+            mIsPlaying = false;
         }
     }
 }

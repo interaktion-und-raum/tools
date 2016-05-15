@@ -194,6 +194,9 @@ public class SynthesizerCFOSynth extends Synthesizer {
         sendNoteOff(mCurrentlyPlayingNote, 0);
     }
 
+    public void controller(int pCC, int pValue) {
+    }
+
     public boolean isPlaying() {
         return mCurrentlyPlayingNote != -1;
     }

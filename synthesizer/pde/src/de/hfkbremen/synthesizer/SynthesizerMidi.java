@@ -55,6 +55,10 @@ public class SynthesizerMidi extends Synthesizer {
         mLastPlayedNote = -1;
     }
 
+    public void controller(int pCC, int pValue) {
+        mMidiOut.sendController(mChannel, pCC, pValue);
+    }
+
     public Instrument instrument(int pInstrumentID) {
         mChannel = pInstrumentID;
         return null;
@@ -75,6 +79,7 @@ public class SynthesizerMidi extends Synthesizer {
                     public void run() {
                         for (int i = 0; i < 127; i++) {
                             mMidiOut.sendNoteOff(mChannel, i, 0);
+                            mLastPlayedNote = -1;
                         }
                     }
                 }

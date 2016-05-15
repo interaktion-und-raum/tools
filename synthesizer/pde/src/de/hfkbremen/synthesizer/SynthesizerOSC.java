@@ -56,6 +56,9 @@ public class SynthesizerOSC extends Synthesizer {
         noteOff(-1);
     }
 
+    public void controller(int pCC, int pValue) {
+    }
+
     public Instrument instrument(int pInstrumentID) {
         mChannel = pInstrumentID;
         return null;
