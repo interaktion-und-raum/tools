@@ -4,7 +4,7 @@ import de.hfkbremen.mesh.IcoSphere;
 import de.hfkbremen.mesh.Mesh;
 import processing.core.PApplet;
 
-public class SketchIcoSphereSimple extends PApplet {
+public class SketchIcoSphereMesh extends PApplet {
 
     private Mesh mMesh;
 
@@ -13,7 +13,7 @@ public class SketchIcoSphereSimple extends PApplet {
     }
 
     public void setup() {
-        mMesh = IcoSphere.mesh(3);
+        mMesh = IcoSphere.mesh(4);
     }
 
     public void draw() {
@@ -31,6 +31,6 @@ public class SketchIcoSphereSimple extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchIcoSphereSimple.class.getName());
+        PApplet.main(SketchIcoSphereMesh.class.getName());
     }
 }
