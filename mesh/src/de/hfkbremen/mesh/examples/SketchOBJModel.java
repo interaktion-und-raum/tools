@@ -15,7 +15,7 @@ public class SketchOBJModel extends PApplet {
     }
 
     public void setup() {
-        ModelData mModelData = ModelLoaderOBJ.getModelData(split(OBJMan.DATA, "\n"));
+        ModelData mModelData = ModelLoaderOBJ.parseModelData(OBJMan.DATA);
         mModelMesh = mModelData.mesh();
         println(mModelData);
     }

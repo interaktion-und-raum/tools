@@ -1,5 +1,6 @@
 package de.hfkbremen.mesh;
 
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -19,6 +20,7 @@ public class ModelLoaderOBJ {
     public static int GET_NORMALS_DIRECTION = GET_NORMALS_CCW;
     public static int NUMBER_OF_VERTEX_COMPONENTS = 3;
     public static int PRIMITIVE = PGraphics.TRIANGLES;
+    private static int GROUP_NAME_INDEX_COUNTER = 0;
 
     private static float[] distributeVertices(Vector<Float> theTempVertices,
                                               Vector<Integer> theTempVertexIndices,
@@ -85,6 +87,36 @@ public class ModelLoaderOBJ {
             }
         }
         return myNormals;
+    }
+
+    private static float[] rearrangeVertices(float[] theVertices,
+                                             int[] theIndices,
+                                             int theNumberOfVertexComponents,
+                                             PVector theScale,
+                                             PVector thePosition) {
+        float[] myRearrangedVertices = new float[theIndices.length * theNumberOfVertexComponents];
+        int myVertexIndex = -1;
+        for (int i = 0; i < theIndices.length; i++) {
+            int myIndex = theIndices[i] * theNumberOfVertexComponents;
+            if (theNumberOfVertexComponents == 3) {
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex] * theScale.x + thePosition.x;
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 1] * theScale.y + thePosition.y;
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 2] * theScale.z + thePosition.z;
+            } else if (theNumberOfVertexComponents == 2) {
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex] * theScale.x + thePosition.x;
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 1] * theScale.y + thePosition.y;
+            } else if (theNumberOfVertexComponents == 4) {
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex] * theScale.x + thePosition.x;
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 1] * theScale.y + thePosition.y;
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 2] * theScale.z + thePosition.z;
+                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 3] * 1 + 0;
+            }
+        }
+        return myRearrangedVertices;
+    }
+
+    private static void createNormalsQUADS(float[] theVertices, float[] theNormals) {
+        System.out.println("### WARNING @ ModelLoaderOBJ / normal autogenerator for QUADS isn t implemented yet");
     }
 
     public static ModelData[] getModelDataGroups(String[] pLines) {
@@ -294,7 +326,7 @@ public class ModelLoaderOBJ {
         return myDatas;
     }
 
-    public static ModelData getModelData(InputStream theModelFile) {
+    public static ModelData parseModelData(InputStream theModelFile) {
         InputStreamReader myInputStreamReader = new InputStreamReader(theModelFile);
         BufferedReader myBufferedReader = new BufferedReader(myInputStreamReader);
         ArrayList<String> mLines = new ArrayList<>();
@@ -309,10 +341,64 @@ public class ModelLoaderOBJ {
 
         String[] mLinesArray = new String[mLines.size()];
         mLines.toArray(mLinesArray);
-        return getModelData(mLinesArray);
+        return parseModelData(mLinesArray);
     }
 
-    public static ModelData getModelData(String[] pLines) {
+    public static String[] convertMeshToOBJ(Mesh pMesh) {
+        if (pMesh.getVertexComponentsCount() != 3) {
+            System.out.println("+++ WARNING can only parse 3D meshes.");
+        }
+
+        return convertVertexDataToOBJ(pMesh.vertices());
+    }
+
+    public static String[] convertVertexDataToOBJ(float[] pVertexData) {
+        final String LINE_TERMINATOR = ""; // @todo apparently processing automatically adds an empty line at the end of each string
+        final String GROUP_NAME = "g object" + PApplet.nf(GROUP_NAME_INDEX_COUNTER++,
+                                                          5) + LINE_TERMINATOR; // @todo could be set external
+
+        ArrayList<String> s = new ArrayList<>();
+        ArrayList<String> mVertices = new ArrayList<>();
+        ArrayList<String> mFaces = new ArrayList<>();
+
+        for (int i = 0; i < pVertexData.length; i += 3) { // @todo assumes three components
+            StringBuilder mLine = new StringBuilder();
+            mLine.append("v ");
+            mLine.append(pVertexData[i + 0]);
+            mLine.append(" ");
+            mLine.append(pVertexData[i + 1]);
+            mLine.append(" ");
+            mLine.append(pVertexData[i + 2]);
+            mLine.append(LINE_TERMINATOR);
+            mVertices.add(mLine.toString());
+
+            final int FACE_OFFSET = 1;
+            StringBuilder mFace = new StringBuilder();
+            mFace.append("f ");
+            mFace.append((i + 0 + FACE_OFFSET));
+            mFace.append(" ");
+            mFace.append((i + 1 + FACE_OFFSET));
+            mFace.append(" ");
+            mFace.append((i + 2 + FACE_OFFSET));
+            mFace.append(LINE_TERMINATOR);
+            mFaces.add(mFace.toString());
+        }
+
+        s.add(GROUP_NAME);
+        s.add(LINE_TERMINATOR);
+        s.addAll(mVertices);
+        s.add(LINE_TERMINATOR);
+        s.addAll(mFaces);
+
+        String[] mStringArray = new String[s.size()];
+        return s.toArray(mStringArray);
+    }
+
+    public static ModelData parseModelData(String pString) {
+        return ModelLoaderOBJ.parseModelData(PApplet.split(pString, "\n"));
+    }
+
+    public static ModelData parseModelData(String[] pLines) {
         int myNumberOfObjects = 0;
         Vector<Float> myTempVertices = new Vector<Float>();
         Vector<Float> myTempTexCoords = new Vector<Float>();
@@ -454,32 +540,6 @@ public class ModelLoaderOBJ {
         return myModelData;
     }
 
-    private static float[] rearrangeVertices(float[] theVertices,
-                                             int[] theIndices,
-                                             int theNumberOfVertexComponents,
-                                             PVector theScale,
-                                             PVector thePosition) {
-        float[] myRearrangedVertices = new float[theIndices.length * theNumberOfVertexComponents];
-        int myVertexIndex = -1;
-        for (int i = 0; i < theIndices.length; i++) {
-            int myIndex = theIndices[i] * theNumberOfVertexComponents;
-            if (theNumberOfVertexComponents == 3) {
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex] * theScale.x + thePosition.x;
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 1] * theScale.y + thePosition.y;
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 2] * theScale.z + thePosition.z;
-            } else if (theNumberOfVertexComponents == 2) {
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex] * theScale.x + thePosition.x;
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 1] * theScale.y + thePosition.y;
-            } else if (theNumberOfVertexComponents == 4) {
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex] * theScale.x + thePosition.x;
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 1] * theScale.y + thePosition.y;
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 2] * theScale.z + thePosition.z;
-                myRearrangedVertices[++myVertexIndex] = theVertices[myIndex + 3] * 1 + 0;
-            }
-        }
-        return myRearrangedVertices;
-    }
-
     public static void createNormalsTRIANGLE(float[] theVertices, float[] theNormals) {
         int myNumberOfPoints = 3;
         for (int i = 0; i < theVertices.length; i += (myNumberOfPoints * NUMBER_OF_VERTEX_COMPONENTS)) {
@@ -505,10 +565,6 @@ public class ModelLoaderOBJ {
             theNormals[i + 7] = myNormal.y;
             theNormals[i + 8] = myNormal.z;
         }
-    }
-
-    private static void createNormalsQUADS(float[] theVertices, float[] theNormals) {
-        System.out.println("### WARNING @ ModelLoaderOBJ / normal autogenerator for QUADS isn t implemented yet");
     }
 
     public static void calculateNormal(final PVector pointA,

@@ -14,7 +14,7 @@ public class SketchOBJModelDrawingManually extends PApplet {
     }
 
     public void setup() {
-        mModelData = ModelLoaderOBJ.getModelData(OBJWeirdObject.DATA);
+        mModelData = ModelLoaderOBJ.parseModelData(OBJWeirdObject.DATA);
         println(mModelData);
     }
 

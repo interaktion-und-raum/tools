@@ -5,7 +5,7 @@ void settings() {
     size(640, 480, P3D);
 }
 void setup() {
-    ModelData mModelData = ModelLoaderOBJ.getModelData(split(OBJMan.DATA, "\n"));
+    ModelData mModelData = ModelLoaderOBJ.parseModelData(OBJMan.DATA);
     mModelMesh = mModelData.mesh();
     println(mModelData);
 }

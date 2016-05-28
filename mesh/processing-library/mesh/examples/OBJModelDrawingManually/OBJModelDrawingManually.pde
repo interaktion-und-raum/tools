@@ -5,7 +5,7 @@ void settings() {
     size(640, 480, P3D);
 }
 void setup() {
-    mModelData = ModelLoaderOBJ.getModelData(OBJWeirdObject.DATA);
+    mModelData = ModelLoaderOBJ.parseModelData(OBJWeirdObject.DATA);
     println(mModelData);
 }
 void draw() {

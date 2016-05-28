@@ -18,7 +18,7 @@ public class SketchOBJModelToTriangles extends PApplet {
     }
 
     public void setup() {
-        ModelData mModelData = ModelLoaderOBJ.getModelData(OBJWeirdObject.DATA);
+        ModelData mModelData = ModelLoaderOBJ.parseModelData(OBJWeirdObject.DATA);
         Mesh mModelMesh = mModelData.mesh();
         mTriangles = mModelMesh.triangles();
     }
