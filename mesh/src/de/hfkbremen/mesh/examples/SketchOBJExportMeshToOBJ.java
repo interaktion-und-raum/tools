@@ -33,7 +33,7 @@ public class SketchOBJExportMeshToOBJ extends PApplet {
 
     public void keyPressed() {
         String[] mOBJ = ModelLoaderOBJ.convertMeshToOBJ(mMesh);
-        saveStrings("icosphere.obj", mOBJ);
+        saveStrings("icosphere" + frameCount + ".obj", mOBJ);
     }
 
     public static void main(String[] args) {
@@ -41,3 +41,4 @@ public class SketchOBJExportMeshToOBJ extends PApplet {
     }
 }
 
+// @todo add SketchOBJExportVertexDataToOBJ

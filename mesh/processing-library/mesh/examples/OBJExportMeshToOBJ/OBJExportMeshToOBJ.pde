@@ -20,5 +20,5 @@ void draw() {
 }
 void keyPressed() {
     String[] mOBJ = ModelLoaderOBJ.convertMeshToOBJ(mMesh);
-    saveStrings("icosphere.obj", mOBJ);
+    saveStrings("icosphere" + frameCount + ".obj", mOBJ);
 }
