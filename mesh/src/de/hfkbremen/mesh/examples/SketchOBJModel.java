@@ -29,7 +29,7 @@ public class SketchOBJModel extends PApplet {
             mModelMesh.primitive(POINTS);
         } else {
             fill(0, 127, 255);
-            stroke(127, 191, 255);
+            stroke(255);
             mModelMesh.primitive(TRIANGLES);
         }
 

@@ -322,6 +322,8 @@ public class OBJWriter extends PGraphics {
 
         } else if ((shape == TRIANGLES) && (vertexCount == 3)) {
             writeTriangle();
+        } else if (shape == POINTS) {
+            // @todo write points as spheres
         }
     }
 
