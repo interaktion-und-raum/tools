@@ -46,7 +46,6 @@ public class VectorFont {
         mRepeat = pRepeat;
     }
 
-
     public ArrayList<PVector> outline(String pText) {
         return flattenCharacters(characters(pText));
     }
