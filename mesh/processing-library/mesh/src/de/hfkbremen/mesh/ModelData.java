@@ -78,9 +78,9 @@ public class ModelData implements Serializable {
                 "### INFO @ ModelData.averageNormals() / this algorithm is not very efficient yet. Takes quite long!");
         for (int i = 0; i < vertices.length; i += vertex_component_count) {
             PVector myVertex = new PVector(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
-            ArrayList<PVector> myNormals = new ArrayList<PVector>();
+            ArrayList<PVector> myNormals = new ArrayList<>();
 
-            ArrayList<Integer> myNormalIndices = new ArrayList<Integer>();
+            ArrayList<Integer> myNormalIndices = new ArrayList<>();
             for (int j = 0; j < vertices.length; j += vertex_component_count) {
                 PVector mySecondVertex = new PVector(vertices[j + 0], vertices[j + 1], vertices[j + 2]);
                 PVector mySecondNormal = new PVector(vertex_normals[j + 0],
@@ -99,10 +99,10 @@ public class ModelData implements Serializable {
             }
             myAverageNormal.normalize();
 
-            for (int k = 0; k < myNormalIndices.size(); k++) {
-                vertex_normals[myNormalIndices.get(k) + 0] = myAverageNormal.x;
-                vertex_normals[myNormalIndices.get(k) + 1] = myAverageNormal.y;
-                vertex_normals[myNormalIndices.get(k) + 2] = myAverageNormal.z;
+            for (Integer myNormalIndice : myNormalIndices) {
+                vertex_normals[myNormalIndice + 0] = myAverageNormal.x;
+                vertex_normals[myNormalIndice + 1] = myAverageNormal.y;
+                vertex_normals[myNormalIndice + 2] = myAverageNormal.z;
             }
         }
     }

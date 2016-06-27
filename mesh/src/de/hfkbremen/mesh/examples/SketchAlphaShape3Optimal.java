@@ -1,17 +1,17 @@
 package de.hfkbremen.mesh.examples;
 
 import de.hfkbremen.mesh.CGALAlphaShape3;
-import de.hfkbremen.mesh.Mesh;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class SketchAlphaShape3 extends PApplet {
+public class SketchAlphaShape3Optimal extends PApplet {
 
     private CGALAlphaShape3 cgal;
 
     private float[] mPoints3;
 
-    private Mesh mMesh;
+    private float[] mOptimalAlphaShape;
+    private int mNumberOfSolidComponents = 1;
 
     public void settings() {
         size(640, 480, P3D);
@@ -32,7 +32,7 @@ public class SketchAlphaShape3 extends PApplet {
             mPoints3[i * 3 + 2] = p.z;
         }
         cgal.compute_cgal_alpha_shape(mPoints3);
-        computeAlphaShape(0.5f);
+        computeAlphaShape(mNumberOfSolidComponents);
     }
 
     public void draw() {
@@ -48,8 +48,12 @@ public class SketchAlphaShape3 extends PApplet {
         fill(0, 127, 255);
         noStroke();
 
-        if (mMesh != null) {
-            mMesh.draw(g);
+        if (mOptimalAlphaShape != null) {
+            beginShape(TRIANGLES);
+            for (int i = 0; i < mOptimalAlphaShape.length; i += 3) {
+                vertex(mOptimalAlphaShape[i + 0], mOptimalAlphaShape[i + 1], mOptimalAlphaShape[i + 2]);
+            }
+            endShape();
         }
 
         strokeWeight(1f / 25f);
@@ -62,15 +66,23 @@ public class SketchAlphaShape3 extends PApplet {
         endShape();
     }
 
-    private void computeAlphaShape(float mAlpha) {
-        mMesh = cgal.mesh(mAlpha);
+    public void keyPressed() {
+        if (key == '+') {
+            mNumberOfSolidComponents++;
+        }
+        if (key == '-') {
+            mNumberOfSolidComponents--;
+        }
+        computeAlphaShape(mNumberOfSolidComponents);
     }
 
-    public void mouseMoved() {
-        computeAlphaShape(mouseX / (float) width);
+    private void computeAlphaShape(int mNumberOfSolidComponents) {
+        System.out.println("+++ number of solid components: " + mNumberOfSolidComponents);
+        System.out.println("+++ optimal alpha             : " + cgal.get_optimal_alpha(mNumberOfSolidComponents));
+        mOptimalAlphaShape = cgal.compute_regular_mesh_optimal(mNumberOfSolidComponents);
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchAlphaShape3.class.getName());
+        PApplet.main(SketchAlphaShape3Optimal.class.getName());
     }
 }

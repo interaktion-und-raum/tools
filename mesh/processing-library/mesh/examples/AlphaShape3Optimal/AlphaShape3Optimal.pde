@@ -2,7 +2,8 @@ import de.hfkbremen.mesh.*;
 
 CGALAlphaShape3 cgal;
 float[] mPoints3;
-Mesh mMesh;
+float[] mOptimalAlphaShape;
+int mNumberOfSolidComponents = 1;
 void settings() {
     size(640, 480, P3D);
 }
@@ -20,7 +21,7 @@ void setup() {
         mPoints3[i * 3 + 2] = p.z;
     }
     cgal.compute_cgal_alpha_shape(mPoints3);
-    computeAlphaShape(0.5f);
+    computeAlphaShape(mNumberOfSolidComponents);
 }
 void draw() {
     background(255);
@@ -32,8 +33,12 @@ void draw() {
     rotateY(frameCount * 0.003f);
     fill(0, 127, 255);
     noStroke();
-    if (mMesh != null) {
-        mMesh.draw(g);
+    if (mOptimalAlphaShape != null) {
+        beginShape(TRIANGLES);
+        for (int i = 0; i < mOptimalAlphaShape.length; i += 3) {
+            vertex(mOptimalAlphaShape[i + 0], mOptimalAlphaShape[i + 1], mOptimalAlphaShape[i + 2]);
+        }
+        endShape();
     }
     strokeWeight(1f / 25f);
     stroke(255, 127, 0);
@@ -44,9 +49,17 @@ void draw() {
     }
     endShape();
 }
-void computeAlphaShape(float mAlpha) {
-    mMesh = cgal.mesh(mAlpha);
+void keyPressed() {
+    if (key == '+') {
+        mNumberOfSolidComponents++;
+    }
+    if (key == '-') {
+        mNumberOfSolidComponents--;
+    }
+    computeAlphaShape(mNumberOfSolidComponents);
 }
-void mouseMoved() {
-    computeAlphaShape(mouseX / (float) width);
+void computeAlphaShape(int mNumberOfSolidComponents) {
+    System.out.println("+++ number of solid components: " + mNumberOfSolidComponents);
+    System.out.println("+++ optimal alpha             : " + cgal.get_optimal_alpha(mNumberOfSolidComponents));
+    mOptimalAlphaShape = cgal.compute_regular_mesh_optimal(mNumberOfSolidComponents);
 }

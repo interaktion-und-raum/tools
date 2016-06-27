@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 public class Mesh {
 
-    private static final int NUMBER_OF_NORMAL_COMPONENTS = 3;
     private final int mNormalsComponentsCount;
     private int mTextureCoordComponentsCount;
     private int mNumberOfAtoms;
@@ -19,6 +18,10 @@ public class Mesh {
     private int mColorComponentsCount;
     private float[] mNormals;
     private float[] mTexCoords;
+
+    Mesh(float[] pVertices) {
+        this(pVertices, 3, null, 0, null, 0, null, PGraphics.TRIANGLES);
+    }
 
     public Mesh(float[] pVertices,
                 int pVertexComponents,
@@ -98,7 +101,7 @@ public class Mesh {
             return false;
         }
 
-        if ((mNormals != null) && (mNormals.length != 0) && (mNormals.length / NUMBER_OF_NORMAL_COMPONENTS != mNumberOfAtoms)) {
+        if ((mNormals != null) && (mNormals.length != 0) && (mNormals.length / mNormalsComponentsCount != mNumberOfAtoms)) {
             System.err.print("### WARNING @ Mesh / problems with data integrity ");
             System.err.println("/ vertex_normals");
             return false;
@@ -161,7 +164,7 @@ public class Mesh {
         g.pushMatrix();
 
         /* model */
-        int myNormalIndex = mDrawStart * NUMBER_OF_NORMAL_COMPONENTS;
+        int myNormalIndex = mDrawStart * mNormalsComponentsCount;
         int myTexCoordIndex = mDrawStart * mTextureCoordComponentsCount;
         int myColorIndex = mDrawStart * mColorComponentsCount;
         int myVertexIndex = mDrawStart * mVertexComponentsCount;
@@ -181,7 +184,7 @@ public class Mesh {
             /* vertex_normals */
             if (mNormals != null && mNormals.length != 0) {
                 g.normal(mNormals[myNormalIndex], mNormals[myNormalIndex + 1], mNormals[myNormalIndex + 2]); // 3f
-                myNormalIndex += NUMBER_OF_NORMAL_COMPONENTS;
+                myNormalIndex += mNormalsComponentsCount;
             }
             /* texcoords */
             float u = 0;

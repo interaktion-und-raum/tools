@@ -23,7 +23,7 @@ public class CGALAlphaShape3 {
      *
      * @return
      */
-    public native int version();
+    native int version();
 
     /**
      * Initialize the alpha_shape from the array of points coordinates
@@ -81,19 +81,22 @@ public class CGALAlphaShape3 {
     private native int number_of_solid_components(long ptr);
 
     /**
-     *
      * @param classification_type
      * @param alpha
      * @param ptr
      * @return
      */
-    public native float[] get_alpha_shape_mesh(String classification_type, float alpha, long ptr);
+    private native float[] get_alpha_shape_mesh(String classification_type, float alpha, long ptr);
+
+    /**
+     * @param nb_sc
+     * @param ptr
+     * @return
+     */
+    private native float get_optimal_alpha(int nb_sc, long ptr);
+
 
     /* --- */
-
-    public int number_of_solid_components() {
-        return number_of_solid_components(ptr2cgalAlphaShape);
-    }
 
     public void compute_cgal_alpha_shape(float[] pts_coord) {
         ptr2cgalAlphaShape = init_alpha_shape(pts_coord);
@@ -110,64 +113,39 @@ public class CGALAlphaShape3 {
         ptr2cgalAlphaShape = init_alpha_shape(pts_coord);
     }
 
+    public Mesh mesh(float m_alpha) {
+        return new Mesh(get_alpha_shape_mesh("REGULAR", m_alpha, ptr2cgalAlphaShape));
+    }
+
     public float[] compute_regular_mesh(float m_alpha) {
         return get_alpha_shape_mesh("REGULAR", m_alpha, ptr2cgalAlphaShape);
     }
 
-    /**
-     * Update the regular_facets geometry for a given alpha value
-     */
-    public int[] compute_regular_facets(float m_alpha) {
-        /* call the native method */
-        return get_alpha_shape_facets("REGULAR", m_alpha, ptr2cgalAlphaShape);
+    public float[] compute_singular_mesh(float m_alpha) {
+        return get_alpha_shape_mesh("SINGULAR", m_alpha, ptr2cgalAlphaShape);
     }
 
-    /**
-     * Update the singular_facets geometry for a given alpha value
-     */
-    public int[] compute_singular_facets(float m_alpha) {
-        return get_alpha_shape_facets("SINGULAR", m_alpha, ptr2cgalAlphaShape);
+    public float[] compute_regular_mesh_optimal(int number_of_solid_components) {
+        return get_alpha_shape_mesh("REGULAR",
+                                    get_optimal_alpha(number_of_solid_components, ptr2cgalAlphaShape),
+                                    ptr2cgalAlphaShape);
     }
 
-    /**
-     * Update the regular_facets geometry for a given nb of solid components
-     */
-    public int[] compute_regular_facets_optimal(int nb_of_solid_components) {
-        return get_alpha_shape_facets_optimal("REGULAR", nb_of_solid_components, ptr2cgalAlphaShape);
+    public float[] compute_singular_mesh_optimal(int number_of_solid_components) {
+        return get_alpha_shape_mesh("SINGULAR",
+                                    get_optimal_alpha(number_of_solid_components, ptr2cgalAlphaShape),
+                                    ptr2cgalAlphaShape);
     }
 
-    /**
-     * Update the singular_facets geometry for a given nb of solid components
-     */
-    public int[] compute_singular_facets_optimal(int nb_of_solid_components) {
-        return get_alpha_shape_facets_optimal("SINGULAR", nb_of_solid_components, ptr2cgalAlphaShape);
-    }
-
-    public float getAlpha() {
+    public float alpha() {
         return get_alpha(ptr2cgalAlphaShape);
     }
 
-    public int getNumberOfSolidComponents() {
+    public int number_of_solid_components() {
         return number_of_solid_components(ptr2cgalAlphaShape);
     }
 
-    //    /**
-    //     * Compute the regular and singular facets of the alpha shape for the given alpha,
-    //     * the nb of solid components is updated.
-    //     */
-    //    private void start(float m_alpha) {
-    //        compute_regular_facets(m_alpha);
-    //        compute_singular_facets(m_alpha);
-    //        int nb_of_solid_components = number_of_solid_components(ptr2cgalAlphaShape);
-    //    }
-    //
-    //    /**
-    //     * Compute the regular and singular facets of the alpha shape for a given nb of solid components,
-    //     * the alpha is updated.
-    //     */
-    //    private void startOptimal(int nb_of_solid_components) {
-    //        this.compute_regular_facets_optimal(nb_of_solid_components);
-    //        this.compute_singular_facets_optimal(nb_of_solid_components);
-    //        double m_alpha = get_alpha(ptr2cgalAlphaShape);
-    //    }
+    public float get_optimal_alpha(int nb_sc) {
+        return get_optimal_alpha(nb_sc, ptr2cgalAlphaShape);
+    }
 }
