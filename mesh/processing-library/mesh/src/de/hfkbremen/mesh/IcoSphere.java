@@ -23,7 +23,7 @@ public class IcoSphere {
     // add vertex to mesh, fix position to be on unit sphere, return mIndex
     private int addVertex(PVector p) {
         float length = PApplet.sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
-        mGeometry.positions.add(new PVector(p.x / length, p.y / length, p.z / length));
+        mGeometry.vertices.add(new PVector(p.x / length, p.y / length, p.z / length));
         return mIndex++;
     }
 
@@ -42,8 +42,8 @@ public class IcoSphere {
         }
 
         // not in cache, calculate it
-        PVector point1 = mGeometry.positions.get(p1);
-        PVector point2 = mGeometry.positions.get(p2);
+        PVector point1 = mGeometry.vertices.get(p1);
+        PVector point2 = mGeometry.vertices.get(p2);
         PVector middle = new PVector((point1.x + point2.x) / 2.0f,
                                      (point1.y + point2.y) / 2.0f,
                                      (point1.z + point2.z) / 2.0f);
@@ -130,9 +130,9 @@ public class IcoSphere {
 
         // done, now add triangles to mesh
         for (TriangleIndices tri : faces) {
-            mGeometry.triangle_indices.add(tri.v1);
-            mGeometry.triangle_indices.add(tri.v2);
-            mGeometry.triangle_indices.add(tri.v3);
+            mGeometry.indices.add(tri.v1);
+            mGeometry.indices.add(tri.v2);
+            mGeometry.indices.add(tri.v3);
         }
 
         return mGeometry;
@@ -141,9 +141,9 @@ public class IcoSphere {
     public static Mesh mesh(int pRecursionLevel) {
         IcoSphere is = new IcoSphere();
         IndexedTriangleList m = is.create(pRecursionLevel);
-        float[] mVertices = new float[m.triangle_indices.size() * 3];
-        for (int i = 0; i < m.triangle_indices.size(); i++) {
-            PVector v = m.positions.get(m.triangle_indices.get(i));
+        float[] mVertices = new float[m.indices.size() * 3];
+        for (int i = 0; i < m.indices.size(); i++) {
+            PVector v = m.vertices.get(m.indices.get(i));
             mVertices[i * 3 + 0] = v.x;
             mVertices[i * 3 + 1] = v.y;
             mVertices[i * 3 + 2] = v.z;

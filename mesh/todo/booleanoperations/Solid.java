@@ -1,11 +1,11 @@
-package claylike.booleanoperations;
+package de.hfkbremen.mesh.booleanoperations;
 
-
-import mathematik.Vector3f;
-
+import de.hfkbremen.mesh.Mesh;
+import processing.core.PGraphics;
+import processing.core.PVector;
 
 /**
- * Class representing a 3D solid.
+ * Class representing a 3D create.
  *
  * @author Danilo Balby Silva Castanheira (danbalby@yahoo.com)
  */
@@ -14,22 +14,20 @@ public class Solid {
 
     protected int[] indices;
 
-    protected Vector3f[] vertices;
+    protected PVector[] vertices;
 
-    public Solid(Vector3f[] theVertices, int[] theIndices) {
+    public Solid(PVector[] theVertices, int[] theIndices) {
         vertices = theVertices;
         indices = theIndices;
     }
 
-
-    public Vector3f[] getVertices() {
-        Vector3f[] newVertices = new Vector3f[vertices.length];
+    public PVector[] getVertices() {
+        PVector[] newVertices = new PVector[vertices.length];
         for (int i = 0; i < newVertices.length; i++) {
-            newVertices[i] = (Vector3f) vertices[i].clone();
+            newVertices[i] = new PVector().set(vertices[i]);
         }
         return newVertices;
     }
-
 
     public int[] getIndices() {
         int[] newIndices = new int[indices.length];
@@ -37,21 +35,44 @@ public class Solid {
         return newIndices;
     }
 
-
     public boolean isEmpty() {
-        if (indices.length == 0) {
-            return true;
-        } else {
-            return false;
+        return indices.length == 0;
+    }
+
+    public void translate(float dx, float dy, float dz) {
+        for (PVector vertice : vertices) {
+            vertice.x += dx;
+            vertice.y += dy;
+            vertice.z += dz;
         }
     }
 
-
-    public void translate(float dx, float dy, float dz) {
-        for (int i = 0; i < vertices.length; i++) {
-            vertices[i].x += dx;
-            vertices[i].y += dy;
-            vertices[i].z += dz;
+    public void draw(PGraphics g) {
+        g.beginShape(PGraphics.TRIANGLES);
+        for (int i = 0; i < getIndices().length; i++) {
+            final PVector v = getVertices()[getIndices()[i]];
+            g.vertex(v.x, v.y, v.z);
         }
+        g.endShape();
+    }
+
+    public static Solid create(Mesh pMesh) {
+        return create(pMesh.vertices());
+    }
+
+    public static Solid create(float[] pMeshData) {
+        PVector[] mVertices = new PVector[pMeshData.length / 3];
+        for (int i = 0; i < pMeshData.length; i += 3) {
+            mVertices[i / 3] = new PVector(pMeshData[i + 0], pMeshData[i + 1], pMeshData[i + 2]);
+        }
+        return create(mVertices);
+    }
+
+    public static Solid create(PVector[] pVertices) {
+        int[] mIndices = new int[pVertices.length];
+        for (int i = 0; i < mIndices.length; i++) {
+            mIndices[i] = i;
+        }
+        return new Solid(pVertices, mIndices);
     }
 }

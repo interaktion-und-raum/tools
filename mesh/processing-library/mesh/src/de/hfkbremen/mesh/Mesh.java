@@ -1,6 +1,7 @@
 package de.hfkbremen.mesh;
 
 import processing.core.PGraphics;
+import processing.core.PVector;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,7 @@ public class Mesh {
     private float[] mNormals;
     private float[] mTexCoords;
 
-    Mesh(float[] pVertices) {
+    public Mesh(float[] pVertices) {
         this(pVertices, 3, null, 0, null, 0, null, PGraphics.TRIANGLES);
     }
 
@@ -249,5 +250,17 @@ public class Mesh {
             mTriangles.add(t);
         }
         return mTriangles;
+    }
+
+    public void translate(float x, float y, float z) {
+        for (int i = 0; i < mVertices.length; i += 3) {
+            mVertices[i + 0] = mVertices[i + 0] + x;
+            mVertices[i + 1] = mVertices[i + 1] + y;
+            mVertices[i + 2] = mVertices[i + 2] + z;
+        }
+    }
+
+    public void translate(PVector p) {
+        translate(p.x, p.y, p.z);
     }
 }

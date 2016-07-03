@@ -8,7 +8,7 @@ void settings() {
 }
 void setup() {
     cgal = new CGALAlphaShape3();
-    final int NUMBER_OF_POINTS = 1000;
+    final int NUMBER_OF_POINTS = 2000;
     mPoints3 = new float[NUMBER_OF_POINTS * 3];
     final float mRange = 2;
     for (int i = 0; i < NUMBER_OF_POINTS; i++) {

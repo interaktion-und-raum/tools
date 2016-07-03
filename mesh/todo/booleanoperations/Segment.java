@@ -1,49 +1,33 @@
-package claylike.booleanoperations;
+package de.hfkbremen.mesh.booleanoperations;
 
-
-import mathematik.Vector3f;
-
+import processing.core.PVector;
 
 /**
  * Represents a line segment resulting from a intersection of a face and a plane.
- *
+ * <p>
  * D. H. Laidlaw, W. B. Trumbore, and J. F. Hughes.
  * "Constructive Solid Geometry for Polyhedral Objects"
  * SIGGRAPH Proceedings, 1986, p.161.
  *
  * @author Danilo Balby Silva Castanheira (danbalby@yahoo.com)
  */
-public class Segment
-    implements Cloneable {
-    private Line line;
-
-    private int index;
-
-    private float startDist;
-
-    private float endDist;
-
-    private int startType;
-
-    private int middleType;
-
-    private int endType;
-
-    private Vertex startVertex;
-
-    private Vertex endVertex;
-
-    private Vector3f startPos;
-
-    private Vector3f endPos;
+public class Segment {
 
     public static final int VERTEX = 1;
-
     public static final int FACE = 2;
-
     public static final int EDGE = 3;
-
     private static final float TOL = 1e-8f;
+    private Line line;
+    private int index;
+    private float startDist;
+    private float endDist;
+    private int startType;
+    private int middleType;
+    private int endType;
+    private Vertex startVertex;
+    private Vertex endVertex;
+    private PVector startPos;
+    private PVector endPos;
 
     public Segment(Line line, Face face, int sign1, int sign2, int sign3) {
         this.line = line;
@@ -79,49 +63,40 @@ public class Segment
         //There are undefined ends - one or more edges cut the planes intersection line
         if (getNumEndsSet() != 2) {
             //EDGE is an end
-            if ( (sign1 == 1 && sign2 == -1) || (sign1 == -1 && sign2 == 1)) {
+            if ((sign1 == 1 && sign2 == -1) || (sign1 == -1 && sign2 == 1)) {
                 setEdge(face.v1, face.v2);
             }
             //EDGE is an end
-            if ( (sign2 == 1 && sign3 == -1) || (sign2 == -1 && sign3 == 1)) {
+            if ((sign2 == 1 && sign3 == -1) || (sign2 == -1 && sign3 == 1)) {
                 setEdge(face.v2, face.v3);
             }
             //EDGE is an end
-            if ( (sign3 == 1 && sign1 == -1) || (sign3 == -1 && sign1 == 1)) {
+            if ((sign3 == 1 && sign1 == -1) || (sign3 == -1 && sign1 == 1)) {
                 setEdge(face.v3, face.v1);
             }
         }
     }
 
+    private Segment() {
+    }
 
     //-----------------------------------OVERRIDES----------------------------------//
 
-    /**
-     * Clones the Segment object
-     *
-     * @return cloned Segment object
-     */
-    public Object clone() {
-        try {
-            Segment clone = (Segment)super.clone();
-            clone.line = (Line) line.clone();
-            clone.index = index;
-            clone.startDist = startDist;
-            clone.endDist = endDist;
-            clone.startDist = startType;
-            clone.middleType = middleType;
-            clone.endType = endType;
-            clone.startVertex = (Vertex) startVertex.clone();
-            clone.endVertex = (Vertex) endVertex.clone();
-            clone.startPos = (Vector3f) startPos.clone();
-            clone.endPos = (Vector3f) endPos.clone();
-
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+    public Segment copy() {
+        Segment clone = new Segment();
+        clone.line = line.copy();
+        clone.index = index;
+        clone.startDist = startDist;
+        clone.endDist = endDist;
+        clone.startDist = startType;
+        clone.middleType = middleType;
+        clone.endType = endType;
+        clone.startVertex = startVertex.copy();
+        clone.endVertex = endVertex.copy();
+        clone.startPos = new PVector().set(startPos);
+        clone.endPos = new PVector().set(endPos);
+        return clone;
     }
-
 
     //-------------------------------------GETS-------------------------------------//
 
@@ -134,7 +109,6 @@ public class Segment
         return startVertex;
     }
 
-
     /**
      * Gets the end vertex
      *
@@ -143,7 +117,6 @@ public class Segment
     public Vertex getEndVertex() {
         return endVertex;
     }
-
 
     /**
      * Gets the distance from the origin until the starting point
@@ -154,7 +127,6 @@ public class Segment
         return startDist;
     }
 
-
     /**
      * Gets the distance from the origin until ending point
      *
@@ -163,7 +135,6 @@ public class Segment
     public float getEndDistance() {
         return endDist;
     }
-
 
     /**
      * Gets the type of the starting point
@@ -174,7 +145,6 @@ public class Segment
         return startType;
     }
 
-
     /**
      * Gets the type of the segment between the starting and ending points
      *
@@ -183,7 +153,6 @@ public class Segment
     public int getIntermediateType() {
         return middleType;
     }
-
 
     /**
      * Gets the type of the ending point
@@ -194,7 +163,6 @@ public class Segment
         return endType;
     }
 
-
     /**
      * Gets the number of ends already set
      *
@@ -204,26 +172,23 @@ public class Segment
         return index;
     }
 
-
     /**
      * Gets the starting position
      *
      * @return start position
      */
-    public Vector3f getStartPosition() {
+    public PVector getStartPosition() {
         return startPos;
     }
-
 
     /**
      * Gets the ending position
      *
      * @return ending position
      */
-    public Vector3f getEndPosition() {
+    public PVector getEndPosition() {
         return endPos;
     }
-
 
     //------------------------------------OTHERS------------------------------------//
 
@@ -234,13 +199,8 @@ public class Segment
      * @return true if the segments intersect, false otherwise
      */
     public boolean intersect(Segment segment) {
-        if (endDist < segment.startDist + TOL || segment.endDist < startDist + TOL) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(endDist < segment.startDist + TOL || segment.endDist < startDist + TOL);
     }
-
 
     //---------------------------------PRIVATES-------------------------------------//
 
@@ -289,7 +249,6 @@ public class Segment
         }
     }
 
-
     /**
      * Sets an end as edge (starting point if none end were defined, ending point otherwise)
      *
@@ -298,9 +257,9 @@ public class Segment
      * @return false if all ends were already defined, true otherwise
      */
     private boolean setEdge(Vertex vertex1, Vertex vertex2) {
-        Vector3f point1 = vertex1.getPosition();
-        Vector3f point2 = vertex2.getPosition();
-        Vector3f edgeDirection = new Vector3f(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
+        PVector point1 = vertex1.getPosition();
+        PVector point2 = vertex2.getPosition();
+        PVector edgeDirection = new PVector(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
         Line edgeLine = new Line(edgeDirection, point1);
 
         if (index == 0) {
@@ -330,8 +289,9 @@ public class Segment
         }
     }
 
-
-    /** Swaps the starting point and the ending point */
+    /**
+     * Swaps the starting point and the ending point
+     */
     private void swapEnds() {
         float distTemp = startDist;
         startDist = endDist;
@@ -345,7 +305,7 @@ public class Segment
         startVertex = endVertex;
         endVertex = vertexTemp;
 
-        Vector3f posTemp = startPos;
+        PVector posTemp = startPos;
         startPos = endPos;
         endPos = posTemp;
     }

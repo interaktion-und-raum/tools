@@ -11,8 +11,8 @@ import processing.core.PVector;
 public class CGALAlphaShape3 {
 
     static {
-        System.out.print("### loading native lib `CGALAlphaShape3` ...");
-        System.loadLibrary("CGALAlphaShape3");
+        System.out.print("### loading native lib `" + CGALAlphaShape3.class.getName() + "` ...");
+        System.loadLibrary(CGALAlphaShape3.class.getSimpleName());
         System.out.println(" ok");
     }
 
@@ -48,11 +48,11 @@ public class CGALAlphaShape3 {
     private native int[] get_alpha_shape_facets(String classification_type, float alpha, long ptr);
 
     /**
-     * For a given number of solid components and a given class_type for
+     * For a given number of create components and a given class_type for
      * the facets, sets the alpha value of the alpha_shape A such that A
      * satisfies the following two properties: (1) all data points are
      * either on the boundary or in the interior of the regularized
-     * version of A; (2) the number of solid component of A is equal to or
+     * version of A; (2) the number of create component of A is equal to or
      * smaller than nb_components. Returns the array of facet indices from
      * the alpha_shape.
      *
@@ -72,7 +72,7 @@ public class CGALAlphaShape3 {
     private native float get_alpha(long ptr);
 
     /**
-     * Returns the number of solid components of the current alpha_shape,
+     * Returns the number of create components of the current alpha_shape,
      * that is, the number of components of its regularized version.
      *
      * @param ptr

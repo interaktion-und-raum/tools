@@ -1,12 +1,10 @@
-package claylike.booleanoperations;
+package de.hfkbremen.mesh.booleanoperations;
 
-
-import mathematik.Vector3f;
-
+import processing.core.PVector;
 
 /**
  * Representation of a 3D face (triangle).
- *
+ * <p>
  * D. H. Laidlaw, W. B. Trumbore, and J. F. Hughes.
  * "Constructive Solid Geometry for Polyhedral Objects"
  * SIGGRAPH Proceedings, 1986, p.161.
@@ -14,48 +12,61 @@ import mathematik.Vector3f;
  * @author Danilo Balby Silva Castanheira (danbalby@yahoo.com)
  */
 
-public class Face
-    implements Cloneable {
-    /** first vertex */
-    public Vertex v1;
+public class Face {
 
-    /** second vertex */
-    public Vertex v2;
-
-    /** third vertex */
-    public Vertex v3;
-
-    /** face status relative to a solid  */
-    private int status;
-
-    /** face status if it is still unknown */
+    /**
+     * face status if it is still unknown
+     */
     public static final int UNKNOWN = 1;
-
-    /** face status if it is inside a solid */
+    /**
+     * face status if it is inside a create
+     */
     public static final int INSIDE = 2;
-
-    /** face status if it is outside a solid */
+    /**
+     * face status if it is outside a create
+     */
     public static final int OUTSIDE = 3;
-
-    /** face status if it is coincident with a solid face */
+    /**
+     * face status if it is coincident with a create face
+     */
     public static final int SAME = 4;
-
-    /** face status if it is coincident with a solid face with opposite orientation*/
+    /**
+     * face status if it is coincident with a create face with opposite orientation
+     */
     public static final int OPPOSITE = 5;
-
-    /** point status if it is up relative to an edge - see linePositionIn_ methods */
+    /**
+     * point status if it is up relative to an edge - see linePositionIn_ methods
+     */
     private static final int UP = 6;
-
-    /** point status if it is down relative to an edge - see linePositionIn_ methods */
+    /**
+     * point status if it is down relative to an edge - see linePositionIn_ methods
+     */
     private static final int DOWN = 7;
-
-    /** point status if it is on an edge - see linePositionIn_ methods */
+    /**
+     * point status if it is on an edge - see linePositionIn_ methods
+     */
     private static final int ON = 8;
-
-    /** point status if it isn't up, down or on relative to an edge - see linePositionIn_ methods */
+    /**
+     * point status if it isn't up, down or on relative to an edge - see linePositionIn_ methods
+     */
     private static final int NONE = 9;
-
     private static final float TOL = 1e-8f;
+    /**
+     * first vertex
+     */
+    public Vertex v1;
+    /**
+     * second vertex
+     */
+    public Vertex v2;
+    /**
+     * third vertex
+     */
+    public Vertex v3;
+    /**
+     * face status relative to a create
+     */
+    private int status;
 
     //---------------------------------CONSTRUCTORS---------------------------------//
 
@@ -74,27 +85,13 @@ public class Face
         status = UNKNOWN;
     }
 
-
     //-----------------------------------OVERRIDES----------------------------------//
 
-    /**
-     * Clones the face object
-     *
-     * @return cloned face object
-     */
-    public Object clone() {
-        try {
-            Face clone = (Face)super.clone();
-            clone.v1 = (Vertex) v1.clone();
-            clone.v2 = (Vertex) v2.clone();
-            clone.v3 = (Vertex) v3.clone();
-            clone.status = status;
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+    public Face copy() {
+        Face clone = new Face(v1.copy(), v2.copy(), v3.copy());
+        clone.status = status;
+        return clone;
     }
-
 
     /**
      * Makes a string definition for the Face object
@@ -105,7 +102,6 @@ public class Face
         return v1.toString() + "\n" + v2.toString() + "\n" + v3.toString();
     }
 
-
     /**
      * Checks if a face is equal to another. To be equal, they have to have equal
      * vertices in the same order
@@ -114,7 +110,7 @@ public class Face
      * @return true if they are equal, false otherwise.
      */
     public boolean equals(Object anObject) {
-        if (! (anObject instanceof Face)) {
+        if (!(anObject instanceof Face)) {
             return false;
         } else {
             Face face = (Face) anObject;
@@ -125,7 +121,6 @@ public class Face
             return cond1 || cond2 || cond3;
         }
     }
-
 
     //-------------------------------------GETS-------------------------------------//
 
@@ -138,28 +133,26 @@ public class Face
         return new Bound(v1.getPosition(), v2.getPosition(), v3.getPosition());
     }
 
-
     /**
      * Gets the face normal
      *
      * @return face normal
      */
-    public Vector3f getNormal() {
-        Vector3f p1 = v1.getPosition();
-        Vector3f p2 = v2.getPosition();
-        Vector3f p3 = v3.getPosition();
-        Vector3f xy, xz, normal;
+    public PVector getNormal() {
+        PVector p1 = v1.getPosition();
+        PVector p2 = v2.getPosition();
+        PVector p3 = v3.getPosition();
+        PVector xy, xz, normal;
 
-        xy = new Vector3f(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
-        xz = new Vector3f(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
+        xy = new PVector(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
+        xz = new PVector(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
 
-        normal = new Vector3f();
-        normal.cross(xy, xz);
+        normal = new PVector();
+        PVector.cross(xy, xz, normal);
         normal.normalize();
 
         return normal;
     }
-
 
     /**
      * Gets the face status
@@ -170,7 +163,6 @@ public class Face
         return status;
     }
 
-
     /**
      * Gets the face area
      *
@@ -178,29 +170,29 @@ public class Face
      */
     public float getArea() {
         //area = (a * c * sen(B))/2
-        Vector3f p1 = v1.getPosition();
-        Vector3f p2 = v2.getPosition();
-        Vector3f p3 = v3.getPosition();
-        Vector3f xy = new Vector3f(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
-        Vector3f xz = new Vector3f(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
+        PVector p1 = v1.getPosition();
+        PVector p2 = v2.getPosition();
+        PVector p3 = v3.getPosition();
+        PVector xy = new PVector(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
+        PVector xz = new PVector(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
 
-        float a = p1.distance(p2);
-        float c = p1.distance(p3);
-        float B = xy.angle(xz);
+        float a = PVector.dist(p1, p2);
+        float c = PVector.dist(p1, p3);
+        float b = PVector.angleBetween(xy, xz);
 
-        return (a * c * (float)Math.sin(B)) / 2f;
+        return (a * c * (float) Math.sin(b)) / 2f;
     }
-
 
     //-------------------------------------OTHERS-----------------------------------//
 
-    /** Invert face direction (normal direction) */
+    /**
+     * Invert face direction (normal direction)
+     */
     public void invert() {
         Vertex vertexTemp = v2;
         v2 = v1;
         v1 = vertexTemp;
     }
-
 
     //------------------------------------CLASSIFIERS-------------------------------//
 
@@ -228,7 +220,6 @@ public class Face
         }
     }
 
-
     /**
      * Classifies the face based on the ray trace technique
      *
@@ -236,7 +227,7 @@ public class Face
      */
     public void rayTraceClassify(Object3D object) {
         //creating a ray starting starting at the face baricenter going to the normal direction
-        Vector3f p0 = new Vector3f();
+        PVector p0 = new PVector();
         p0.x = (v1.x + v2.x + v3.x) / 3f;
         p0.y = (v1.y + v2.y + v3.y) / 3f;
         p0.z = (v1.z + v2.z + v3.z) / 3f;
@@ -244,14 +235,14 @@ public class Face
 
         boolean success;
         float dotProduct, distance;
-        Vector3f intersectionPoint;
+        PVector intersectionPoint;
         Face closestFace = null;
         float closestDistance;
 
         do {
             success = true;
             closestDistance = Float.MAX_VALUE;
-            //for each face from the other solid...
+            //for each face from the other create...
             for (int i = 0; i < object.getNumFaces(); i++) {
                 Face face = object.getFace(i);
                 dotProduct = face.getNormal().dot(ray.getDirection());
@@ -293,7 +284,7 @@ public class Face
                     }
                 }
             }
-        } while (success == false);
+        } while (!success);
 
         //none face found: outside face
         if (closestFace == null) {
@@ -324,19 +315,18 @@ public class Face
         }
     }
 
-
     //------------------------------------PRIVATES----------------------------------//
 
     /**
      * Checks if the the face contains a point
      *
-     * @param point to be tested
-     * @param true if the face contains the point, false otherwise
+     * @param point
+     * @return
      */
-    private boolean hasPoint(Vector3f point) {
+    private boolean hasPoint(PVector point) {
         int result1, result2, result3;
         boolean hasUp, hasDown, hasOn;
-        Vector3f normal = getNormal();
+        PVector normal = getNormal();
 
         //if x is constant...
         if (Math.abs(normal.x) > TOL) {
@@ -360,32 +350,21 @@ public class Face
         }
 
         //if the point is up and down two lines...
-        if ( ( (result1 == UP) || (result2 == UP) || (result3 == UP)) &&
-            ( (result1 == DOWN) || (result2 == DOWN) || (result3 == DOWN))) {
-            return true;
-        }
         //if the point is on of the lines...
-        else if ( (result1 == ON) || (result2 == ON) || (result3 == ON)) {
-            return true;
-        } else {
-            return false;
-        }
+        return ((result1 == UP) || (result2 == UP) || (result3 == UP)) && ((result1 == DOWN) || (result2 == DOWN) || (result3 == DOWN)) || (result1 == ON) || (result2 == ON) || (result3 == ON);
     }
-
 
     /**
      * Gets the position of a point relative to a line in the x plane
      *
-     * @param point point to be tested
+     * @param point      point to be tested
      * @param pointLine1 one of the line ends
      * @param pointLine2 one of the line ends
      * @return position of the point relative to the line - UP, DOWN, ON, NONE
      */
-    private static int linePositionInX(Vector3f point, Vector3f pointLine1, Vector3f pointLine2) {
+    private static int linePositionInX(PVector point, PVector pointLine1, PVector pointLine2) {
         float a, b, z;
-        if ( (Math.abs(pointLine1.y - pointLine2.y) > TOL) &&
-            ( ( (point.y >= pointLine1.y) && (point.y <= pointLine2.y)) ||
-             ( (point.y <= pointLine1.y) && (point.y >= pointLine2.y)))) {
+        if ((Math.abs(pointLine1.y - pointLine2.y) > TOL) && (((point.y >= pointLine1.y) && (point.y <= pointLine2.y)) || ((point.y <= pointLine1.y) && (point.y >= pointLine2.y)))) {
             a = (pointLine2.z - pointLine1.z) / (pointLine2.y - pointLine1.y);
             b = pointLine1.z - a * pointLine1.y;
             z = a * point.y + b;
@@ -401,21 +380,18 @@ public class Face
         }
     }
 
-
     /**
      * Gets the position of a point relative to a line in the y plane
      *
-     * @param point point to be tested
+     * @param point      point to be tested
      * @param pointLine1 one of the line ends
      * @param pointLine2 one of the line ends
      * @return position of the point relative to the line - UP, DOWN, ON, NONE
      */
 
-    private static int linePositionInY(Vector3f point, Vector3f pointLine1, Vector3f pointLine2) {
+    private static int linePositionInY(PVector point, PVector pointLine1, PVector pointLine2) {
         float a, b, z;
-        if ( (Math.abs(pointLine1.x - pointLine2.x) > TOL) &&
-            ( ( (point.x >= pointLine1.x) && (point.x <= pointLine2.x)) ||
-             ( (point.x <= pointLine1.x) && (point.x >= pointLine2.x)))) {
+        if ((Math.abs(pointLine1.x - pointLine2.x) > TOL) && (((point.x >= pointLine1.x) && (point.x <= pointLine2.x)) || ((point.x <= pointLine1.x) && (point.x >= pointLine2.x)))) {
             a = (pointLine2.z - pointLine1.z) / (pointLine2.x - pointLine1.x);
             b = pointLine1.z - a * pointLine1.x;
             z = a * point.x + b;
@@ -431,21 +407,18 @@ public class Face
         }
     }
 
-
     /**
      * Gets the position of a point relative to a line in the z plane
      *
-     * @param point point to be tested
+     * @param point      point to be tested
      * @param pointLine1 one of the line ends
      * @param pointLine2 one of the line ends
      * @return position of the point relative to the line - UP, DOWN, ON, NONE
      */
 
-    private static int linePositionInZ(Vector3f point, Vector3f pointLine1, Vector3f pointLine2) {
+    private static int linePositionInZ(PVector point, PVector pointLine1, PVector pointLine2) {
         float a, b, y;
-        if ( (Math.abs(pointLine1.x - pointLine2.x) > TOL) &&
-            ( ( (point.x >= pointLine1.x) && (point.x <= pointLine2.x)) ||
-             ( (point.x <= pointLine1.x) && (point.x >= pointLine2.x)))) {
+        if ((Math.abs(pointLine1.x - pointLine2.x) > TOL) && (((point.x >= pointLine1.x) && (point.x <= pointLine2.x)) || ((point.x <= pointLine1.x) && (point.x >= pointLine2.x)))) {
             a = (pointLine2.y - pointLine1.y) / (pointLine2.x - pointLine1.x);
             b = pointLine1.y - a * pointLine1.x;
             y = a * point.x + b;

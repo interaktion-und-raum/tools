@@ -1,55 +1,49 @@
-package claylike.booleanoperations;
+package de.hfkbremen.mesh.booleanoperations;
 
+import processing.core.PVector;
 
 import java.util.ArrayList;
 
-import mathematik.Vector3f;
-
-
 /**
- * Data structure about a 3d solid to apply boolean operations in it.
- *
+ * Data structure about a 3d create to apply boolean operations in it.
+ * <p>
  * <br><br>Tipically, two 'Object3d' objects are created to apply boolean operation. The
  * methods splitFaces() and classifyFaces() are called in this sequence for both objects,
  * always using the other one as parameter. Then the faces from both objects are collected
  * according their status.
-
+ * <p>
  * D. H. Laidlaw, W. B. Trumbore, and J. F. Hughes.
  * "Constructive Solid Geometry for Polyhedral Objects"
  * SIGGRAPH Proceedings, 1986, p.161.
  *
  * @author Danilo Balby Silva Castanheira (danbalby@yahoo.com)
  */
-public class Object3D
-    implements Cloneable {
-
-    private ArrayList vertices;
-
-    private ArrayList faces;
-
-    private Bound bound;
+public class Object3D {
 
     private static final float TOL = 1e-8f;
+    private ArrayList<Vertex> vertices;
+    private ArrayList<Face> faces;
+    private Bound bound;
 
     public Object3D(Solid solid) {
         Vertex v1, v2, v3, vertex;
-        Vector3f[] verticesPoints = solid.getVertices();
+        PVector[] verticesPoints = solid.getVertices();
         int[] indices = solid.getIndices();
-        ArrayList verticesTemp = new ArrayList();
+        ArrayList<Vertex> verticesTemp = new ArrayList<>();
 
         //create vertices
-        vertices = new ArrayList();
-        for (int i = 0; i < verticesPoints.length; i++) {
-            vertex = addVertex(verticesPoints[i], Vertex.UNKNOWN);
+        vertices = new ArrayList<>();
+        for (PVector verticesPoint : verticesPoints) {
+            vertex = addVertex(verticesPoint, Vertex.UNKNOWN);
             verticesTemp.add(vertex);
         }
 
         //create faces
-        faces = new ArrayList();
+        faces = new ArrayList<>();
         for (int i = 0; i < indices.length; i = i + 3) {
-            v1 = (Vertex) verticesTemp.get(indices[i]);
-            v2 = (Vertex) verticesTemp.get(indices[i + 1]);
-            v3 = (Vertex) verticesTemp.get(indices[i + 2]);
+            v1 = verticesTemp.get(indices[i]);
+            v2 = verticesTemp.get(indices[i + 1]);
+            v3 = verticesTemp.get(indices[i + 2]);
             addFace(v1, v2, v3);
         }
 
@@ -57,31 +51,27 @@ public class Object3D
         bound = new Bound(verticesPoints);
     }
 
-
-    public Object clone() {
-        try {
-            Object3D clone = (Object3D)super.clone();
-            clone.vertices = new ArrayList();
-            for (int i = 0; i < vertices.size(); i++) {
-                clone.vertices.add( ( (Vertex) vertices.get(i)).clone());
-            }
-            clone.faces = new ArrayList();
-            for (int i = 0; i < vertices.size(); i++) {
-                clone.faces.add( ( (Face) faces.get(i)).clone());
-            }
-            clone.bound = bound;
-
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+    private Object3D(ArrayList<Vertex> vertices, ArrayList<Face> faces, Bound bound) {
+        this.vertices = vertices;
+        this.faces = faces;
+        this.bound = bound;
     }
 
+    public Object3D copy() {
+        ArrayList<Vertex> mVertices = new ArrayList<>();
+        for (int i = 0; i < mVertices.size(); i++) {
+            mVertices.add(mVertices.get(i).copy());
+        }
+        ArrayList<Face> mFaces = new ArrayList<>();
+        for (int i = 0; i < mVertices.size(); i++) {
+            mFaces.add(mFaces.get(i).copy());
+        }
+        return new Object3D(mVertices, mFaces, bound);
+    }
 
     public int getNumFaces() {
         return faces.size();
     }
-
 
     /**
      * Gets a face reference for a given position
@@ -93,18 +83,16 @@ public class Object3D
         if (index < 0 || index >= faces.size()) {
             return null;
         } else {
-            return (Face) faces.get(index);
+            return faces.get(index);
         }
     }
-
 
     public Bound getBound() {
         return bound;
     }
 
-
     private Face addFace(Vertex v1, Vertex v2, Vertex v3) {
-        if (! (v1.equals(v2) || v1.equals(v3) || v2.equals(v3))) {
+        if (!(v1.equals(v2) || v1.equals(v3) || v2.equals(v3))) {
             Face face = new Face(v1, v2, v3);
             if (face.getArea() > TOL) {
                 faces.add(face);
@@ -117,8 +105,7 @@ public class Object3D
         }
     }
 
-
-    private Vertex addVertex(Vector3f pos, int status) {
+    private Vertex addVertex(PVector pos, int status) {
         int i;
         //if already there is an equal vertex, it is not inserted
         Vertex vertex = new Vertex(pos, status);
@@ -131,13 +118,12 @@ public class Object3D
             vertices.add(vertex);
             return vertex;
         } else {
-            vertex = (Vertex) vertices.get(i);
+            vertex = vertices.get(i);
             vertex.setStatus(status);
             return vertex;
         }
 
     }
-
 
     public void splitFaces(Object3D object) {
         Line line;
@@ -178,7 +164,7 @@ public class Object3D
                             //if all the signs are zero, the planes are coplanar
                             //if all the signs are positive or negative, the planes do not intersect
                             //if the signs are not equal...
-                            if (! (signFace1Vert1 == signFace1Vert2 && signFace1Vert2 == signFace1Vert3)) {
+                            if (!(signFace1Vert1 == signFace1Vert2 && signFace1Vert2 == signFace1Vert3)) {
                                 //distance from the face2 vertices to the face1 plane
                                 distFace2Vert1 = computeDistance(face2.v1, face1);
                                 distFace2Vert2 = computeDistance(face2.v2, face1);
@@ -190,7 +176,7 @@ public class Object3D
                                 signFace2Vert3 = (distFace2Vert3 > TOL ? 1 : (distFace2Vert3 < -TOL ? -1 : 0));
 
                                 //if the signs are not equal...
-                                if (! (signFace2Vert1 == signFace2Vert2 && signFace2Vert2 == signFace2Vert3)) {
+                                if (!(signFace2Vert1 == signFace2Vert2 && signFace2Vert2 == signFace2Vert3)) {
                                     line = new Line(face1, face2);
 
                                     //intersection of the face1 and the plane of face2
@@ -206,15 +192,15 @@ public class Object3D
                                         this.splitFace(i, segment1, segment2);
 
                                         //prevent from infinite loop (with a loss of faces...)
-                                        //if(numFacesStart*20<getNumFaces())
-                                        //{
-                                        //	System.out.println("possible infinite loop situation: terminating faces split");
-                                        //	return;
-                                        //}
+                                        if(numFacesStart*21<getNumFaces())
+                                        {
+                                        	System.out.println("possible infinite loop situation: terminating faces split");
+                                        	return;
+                                        }
 
                                         //if the face in the position isn't the same, there was a break
                                         if (face1 != getFace(i)) {
-                                            //if the generated solid is equal the origin...
+                                            //if the generated create is equal the origin...
                                             if (face1.equals(getFace(getNumFaces() - 1))) {
                                                 //return it to its position and jump it
                                                 if (i != (getNumFaces() - 1)) {
@@ -238,27 +224,25 @@ public class Object3D
                 }
             }
         }
-//        System.out.println("END OF SPLIT VERTICES");
+        //        System.out.println("END OF SPLIT VERTICES");
     }
 
-
     private float computeDistance(Vertex vertex, Face face) {
-        Vector3f normal = face.getNormal();
+        PVector normal = face.getNormal();
         float a = normal.x;
         float b = normal.y;
         float c = normal.z;
-        float d = - (a * face.v1.x + b * face.v1.y + c * face.v1.z);
+        float d = -(a * face.v1.x + b * face.v1.y + c * face.v1.z);
         return a * vertex.x + b * vertex.y + c * vertex.z + d;
     }
 
-
     private void splitFace(int facePos, Segment segment1, Segment segment2) {
         Vertex startPosVertex, endPosVertex;
-        Vector3f startPos, endPos;
+        PVector startPos, endPos;
         int startType, endType, middleType;
         float startDist, endDist;
 
-        Face face = (Face) getFace(facePos);
+        Face face = getFace(facePos);
         Vertex startVertex = segment1.getStartVertex();
         Vertex endVertex = segment1.getEndVertex();
 
@@ -304,10 +288,9 @@ public class Object3D
         else if (middleType == Segment.EDGE) {
             //gets the edge
             int splitEdge;
-            if ( (startVertex == face.v1 && endVertex == face.v2) || (startVertex == face.v2 && endVertex == face.v1)) {
+            if ((startVertex == face.v1 && endVertex == face.v2) || (startVertex == face.v2 && endVertex == face.v1)) {
                 splitEdge = 1;
-            } else if ( (startVertex == face.v2 && endVertex == face.v3) ||
-                       (startVertex == face.v3 && endVertex == face.v2)) {
+            } else if ((startVertex == face.v2 && endVertex == face.v3) || (startVertex == face.v3 && endVertex == face.v2)) {
                 splitEdge = 2;
             } else {
                 splitEdge = 3;
@@ -329,8 +312,8 @@ public class Object3D
             else if (startDist == endDist) {
                 breakFaceInTwo(facePos, endPos, splitEdge);
             } else {
-                if ( (startVertex == face.v1 && endVertex == face.v2) ||
-                    (startVertex == face.v2 && endVertex == face.v3) || (startVertex == face.v3 && endVertex == face.v1)) {
+                if ((startVertex == face.v1 && endVertex == face.v2) ||
+                        (startVertex == face.v2 && endVertex == face.v3) || (startVertex == face.v3 && endVertex == face.v1)) {
                     breakFaceInThree(facePos, startPos, endPos, splitEdge);
                 } else {
                     breakFaceInThree(facePos, endPos, startPos, splitEdge);
@@ -371,7 +354,7 @@ public class Object3D
         }
         //FACE-FACE-FACE
         else if (startType == Segment.FACE && endType == Segment.FACE) {
-            Vector3f segmentVector = new Vector3f(startPos.x - endPos.x, startPos.y - endPos.y, startPos.z - endPos.z);
+            PVector segmentVector = new PVector(startPos.x - endPos.x, startPos.y - endPos.y, startPos.z - endPos.z);
 
             //if the intersection segment is a point only...
             if (Math.abs(segmentVector.x) < TOL && Math.abs(segmentVector.y) < TOL && Math.abs(segmentVector.z) < TOL) {
@@ -381,14 +364,14 @@ public class Object3D
 
             //gets the vertex more lined with the intersection segment
             int linedVertex;
-            Vector3f linedVertexPos;
-            Vector3f vertexVector = new Vector3f(endPos.x - face.v1.x, endPos.y - face.v1.y, endPos.z - face.v1.z);
+            PVector linedVertexPos;
+            PVector vertexVector = new PVector(endPos.x - face.v1.x, endPos.y - face.v1.y, endPos.z - face.v1.z);
             vertexVector.normalize();
             float dot1 = Math.abs(segmentVector.dot(vertexVector));
-            vertexVector = new Vector3f(endPos.x - face.v2.x, endPos.y - face.v2.y, endPos.z - face.v2.z);
+            vertexVector = new PVector(endPos.x - face.v2.x, endPos.y - face.v2.y, endPos.z - face.v2.z);
             vertexVector.normalize();
             float dot2 = Math.abs(segmentVector.dot(vertexVector));
-            vertexVector = new Vector3f(endPos.x - face.v3.x, endPos.y - face.v3.y, endPos.z - face.v3.z);
+            vertexVector = new PVector(endPos.x - face.v3.x, endPos.y - face.v3.y, endPos.z - face.v3.z);
             vertexVector.normalize();
             float dot3 = Math.abs(segmentVector.dot(vertexVector));
             if (dot1 > dot2 && dot1 > dot3) {
@@ -403,7 +386,7 @@ public class Object3D
             }
 
             // Now find which of the intersection endpoints is nearest to that vertex.
-            if (linedVertexPos.distance(startPos) > linedVertexPos.distance(endPos)) {
+            if (PVector.dist(linedVertexPos, startPos) > PVector.dist(linedVertexPos, endPos)) {
                 breakFaceInFive(facePos, startPos, endPos, linedVertex);
             } else {
                 breakFaceInFive(facePos, endPos, startPos, linedVertex);
@@ -411,9 +394,8 @@ public class Object3D
         }
     }
 
-
-    private void breakFaceInTwo(int facePos, Vector3f newPos, int splitEdge) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInTwo(int facePos, PVector newPos, int splitEdge) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex = addVertex(newPos, Vertex.BOUNDARY);
@@ -430,9 +412,8 @@ public class Object3D
         }
     }
 
-
-    private void breakFaceInTwo(int facePos, Vector3f newPos, Vertex endVertex) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInTwo(int facePos, PVector newPos, Vertex endVertex) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex = addVertex(newPos, Vertex.BOUNDARY);
@@ -449,9 +430,8 @@ public class Object3D
         }
     }
 
-
-    private void breakFaceInThree(int facePos, Vector3f newPos1, Vector3f newPos2, int splitEdge) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInThree(int facePos, PVector newPos1, PVector newPos2, int splitEdge) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex1 = addVertex(newPos1, Vertex.BOUNDARY);
@@ -472,9 +452,8 @@ public class Object3D
         }
     }
 
-
-    private void breakFaceInThree(int facePos, Vector3f newPos, Vertex endVertex) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInThree(int facePos, PVector newPos, Vertex endVertex) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex = addVertex(newPos, Vertex.BOUNDARY);
@@ -494,9 +473,8 @@ public class Object3D
         }
     }
 
-
-    private void breakFaceInThree(int facePos, Vector3f newPos1, Vector3f newPos2, Vertex startVertex, Vertex endVertex) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInThree(int facePos, PVector newPos1, PVector newPos2, Vertex startVertex, Vertex endVertex) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex1 = addVertex(newPos1, Vertex.BOUNDARY);
@@ -529,9 +507,8 @@ public class Object3D
         }
     }
 
-
-    private void breakFaceInThree(int facePos, Vector3f newPos) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInThree(int facePos, PVector newPos) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex = addVertex(newPos, Vertex.BOUNDARY);
@@ -541,9 +518,8 @@ public class Object3D
         addFace(face.v3, face.v1, vertex);
     }
 
-
-    private void breakFaceInFour(int facePos, Vector3f newPos1, Vector3f newPos2, Vertex endVertex) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInFour(int facePos, PVector newPos1, PVector newPos2, Vertex endVertex) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex1 = addVertex(newPos1, Vertex.BOUNDARY);
@@ -567,9 +543,8 @@ public class Object3D
         }
     }
 
-
-    private void breakFaceInFive(int facePos, Vector3f newPos1, Vector3f newPos2, int linedVertex) {
-        Face face = (Face) faces.get(facePos);
+    private void breakFaceInFive(int facePos, PVector newPos1, PVector newPos2, int linedVertex) {
+        Face face = faces.get(facePos);
         faces.remove(facePos);
 
         Vertex vertex1 = addVertex(newPos1, Vertex.BOUNDARY);
@@ -597,7 +572,6 @@ public class Object3D
         }
     }
 
-
     public void classifyFaces(Object3D object) {
         //calculate adjacency information
         Face face;
@@ -616,7 +590,7 @@ public class Object3D
             face = getFace(i);
 
             //if the face vertices aren't classified to make the simple classify
-            if (face.simpleClassify() == false) {
+            if (!face.simpleClassify()) {
                 //makes the ray trace classification
                 face.rayTraceClassify(object);
 
@@ -633,7 +607,6 @@ public class Object3D
             }
         }
     }
-
 
     public void invertInsideFaces() {
         Face face;

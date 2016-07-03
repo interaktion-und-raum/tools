@@ -77,7 +77,7 @@ public class SketchAlphaShape3Optimal extends PApplet {
     }
 
     private void computeAlphaShape(int mNumberOfSolidComponents) {
-        System.out.println("+++ number of solid components: " + mNumberOfSolidComponents);
+        System.out.println("+++ number of create components: " + mNumberOfSolidComponents);
         System.out.println("+++ optimal alpha             : " + cgal.get_optimal_alpha(mNumberOfSolidComponents));
         mOptimalAlphaShape = cgal.compute_regular_mesh_optimal(mNumberOfSolidComponents);
     }

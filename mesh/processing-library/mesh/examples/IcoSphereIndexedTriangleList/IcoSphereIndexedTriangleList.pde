@@ -15,9 +15,9 @@ void draw() {
     rotateY(0.33f * frameCount / 180.0f);
     scale(100);
     beginShape(TRIANGLES);
-    for (int i = 0; i < mIndexedTriangleList.triangle_indices.size(); i++) {
-        int mIndex = mIndexedTriangleList.triangle_indices.get(i);
-        int mHighlight = ((frameCount / 3) % mIndexedTriangleList.triangle_indices.size()) / 3;
+    for (int i = 0; i < mIndexedTriangleList.indices.size(); i++) {
+        int mIndex = mIndexedTriangleList.indices.get(i);
+        int mHighlight = ((frameCount / 3) % mIndexedTriangleList.indices.size()) / 3;
         if (i / 3 == mHighlight) {
             stroke(0, 0, 255, 127);
             fill(0, 127, 255, 127);
@@ -25,8 +25,9 @@ void draw() {
             stroke(0, 127);
             fill(255, 32);
         }
-        PVector p = mIndexedTriangleList.positions.get(mIndex);
+        PVector p = mIndexedTriangleList.vertices.get(mIndex);
         vertex(p.x, p.y, p.z);
     }
     endShape();
+    // or for short `mIndexedTriangleList.draw(g);`
 }

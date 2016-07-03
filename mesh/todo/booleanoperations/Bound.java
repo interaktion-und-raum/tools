@@ -1,12 +1,10 @@
-package claylike.booleanoperations;
+package de.hfkbremen.mesh.booleanoperations;
 
-
-import mathematik.Vector3f;
-
+import processing.core.PVector;
 
 /**
  * Representation of a bound - the extremes of a 3d component for each coordinate.
- *
+ * <p>
  * D. H. Laidlaw, W. B. Trumbore, and J. F. Hughes.
  * "Constructive Solid Geometry for Polyhedral Objects"
  * SIGGRAPH Proceedings, 1986, p.161.
@@ -15,21 +13,16 @@ import mathematik.Vector3f;
  */
 
 public class Bound {
-    private float xMax;
-
-    private float xMin;
-
-    private float yMax;
-
-    private float yMin;
-
-    private float zMax;
-
-    private float zMin;
 
     private static final float TOL = 1e-8f;
+    private float xMax;
+    private float xMin;
+    private float yMax;
+    private float yMin;
+    private float zMax;
+    private float zMin;
 
-    public Bound(Vector3f p1, Vector3f p2, Vector3f p3) {
+    public Bound(PVector p1, PVector p2, PVector p3) {
         xMax = xMin = p1.x;
         yMax = yMin = p1.y;
         zMax = zMin = p1.z;
@@ -38,8 +31,7 @@ public class Bound {
         checkVertex(p3);
     }
 
-
-    public Bound(Vector3f[] vertices) {
+    public Bound(PVector[] vertices) {
         xMax = xMin = vertices[0].x;
         yMax = yMin = vertices[0].y;
         zMax = zMin = vertices[0].z;
@@ -49,23 +41,16 @@ public class Bound {
         }
     }
 
-
     public String toString() {
         return "x: " + xMin + " .. " + xMax + "\ny: " + yMin + " .. " + yMax + "\nz: " + zMin + " .. " + zMax;
     }
 
-
     public boolean overlap(Bound bound) {
-        if ( (xMin > bound.xMax + TOL) || (xMax < bound.xMin - TOL) || (yMin > bound.yMax + TOL) ||
-            (yMax < bound.yMin - TOL) || (zMin > bound.zMax + TOL) || (zMax < bound.zMin - TOL)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !((xMin > bound.xMax + TOL) || (xMax < bound.xMin - TOL) || (yMin > bound.yMax + TOL) ||
+                (yMax < bound.yMin - TOL) || (zMin > bound.zMax + TOL) || (zMax < bound.zMin - TOL));
     }
 
-
-    private void checkVertex(Vector3f vertex) {
+    private void checkVertex(PVector vertex) {
         if (vertex.x > xMax) {
             xMax = vertex.x;
         } else if (vertex.x < xMin) {

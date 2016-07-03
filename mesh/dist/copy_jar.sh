@@ -15,6 +15,7 @@ cp "$SRC" "$DST"
 
 SRC_LIBS=$ROOT/../lib/
 cp "$SRC_LIBS/libCGALAlphaShape3.jnilib" "$DST"
+cp "$SRC_LIBS/libCGALBooleanOperations3.jnilib" "$DST"
 cp "$SRC_LIBS/j3dcore.jar" "$DST"
 cp "$SRC_LIBS/j3dutils.jar" "$DST"
 cp "$SRC_LIBS/vecmath.jar" "$DST"

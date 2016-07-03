@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
  * This array keeps the number of segments of each hair strand. Each entry is a 16-bit unsigned integer, therefore each hair strand can have up to 65,536 segments.
  * <p>
  * Points array (float)
- * This array keeps the 3D positions each of hair strand point. These points are not shared by different hair strands; each point belongs to a particular hair strand only. Line segments of a hair strand connects consecutive points. The points in this array are ordered by strand and from root to tip; such that it begins with the root point of the first hair strand, continues with the next point of the first hair strand until the tip of the first hair strand, and then comes the points of the next hair strands. Each entry is a 32-bit floating point number, and each point is defined by 3 consecutive numbers that correspond to x, y, and z coordinates.
+ * This array keeps the 3D vertices each of hair strand point. These points are not shared by different hair strands; each point belongs to a particular hair strand only. Line segments of a hair strand connects consecutive points. The points in this array are ordered by strand and from root to tip; such that it begins with the root point of the first hair strand, continues with the next point of the first hair strand until the tip of the first hair strand, and then comes the points of the next hair strands. Each entry is a 32-bit floating point number, and each point is defined by 3 consecutive numbers that correspond to x, y, and z coordinates.
  * <p>
  * Thickness array (float)
  * This array keeps the thickness of hair strands at point locations, therefore the size of this array is equal to the number of points. Each entry is a 32-bit floating point number.
