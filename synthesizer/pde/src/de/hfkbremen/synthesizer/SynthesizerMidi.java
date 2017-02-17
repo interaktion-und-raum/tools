@@ -1,9 +1,10 @@
 package de.hfkbremen.synthesizer;
 
-import java.util.ArrayList;
-import java.util.Timer;
 import rwmidi.MidiOutput;
 import rwmidi.RWMidi;
+
+import java.util.ArrayList;
+import java.util.Timer;
 
 public class SynthesizerMidi extends Synthesizer {
 
@@ -73,17 +74,13 @@ public class SynthesizerMidi extends Synthesizer {
     }
 
     private void prepareExitHandler() {
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(
-                        new Runnable() {
-                    public void run() {
-                        for (int i = 0; i < 127; i++) {
-                            mMidiOut.sendNoteOff(mChannel, i, 0);
-                            mLastPlayedNote = -1;
-                        }
-                    }
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                for (int i = 0; i < 127; i++) {
+                    mMidiOut.sendNoteOff(mChannel, i, 0);
+                    mLastPlayedNote = -1;
                 }
-                )
-        );
+            }
+        }));
     }
 }

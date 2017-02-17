@@ -1,0 +1,2 @@
+LIB_NAME=netzwerk
+IO_EXAMPLE_PATHS=( examples )
