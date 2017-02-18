@@ -6,6 +6,7 @@ public class Netzwerk {
     public static int SERVER_DEFAULT_BROADCAST_PORT = 32000;
     public static String SERVER_CONNECT_PATTERN = "/server/connect";
     public static String SERVER_DISCONNECT_PATTERN = "/server/disconnect";
+    public static String SERVER_PING_PATTERN = "/server/ping";
 
     public static boolean match(String s1, String equals) {
         return s1.equals(equals);

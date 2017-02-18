@@ -8,18 +8,10 @@ void settings() {
 }
 void setup() {
     mClient = new NetzwerkClient(this, "localhost", "client");
+    mClient.connect();
 }
 void draw() {
     background(255);
-}
-void keyPressed() {
-    /* connect to or disconnect from server if the keys `.` or `,` are pressed */
-    if (key == ',') {
-        mClient.disconnect();
-    }
-    if (key == '.') {
-        mClient.connect();
-    }
 }
 void mousePressed() {
     /*

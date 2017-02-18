@@ -8,20 +8,22 @@ void settings() {
 }
 void setup() {
     mClient = new NetzwerkClient(this, "localhost", "client");
+    mClient.connect();
 }
 void draw() {
     background(255);
 }
 void keyPressed() {
-    if (key == ',') {
-        mClient.disconnect();
+    if (key == '1') {
+        mClient.send("rnd1f", random(255));
+        println("### sending: rnd1f");
+    } else if (key == '2') {
+        mClient.send("rnd2f", random(255), random(255));
+        println("### sending: rnd2f");
+    } else if (key == '3') {
+        mClient.send("rnd3f", random(255), random(255), random(255));
+        println("### sending: rnd3f");
     }
-    if (key == '.') {
-        mClient.connect();
-    }
-}
-void mousePressed() {
-    mClient.send("random", random(255));
 }
 /*
  * if the following three `receive` methods are implemented they will be

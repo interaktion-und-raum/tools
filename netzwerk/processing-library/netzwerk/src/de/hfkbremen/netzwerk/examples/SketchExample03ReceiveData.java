@@ -13,6 +13,7 @@ public class SketchExample03ReceiveData extends PApplet {
 
     public void setup() {
         mClient = new NetzwerkClient(this, "localhost", "client");
+        mClient.connect();
     }
 
     public void draw() {
@@ -20,16 +21,16 @@ public class SketchExample03ReceiveData extends PApplet {
     }
 
     public void keyPressed() {
-        if (key == ',') {
-            mClient.disconnect();
+        if (key == '1') {
+            mClient.send("rnd1f", random(255));
+            println("### sending: rnd1f");
+        } else if (key == '2') {
+            mClient.send("rnd2f", random(255), random(255));
+            println("### sending: rnd2f");
+        } else if (key == '3') {
+            mClient.send("rnd3f", random(255), random(255), random(255));
+            println("### sending: rnd3f");
         }
-        if (key == '.') {
-            mClient.connect();
-        }
-    }
-
-    public void mousePressed() {
-        mClient.send("random", random(255));
     }
 
     /*

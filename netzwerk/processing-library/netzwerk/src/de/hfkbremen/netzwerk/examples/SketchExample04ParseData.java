@@ -15,6 +15,7 @@ public class SketchExample04ParseData extends PApplet {
 
     public void setup() {
         mClient = new NetzwerkClient(this, "localhost", "client");
+        mClient.connect();
     }
 
     public void draw() {
@@ -24,15 +25,6 @@ public class SketchExample04ParseData extends PApplet {
 
     public void mousePressed() {
         mClient.send("random", random(255));
-    }
-
-    public void keyPressed() {
-        if (key == ',') {
-            mClient.disconnect();
-        }
-        if (key == '.') {
-            mClient.connect();
-        }
     }
 
     public void receive(String name, String tag, float x) {
@@ -45,14 +37,6 @@ public class SketchExample04ParseData extends PApplet {
         if (name.equals("client") && tag.equals("random")) {
             mBackgroundColor = x;
         }
-    }
-
-    public void receive(String name, String tag, float x, float y) {
-        println("### received: " + name + " - " + tag + " - " + x + ", " + y);
-    }
-
-    public void receive(String name, String tag, float x, float y, float z) {
-        println("### received: " + name + " - " + tag + " - " + x + ", " + y + ", " + z);
     }
 
     public static void main(String[] args) {

@@ -2,7 +2,7 @@ import de.hfkbremen.netzwerk.*;
 import netP5.*;
 import oscP5.*;
 
-final float mFontSize = 9;
+final float mFontSize = 10;
 NetzwerkServer mNetworkServer;
 void settings() {
     size(480, 640);

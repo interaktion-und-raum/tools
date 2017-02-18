@@ -19,9 +19,9 @@ public class NetzwerkServer {
     private final String mConnectPattern;
     private final String mDisconnectPattern;
     private final OscMessage[] mMessages;
-    private int mMessagePtr;
     private final HashMap<String, String> mAddressMap = new HashMap<>();
     private final String mIP;
+    private int mMessagePtr;
     private OscP5 mOSC;
 
     public NetzwerkServer() {
@@ -70,28 +70,21 @@ public class NetzwerkServer {
         return mNetAddressList;
     }
 
-    public synchronized void oscEvent(OscMessage pOscMessage) {
+    public synchronized void oscEvent(OscMessage m) {
         /* check if the address pattern fits any of our patterns, accepting `int` and `float` as typetag */
-        if (pOscMessage.addrPattern().equals(mConnectPattern)) {
-            if (pOscMessage.checkTypetag("i")) {
-                connect(pOscMessage.netAddress().address(), pOscMessage.get(0).intValue());
-            } else if (pOscMessage.checkTypetag("f")) {
-                connect(pOscMessage.netAddress().address(), (int) pOscMessage.get(0).floatValue());
-            }
-        } else if (pOscMessage.addrPattern().equals(mDisconnectPattern)) {
-            if (pOscMessage.checkTypetag("i")) {
-                disconnect(pOscMessage.netAddress().address(), pOscMessage.get(0).intValue());
-            } else if (pOscMessage.checkTypetag("f")) {
-                disconnect(pOscMessage.netAddress().address(), (int) pOscMessage.get(0).floatValue());
-                //            } else {
-                //                disconnect(pOscMessage.netAddress().address(), 12000);
-            }
+        if (m.checkAddrPattern(Netzwerk.SERVER_PING_PATTERN) && m.checkTypetag("i")) {
+            NetAddress mNetAddress = new NetAddress(m.netAddress().address(), m.get(0).intValue());
+            mOSC.send(m, mNetAddress);
+        } else if (m.checkAddrPattern(mConnectPattern) && m.checkTypetag("i")) {
+            connect(m.netAddress().address(), m.get(0).intValue());
+        } else if (m.checkAddrPattern(mDisconnectPattern) && m.checkTypetag("i")) {
+            disconnect(m.netAddress().address(), m.get(0).intValue());
         } else {
             /*
              * if pattern matching was not successful, then broadcast the incoming
              * message to all addresses in the netAddresList.
              */
-            mOSC.send(pOscMessage, mNetAddressList);
+            mOSC.send(m, mNetAddressList);
 
             // @todo try to connect with first message
             /* try to connect name and IP:port */
@@ -108,7 +101,7 @@ public class NetzwerkServer {
         }
 
         /* store messages */
-        mMessages[mMessagePtr] = pOscMessage;
+        mMessages[mMessagePtr] = m;
         mMessagePtr++;
         mMessagePtr %= mMessages.length;
     }
@@ -116,7 +109,7 @@ public class NetzwerkServer {
     private void connect(String theIPaddress, int pBroadcastPort) {
         if (!mNetAddressList.contains(theIPaddress, pBroadcastPort)) {
             mNetAddressList.add(new NetAddress(theIPaddress, pBroadcastPort));
-            log("###", "adding " + theIPaddress + " to the list.");
+            log("###", "adding " + theIPaddress + " to list.");
         } else {
             log("---", theIPaddress + " is already connected.");
         }
@@ -127,11 +120,11 @@ public class NetzwerkServer {
     private void disconnect(String theIPaddress, int pBroadcastPort) {
         if (mNetAddressList.contains(theIPaddress, pBroadcastPort)) {
             mNetAddressList.remove(theIPaddress, pBroadcastPort);
-            log("###", "removing " + theIPaddress + " from the list.");
+            log("###", "removing " + theIPaddress + " from list.");
         } else {
             log("---", theIPaddress + " is not connected.");
         }
-        log("###", "currently there are " + mNetAddressList.list().size());
+        log("###", "currently there are " + mNetAddressList.list().size() + " remote locations connected.");
     }
 
     private void log(String p, String m) {

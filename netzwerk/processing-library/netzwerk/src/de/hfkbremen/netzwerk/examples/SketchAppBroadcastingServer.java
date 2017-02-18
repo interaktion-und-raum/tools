@@ -7,7 +7,7 @@ import processing.core.PApplet;
 
 public class SketchAppBroadcastingServer extends PApplet {
 
-    private final float mFontSize = 9;
+    private final float mFontSize = 10;
     NetzwerkServer mNetworkServer;
 
     public void settings() {

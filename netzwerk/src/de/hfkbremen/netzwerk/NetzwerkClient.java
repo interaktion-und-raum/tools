@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 public class NetzwerkClient {
 
     private static final String mReceiveMethod = "receive";
+    private static final String mPingMethod = "ping";
     private static final int MIN_PORT_NUMBER = 12000;
     private static final String DELIMITER = "/";
     private static final String ANONYM = "anonymous";
@@ -28,19 +29,21 @@ public class NetzwerkClient {
     private Method mMethodReceive2f;
     private Method mMethodReceive1f;
     private Method mMethodReceiveStr;
+    private Method mMethodReceiveRaw;
+    private Method mMethodPing;
 
     public NetzwerkClient(Object pClientParent, String pServer, String pSenderName) {
-        this(pClientParent, pServer, pSenderName, Netzwerk.SERVER_DEFAULT_BROADCAST_PORT);
+        this(pClientParent, pServer, pSenderName, Netzwerk.SERVER_DEFAULT_BROADCAST_PORT, findAvailablePort());
     }
 
-    public NetzwerkClient(Object pClientParent, String pServer, String pSenderName, int pServerListeningPort) {
+    public NetzwerkClient(Object pClientParent,
+                          String pServer,
+                          String pSenderName,
+                          int pServerListeningPort,
+                          int pClientListeningPort) {
         mClientParent = pClientParent;
 
-        int mPortTemp = MIN_PORT_NUMBER;
-        while (!available(mPortTemp)) {
-            mPortTemp++;
-        }
-        mPort = mPortTemp;
+        mPort = pClientListeningPort;
 
         mOSC = new OscP5(this, mPort);
         mIP = mOSC.ip();
@@ -81,18 +84,36 @@ public class NetzwerkClient {
                                                                            String.class);
         } catch (NoSuchMethodException ignored) {
         }
+        try {
+            mMethodReceiveRaw = mClientParent.getClass().getDeclaredMethod(mReceiveMethod, OscMessage.class);
+        } catch (NoSuchMethodException ignored) {
+        }
+        try {
+            mMethodPing = mClientParent.getClass().getDeclaredMethod(mPingMethod);
+        } catch (NoSuchMethodException ignored) {
+        }
 
         prepareExitHandler();
         if (pClientParent instanceof PApplet) {
             PApplet p = (PApplet) pClientParent;
             p.registerMethod("dispose", this);
         }
+    }
 
-        connect();
+    private static int findAvailablePort() {
+        int mPortTemp = MIN_PORT_NUMBER;
+        while (!available(mPortTemp)) {
+            mPortTemp++;
+        }
+        return mPortTemp;
     }
 
     public String ip() {
         return mIP;
+    }
+
+    public int port() {
+        return mPort;
     }
 
     private static boolean available(int port) {
@@ -121,14 +142,20 @@ public class NetzwerkClient {
     }
 
     public void connect() {
-        OscMessage m = new OscMessage("/server/connect");
+        OscMessage m = new OscMessage(Netzwerk.SERVER_CONNECT_PATTERN);
         m.add(mPort);
         // todo       // System.out.println("### also connect with a name `m.add(mSenderName`); so that IPs can be mapped to names.");
         mOSC.send(m, mBroadcastLocation);
     }
 
     public void disconnect() {
-        OscMessage m = new OscMessage("/server/disconnect");
+        OscMessage m = new OscMessage(Netzwerk.SERVER_DISCONNECT_PATTERN);
+        m.add(mPort);
+        mOSC.send(m, mBroadcastLocation);
+    }
+
+    public void ping() {
+        OscMessage m = new OscMessage(Netzwerk.SERVER_PING_PATTERN);
         m.add(mPort);
         mOSC.send(m, mBroadcastLocation);
     }
@@ -276,37 +303,54 @@ public class NetzwerkClient {
         }
     }
 
-    public void oscEvent(OscMessage theOscMessage) {
-        if (theOscMessage.typetag().equalsIgnoreCase("f")) {
+    private void receive_raw(OscMessage m) {
+        try {
+            mMethodReceiveRaw.invoke(mClientParent, m);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void receive_ping() {
+        try {
+            mMethodPing.invoke(mClientParent);
+        } catch (Exception ignored) {
+        }
+    }
+
+    public void oscEvent(OscMessage m) {
+        if (m.checkAddrPattern(Netzwerk.SERVER_PING_PATTERN)) {
+            if (mMethodPing != null) {
+                receive_ping();
+            }
+        } else if (m.typetag().equalsIgnoreCase("f")) {
             if (mMethodReceive1f != null) {
-                receive(getName(theOscMessage.addrPattern()),
-                        getTag(theOscMessage.addrPattern()),
-                        theOscMessage.get(0).floatValue());
+                receive(getName(m.addrPattern()), getTag(m.addrPattern()), m.get(0).floatValue());
             }
-        } else if (theOscMessage.typetag().equalsIgnoreCase("ff")) {
+        } else if (m.typetag().equalsIgnoreCase("ff")) {
             if (mMethodReceive2f != null) {
-                receive(getName(theOscMessage.addrPattern()),
-                        getTag(theOscMessage.addrPattern()),
-                        theOscMessage.get(0).floatValue(),
-                        theOscMessage.get(1).floatValue());
+                receive(getName(m.addrPattern()),
+                        getTag(m.addrPattern()),
+                        m.get(0).floatValue(),
+                        m.get(1).floatValue());
             }
-        } else if (theOscMessage.typetag().equalsIgnoreCase("fff")) {
+        } else if (m.typetag().equalsIgnoreCase("fff")) {
             if (mMethodReceive3f != null) {
-                receive(getName(theOscMessage.addrPattern()),
-                        getTag(theOscMessage.addrPattern()),
-                        theOscMessage.get(0).floatValue(),
-                        theOscMessage.get(1).floatValue(),
-                        theOscMessage.get(2).floatValue());
+                receive(getName(m.addrPattern()),
+                        getTag(m.addrPattern()),
+                        m.get(0).floatValue(),
+                        m.get(1).floatValue(),
+                        m.get(2).floatValue());
             }
-        } else if (theOscMessage.typetag().equalsIgnoreCase("s")) {
+        } else if (m.typetag().equalsIgnoreCase("s")) {
             if (mMethodReceiveStr != null) {
-                receive(getName(theOscMessage.addrPattern()),
-                        getTag(theOscMessage.addrPattern()),
-                        theOscMessage.get(0).stringValue());
+                receive(getName(m.addrPattern()), getTag(m.addrPattern()), m.get(0).stringValue());
             }
         } else {
-            log("### ", "client couldn t parse message:");
-            log("### ", theOscMessage.toString());
+            if (mMethodReceiveRaw != null) {
+                receive_raw(m);
+            }
+//            log("### ", "client couldn t parse message:");
+//            log("### ", theOscMessage.toString());
         }
     }
 
