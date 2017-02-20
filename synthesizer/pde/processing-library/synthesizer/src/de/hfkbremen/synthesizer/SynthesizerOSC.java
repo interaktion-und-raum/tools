@@ -1,18 +1,19 @@
 package de.hfkbremen.synthesizer;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import netP5.NetAddress;
 import oscP5.OscMessage;
 import oscP5.OscP5;
 
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class SynthesizerOSC extends Synthesizer {
 
-    private int mChannel;
     private final OscP5 mOscP5;
     private final NetAddress mRemoteLocation;
     private final Timer mTimer;
+    private int mChannel;
     private boolean mIsPlaying = false;
 
     public SynthesizerOSC(String pHostIP) {
@@ -29,13 +30,6 @@ public class SynthesizerOSC extends Synthesizer {
         noteOn(pNote, pVelocity);
         TimerTask mTask = new NoteOffTask();
         mTimer.schedule(mTask, (long) (pDuration * 1000));
-    }
-
-    public class NoteOffTask extends TimerTask {
-
-        public void run() {
-            noteOff();
-        }
     }
 
     public void noteOn(int pNote, int pVelocity) {
@@ -56,6 +50,16 @@ public class SynthesizerOSC extends Synthesizer {
         noteOff(-1);
     }
 
+    public void controller(int pCC, int pValue) {
+    }
+
+    public void pitch_bend(int pValue) {
+    }
+
+    public boolean isPlaying() {
+        return mIsPlaying;
+    }
+
     public Instrument instrument(int pInstrumentID) {
         mChannel = pInstrumentID;
         return null;
@@ -69,7 +73,10 @@ public class SynthesizerOSC extends Synthesizer {
         return null;
     }
 
-    public boolean isPlaying() {
-        return mIsPlaying;
+    public class NoteOffTask extends TimerTask {
+
+        public void run() {
+            noteOff();
+        }
     }
 }

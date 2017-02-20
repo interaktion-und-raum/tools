@@ -19,14 +19,14 @@ public class InstrumentJSyn extends Instrument {
     private final SynthesisEngine mSynth;
 
     private final LineOut mLineOut;
-
-    private UnitGenerator mOsc;
-
-    private SegmentedEnvelope mEnvData;
-
     private final VariableRateMonoReader mEnvPlayer;
-
+    private UnitGenerator mOsc;
+    private SegmentedEnvelope mEnvData;
     private float mAmp = 0.9f;
+    private boolean mDumpWarningLFO = true;
+    private boolean mDumpWarningFILTER = true;
+    private float mFreqOffset = 0.0f;
+    private float mFreq = 0.0f;
 
     public InstrumentJSyn(SynthesisEngine pSynth, LineOut pLineOut, int pName) {
         super(pName);
@@ -80,11 +80,10 @@ public class InstrumentJSyn extends Instrument {
     }
 
     private void update_data() {
-        double[] mData = {
-            mAttack, 1.0 * mAmp, // get_attack
-            mDecay, // get_decay
-            mSustain * mAmp, // get_sustain
-            mRelease, 0.0, // get_release
+        double[] mData = {mAttack, 1.0 * mAmp, // get_attack
+                          mDecay, // get_decay
+                          mSustain * mAmp, // get_sustain
+                          mRelease, 0.0, // get_release
         };
         mEnvData = new SegmentedEnvelope(mData);
     }
@@ -98,7 +97,8 @@ public class InstrumentJSyn extends Instrument {
         mEnvData.setSustainBegin(2);
         mEnvData.setSustainEnd(2);
         TimeStamp mTimeStamp = new TimeStamp(mSynth.getCurrentTime());
-        freq(pFreq);
+        mFreq = pFreq;
+        update_freq();
 //        if (mOsc instanceof UnitOscillator) {
 //            UnitOscillator uo = (UnitOscillator) mOsc;
 //            uo.frequency.set(frequency);
@@ -107,10 +107,10 @@ public class InstrumentJSyn extends Instrument {
         mEnvPlayer.dataQueue.queueOn(mEnvData, mTimeStamp);
     }
 
-    public void freq(float pFreq) {
+    public void update_freq() {
         if (mOsc instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) mOsc;
-            uo.frequency.set(pFreq);
+            uo.frequency.set(mFreq + mFreqOffset);
         }
     }
 
@@ -135,22 +135,6 @@ public class InstrumentJSyn extends Instrument {
         mEnvPlayer.dataQueue.queue(mEnvData, 0, mEnvData.getNumFrames());
     }
 
-    public int get_osc_type() {
-        int mOscID = -1;
-        if (mOsc instanceof SineOscillator) {
-            mOscID = SINE;
-        } else if (mOsc instanceof TriangleOscillator) {
-            mOscID = TRIANGLE;
-        } else if (mOsc instanceof SawtoothOscillator) {
-            mOscID = SAWTOOTH;
-        } else if (mOsc instanceof SquareOscillator) {
-            mOscID = SQUARE;
-        } else if (mOsc instanceof WhiteNoise) {
-            mOscID = NOISE;
-        }
-        return mOscID;
-    }
-
     @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
     public void attack(float pAttack) {
         super.attack(pAttack);
@@ -171,7 +155,11 @@ public class InstrumentJSyn extends Instrument {
         super.release(pRelease);
     }
 
-    @ControlElement(properties = {"min=0.0", "max=" + (NUMBER_OF_OSCILLATORS - 1), "type=knob", "radius=20", "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
+    @ControlElement(properties = {"min=0.0",
+                                  "max=" + (NUMBER_OF_OSCILLATORS - 1),
+                                  "type=knob",
+                                  "radius=20",
+                                  "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
     public void osc_type(int pOsc) {
         disconnectOsc(mOsc);
         /*
@@ -181,7 +169,7 @@ public class InstrumentJSyn extends Instrument {
          SQUARE,
          NOISE
          */
-        switch ((int)pOsc) {
+        switch ((int) pOsc) {
             case SINE:
                 mOsc = new SineOscillator();
                 break;
@@ -201,7 +189,21 @@ public class InstrumentJSyn extends Instrument {
         connectOsc(mOsc);
     }
 
-    private boolean mDumpWarningLFO = true;
+    public int get_osc_type() {
+        int mOscID = -1;
+        if (mOsc instanceof SineOscillator) {
+            mOscID = SINE;
+        } else if (mOsc instanceof TriangleOscillator) {
+            mOscID = TRIANGLE;
+        } else if (mOsc instanceof SawtoothOscillator) {
+            mOscID = SAWTOOTH;
+        } else if (mOsc instanceof SquareOscillator) {
+            mOscID = SQUARE;
+        } else if (mOsc instanceof WhiteNoise) {
+            mOscID = NOISE;
+        }
+        return mOscID;
+    }
 
     @Override
     public void lfo_amp(float pLFOAmp) {
@@ -229,8 +231,6 @@ public class InstrumentJSyn extends Instrument {
         return 0;
     }
 
-    private boolean mDumpWarningFILTER = true;
-
     @Override
     public void filter_q(float f) {
         if (mDumpWarningFILTER) {
@@ -255,5 +255,15 @@ public class InstrumentJSyn extends Instrument {
     @Override
     public float get_filter_freq() {
         return 0;
+    }
+
+    public void pitch_bend(float freq_offset) {
+        mFreqOffset = freq_offset;
+        update_freq();
+    }
+
+    public void set_freq(float freq) {
+        mFreq = freq;
+        update_freq();
     }
 }

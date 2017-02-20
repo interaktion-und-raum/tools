@@ -1,38 +1,14 @@
 package de.hfkbremen.synthesizer;
 
 import controlP5.ControlP5;
-import java.util.ArrayList;
 import processing.core.PApplet;
+
+import java.util.ArrayList;
 
 public abstract class Synthesizer {
 
     public static final int NUMBERS_OF_INSTRUMENTS = 12;
-
-    /**
-     *
-     * @param pNote
-     * @param pVelocity
-     * @param pDuration duration in seconds before the note is turned off (
-     *                  noteOff() ) again
-     */
-    public abstract void noteOn(int pNote, int pVelocity, float pDuration);
-
-    public abstract void noteOn(int pNote, int pVelocity);
-
-    public abstract void noteOff(int pNote);
-
-    public abstract void noteOff();
-
-    public abstract boolean isPlaying();
-
-    public abstract Instrument instrument(int pInstrumentID);
-
-    public abstract Instrument instrument();
-
-    public abstract ArrayList<Instrument> instruments();
-
     public static final String INSTRUMENT_STR = "instrument";
-
     public static final int GUI_ATTACK = 0;
     public static final int GUI_DECAY = 1;
     public static final int GUI_SUSTAIN = 2;
@@ -43,9 +19,8 @@ public abstract class Synthesizer {
     public static final int GUI_FILTER_Q = 7;
     public static final int GUI_FILTER_FREQ = 8;
     private static final int GUI_NUMBER_OF_ELEMENTS = 9;
-
     private static final String[] INSTRUMENT_FIELDS = new String[GUI_NUMBER_OF_ELEMENTS];
-    
+
     static {
         INSTRUMENT_FIELDS[GUI_ATTACK] = "attack";
         INSTRUMENT_FIELDS[GUI_DECAY] = "decay";
@@ -57,6 +32,31 @@ public abstract class Synthesizer {
         INSTRUMENT_FIELDS[GUI_FILTER_Q] = "filter_q";
         INSTRUMENT_FIELDS[GUI_FILTER_FREQ] = "filter_freq";
     }
+
+    /**
+     * @param pNote
+     * @param pVelocity
+     * @param pDuration duration in seconds before the note is turned off ( noteOff() ) again
+     */
+    public abstract void noteOn(int pNote, int pVelocity, float pDuration);
+
+    public abstract void noteOn(int pNote, int pVelocity);
+
+    public abstract void noteOff(int pNote);
+
+    public abstract void noteOff();
+
+    public abstract void controller(int pCC, int pValue);
+
+    public abstract void pitch_bend(int pValue);
+
+    public abstract boolean isPlaying();
+
+    public abstract Instrument instrument(int pInstrumentID);
+
+    public abstract Instrument instrument();
+
+    public abstract ArrayList<Instrument> instruments();
 
     public static Synthesizer getSynth() {
         return new SynthesizerJSyn();

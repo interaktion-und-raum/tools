@@ -56,6 +56,7 @@ do
 		sed '
 			1 i\
 			 import de.hfkbremen.'$LIB_NAME'.*;\
+			 import controlP5.*;\
 			 \
 		'\
 		> $OUTPUT_DIR/$SKETCHNAME/$SKETCHFILE_NAME

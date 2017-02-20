@@ -142,26 +142,28 @@ public class NetzwerkClient {
     }
 
     public void connect() {
-        OscMessage m = new OscMessage(Netzwerk.SERVER_CONNECT_PATTERN);
+        OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_CONNECT);
         m.add(mPort);
         // todo       // System.out.println("### also connect with a name `m.add(mSenderName`); so that IPs can be mapped to names.");
         mOSC.send(m, mBroadcastLocation);
     }
 
     public void disconnect() {
-        OscMessage m = new OscMessage(Netzwerk.SERVER_DISCONNECT_PATTERN);
+        OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_DISCONNECT);
         m.add(mPort);
         mOSC.send(m, mBroadcastLocation);
     }
 
     public void ping() {
-        OscMessage m = new OscMessage(Netzwerk.SERVER_PING_PATTERN);
+        OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_PING);
         m.add(mPort);
         mOSC.send(m, mBroadcastLocation);
     }
 
-    public void send_raw(OscMessage pMessage, NetAddress pNetAddress) {
-        mOSC.send(pMessage, pNetAddress);
+    public void connect_server(String address) {
+        OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_CONNECT_SERVER);
+        m.add(address);
+        mOSC.send(m, mBroadcastLocation);
     }
 
     /* send message to server with 1, 2, or 3 floats as data or a string */
@@ -191,6 +193,12 @@ public class NetzwerkClient {
         OscMessage m = new OscMessage(getAddressPattern(tag));
         m.add(message);
         mOSC.send(m, mBroadcastLocation);
+    }
+
+    /* `send_raw` allows the sending of plain OSC messages to any address on the network. more or less direct access to the underlying OSC library */
+
+    public void send_raw(OscMessage pMessage, NetAddress pNetAddress) {
+        mOSC.send(pMessage, pNetAddress);
     }
 
     /* `send_direct` works like `send` except that it sends a message directly to the specified IP */
@@ -318,7 +326,7 @@ public class NetzwerkClient {
     }
 
     public void oscEvent(OscMessage m) {
-        if (m.checkAddrPattern(Netzwerk.SERVER_PING_PATTERN)) {
+        if (m.checkAddrPattern(Netzwerk.SERVER_PATTERN_PING)) {
             if (mMethodPing != null) {
                 receive_ping();
             }

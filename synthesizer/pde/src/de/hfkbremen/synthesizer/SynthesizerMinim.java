@@ -2,43 +2,34 @@ package de.hfkbremen.synthesizer;
 
 import ddf.minim.AudioOutput;
 import ddf.minim.Minim;
-import static de.hfkbremen.synthesizer.Instrument.*;
-import static de.hfkbremen.synthesizer.SynthUtil.*;
+
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static de.hfkbremen.synthesizer.Instrument.NUMBER_OF_OSCILLATORS;
+import static de.hfkbremen.synthesizer.SynthUtil.clamp127;
+import static de.hfkbremen.synthesizer.SynthUtil.note_to_frequency;
+
 public class SynthesizerMinim extends Synthesizer {
 
-    private final Minim mMinim;
-
-    private final AudioOutput mOut;
-
-    private final ArrayList<Instrument> mInstruments;
-
-    private int mInstrumentID;
-
     private static final boolean USE_AMP_FRACTION = false;
-
+    private final ArrayList<Instrument> mInstruments;
     private final Timer mTimer;
-
+    private int mInstrumentID;
     private boolean mIsPlaying = false;
 
     public SynthesizerMinim() {
-        mMinim = new Minim(this);
-        mOut = mMinim.getLineOut(Minim.MONO, 2048);
+        Minim mMinim = new Minim(this);
+        AudioOutput mOut = mMinim.getLineOut(Minim.MONO, 2048);
         mTimer = new Timer();
 
-        mInstruments = new ArrayList<Instrument>();
+        mInstruments = new ArrayList<>();
         for (int i = 0; i < NUMBERS_OF_INSTRUMENTS; i++) {
             mInstruments.add(new InstrumentMinim(mMinim, i));
             mInstruments.get(i).osc_type(i % NUMBER_OF_OSCILLATORS);
             ((InstrumentMinim) mInstruments.get(i)).amp(1.0f);
         }
-    }
-
-    public ArrayList<Instrument> instruments() {
-        return mInstruments;
     }
 
     public void noteOn(int pNote, int pVelocity, float pDuration) {
@@ -60,14 +51,6 @@ public class SynthesizerMinim extends Synthesizer {
         }
     }
 
-    public boolean isPlaying() {
-        return mIsPlaying;
-    }
-
-    private int getInstrumentID() {
-        return Math.max(mInstrumentID, 0) % mInstruments.size();
-    }
-
     public void noteOff(int pNote) {
         noteOff();
     }
@@ -83,6 +66,13 @@ public class SynthesizerMinim extends Synthesizer {
     public void controller(int pCC, int pValue) {
     }
 
+    public void pitch_bend(int pValue) {
+    }
+
+    public boolean isPlaying() {
+        return mIsPlaying;
+    }
+
     public Instrument instrument(int pInstrumentID) {
         mInstrumentID = pInstrumentID;
         return instruments().get(mInstrumentID);
@@ -90,6 +80,14 @@ public class SynthesizerMinim extends Synthesizer {
 
     public Instrument instrument() {
         return instruments().get(mInstrumentID);
+    }
+
+    public ArrayList<Instrument> instruments() {
+        return mInstruments;
+    }
+
+    private int getInstrumentID() {
+        return Math.max(mInstrumentID, 0) % mInstruments.size();
     }
 
     public class NoteOffTask extends TimerTask {

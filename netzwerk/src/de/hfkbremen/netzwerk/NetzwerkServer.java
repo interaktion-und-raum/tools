@@ -8,9 +8,9 @@ import processing.core.PApplet;
 
 import java.util.HashMap;
 
-import static de.hfkbremen.netzwerk.Netzwerk.SERVER_CONNECT_PATTERN;
+import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_CONNECT;
 import static de.hfkbremen.netzwerk.Netzwerk.SERVER_DEFAULT_BROADCAST_PORT;
-import static de.hfkbremen.netzwerk.Netzwerk.SERVER_DISCONNECT_PATTERN;
+import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_DISCONNECT;
 
 public class NetzwerkServer {
 
@@ -25,7 +25,7 @@ public class NetzwerkServer {
     private OscP5 mOSC;
 
     public NetzwerkServer() {
-        this(SERVER_DEFAULT_BROADCAST_PORT, SERVER_CONNECT_PATTERN, SERVER_DISCONNECT_PATTERN);
+        this(SERVER_DEFAULT_BROADCAST_PORT, SERVER_PATTERN_CONNECT, SERVER_PATTERN_DISCONNECT);
     }
 
     public NetzwerkServer(int pListeningPort, String pConnectPattern, String pDisconnectPattern) {
@@ -72,9 +72,11 @@ public class NetzwerkServer {
 
     public synchronized void oscEvent(OscMessage m) {
         /* check if the address pattern fits any of our patterns, accepting `int` and `float` as typetag */
-        if (m.checkAddrPattern(Netzwerk.SERVER_PING_PATTERN) && m.checkTypetag("i")) {
+        if (m.checkAddrPattern(Netzwerk.SERVER_PATTERN_PING) && m.checkTypetag("i")) {
             NetAddress mNetAddress = new NetAddress(m.netAddress().address(), m.get(0).intValue());
             mOSC.send(m, mNetAddress);
+        } else if (m.checkAddrPattern(Netzwerk.SERVER_PATTERN_CONNECT_SERVER) && m.checkTypetag("s")) {
+            System.err.println("### this server should connect to another server with the address: " + m.get(0).stringValue());
         } else if (m.checkAddrPattern(mConnectPattern) && m.checkTypetag("i")) {
             connect(m.netAddress().address(), m.get(0).intValue());
         } else if (m.checkAddrPattern(mDisconnectPattern) && m.checkTypetag("i")) {

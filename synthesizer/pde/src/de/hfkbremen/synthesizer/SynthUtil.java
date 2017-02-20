@@ -5,7 +5,6 @@ import controlP5.ControlP5;
 import controlP5.DropdownList;
 import processing.core.PApplet;
 import processing.core.PConstants;
-import rwmidi.RWMidi;
 
 public final class SynthUtil {
 
@@ -23,9 +22,7 @@ public final class SynthUtil {
         String note;
 
         octave = noteNum / 12 - 1;
-        note = notes.substring(
-                (noteNum % 12) * 2,
-                (noteNum % 12) * 2 + 2);
+        note = notes.substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
         String mNoteName = PApplet.trim(note) + "" + octave;
         return mNoteName;
     }
@@ -47,7 +44,7 @@ public final class SynthUtil {
     }
 
     public static void dumpMidiOutputDevices() {
-        final String[] mOutputNames = RWMidi.getOutputDeviceNames();
+        final String[] mOutputNames = MidiOut.availableOutputs();
         System.out.println("### Midi Output Devices");
         for (String mOutputName : mOutputNames) {
             System.out.println("###\t" + mOutputName);
@@ -69,35 +66,41 @@ public final class SynthUtil {
     public static void buildSelectMidiDeviceMenu(ControlP5 controls) {
         final int mListWidth = 300, mListHeight = 300;
 
-        DropdownList dl = controls.addDropdownList(
-                "Please select MIDI Device",
-                (controls.papplet.width - mListWidth) / 2,
-                (controls.papplet.height - mListHeight) / 2,
-                mListWidth,
-                mListHeight
-        );
+        DropdownList dl = controls.addDropdownList("Please select MIDI Device",
+                                                   (controls.papplet.width - mListWidth) / 2,
+                                                   (controls.papplet.height - mListHeight) / 2,
+                                                   mListWidth,
+                                                   mListHeight);
 
 //        dl.toUpperCase(true);
         dl.setItemHeight(16);
         dl.setBarHeight(16);
         dl.getCaptionLabel().align(PConstants.LEFT, PConstants.CENTER);
 
-        final String[] mOutputNames = RWMidi.getOutputDeviceNames();
+        final String[] mOutputNames = MidiOut.availableOutputs();
         for (int i = 0; i < mOutputNames.length; i++) {
             dl.addItem(mOutputNames[i], i);
         }
     }
 
-    public static void main(String[] args) {
-        SynthUtil.dumpMidiOutputDevices();
+    public static int constrain(int value, int min, int max) {
+        if (value > max) {
+            value = max;
+        }
+        if (value < min) {
+            value = min;
+        }
+        return value;
     }
 
     public static void run(Class<? extends PApplet> T, String... pArgs) {
         String[] mArgs;
-        mArgs = PApplet.concat(new String[]{
-            "--sketch-path=" + System.getProperty("user.dir") + "/simulator"
-        }, pArgs);
+        mArgs = PApplet.concat(new String[]{"--sketch-path=" + System.getProperty("user.dir") + "/simulator"}, pArgs);
         mArgs = PApplet.concat(mArgs, new String[]{T.getName()});
         PApplet.main(mArgs);
+    }
+
+    public static void main(String[] args) {
+        SynthUtil.dumpMidiOutputDevices();
     }
 }

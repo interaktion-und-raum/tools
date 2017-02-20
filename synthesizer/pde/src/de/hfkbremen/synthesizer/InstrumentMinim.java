@@ -9,13 +9,14 @@ import ddf.minim.ugens.Waves;
 
 public class InstrumentMinim extends Instrument {
 
-    private float mAmp = 0.9f;
-    private float mFreq = 220.0f;
-
     private final Minim minim;
     private final AudioOutput out;
     private final Oscil mOsc;
     private final ADSR adsr;
+    private float mAmp = 0.9f;
+    private float mFreq = 220.0f;
+    private boolean mDumpWarningLFO = true;
+    private boolean mDumpWarningFILTER = true;
 
     public InstrumentMinim(Minim pMinim, int pName) {
         super(pName);
@@ -54,22 +55,6 @@ public class InstrumentMinim extends Instrument {
         mOsc.setAmplitude(mAmp);
     }
 
-    public int get_osc_type() {
-        int mOscID = -1;
-        if (mOsc.getWaveform() == Waves.SINE) {
-            mOscID = SINE;
-        } else if (mOsc.getWaveform() == Waves.TRIANGLE) {
-            mOscID = TRIANGLE;
-        } else if (mOsc.getWaveform() == Waves.SAW) {
-            mOscID = SAWTOOTH;
-        } else if (mOsc.getWaveform() == Waves.SQUARE) {
-            mOscID = SQUARE;
-        } else {
-            mOscID = NOISE;
-        }
-        return mOscID;
-    }
-
     /* --- */
     @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
     public void attack(float pAttack) {
@@ -91,10 +76,14 @@ public class InstrumentMinim extends Instrument {
         super.release(pRelease);
     }
 
-    @ControlElement(properties = {"min=0.0", "max=" + (NUMBER_OF_OSCILLATORS - 1), "type=knob", "radius=20", "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
+    @ControlElement(properties = {"min=0.0",
+                                  "max=" + (NUMBER_OF_OSCILLATORS - 1),
+                                  "type=knob",
+                                  "radius=20",
+                                  "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
     public void osc_type(int pOsc) {
         System.out.println("minim pOsc: " + pOsc);
-        switch ((int)pOsc) {
+        switch ((int) pOsc) {
             case SINE:
                 mOsc.setWaveform(Waves.SINE);
                 break;
@@ -112,7 +101,22 @@ public class InstrumentMinim extends Instrument {
                 break;
         }
     }
-    private boolean mDumpWarningLFO = true;
+
+    public int get_osc_type() {
+        int mOscID = -1;
+        if (mOsc.getWaveform() == Waves.SINE) {
+            mOscID = SINE;
+        } else if (mOsc.getWaveform() == Waves.TRIANGLE) {
+            mOscID = TRIANGLE;
+        } else if (mOsc.getWaveform() == Waves.SAW) {
+            mOscID = SAWTOOTH;
+        } else if (mOsc.getWaveform() == Waves.SQUARE) {
+            mOscID = SQUARE;
+        } else {
+            mOscID = NOISE;
+        }
+        return mOscID;
+    }
 
     @Override
     public void lfo_amp(float pLFOAmp) {
@@ -140,8 +144,6 @@ public class InstrumentMinim extends Instrument {
         return 0;
     }
 
-    private boolean mDumpWarningFILTER = true;
-
     @Override
     public void filter_q(float f) {
         if (mDumpWarningFILTER) {
@@ -166,5 +168,10 @@ public class InstrumentMinim extends Instrument {
     @Override
     public float get_filter_freq() {
         return 0;
+    }
+
+    @Override
+    public void pitch_bend(float freq_offset) {
+
     }
 }

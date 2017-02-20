@@ -2,17 +2,7 @@ package de.hfkbremen.synthesizer;
 
 import com.jsyn.data.SegmentedEnvelope;
 import com.jsyn.engine.SynthesisEngine;
-import com.jsyn.unitgen.Add;
-import com.jsyn.unitgen.FilterLowPass;
-import com.jsyn.unitgen.LineOut;
-import com.jsyn.unitgen.SawtoothOscillator;
-import com.jsyn.unitgen.SineOscillator;
-import com.jsyn.unitgen.SquareOscillator;
-import com.jsyn.unitgen.TriangleOscillator;
-import com.jsyn.unitgen.UnitGenerator;
-import com.jsyn.unitgen.UnitOscillator;
-import com.jsyn.unitgen.VariableRateMonoReader;
-import com.jsyn.unitgen.WhiteNoise;
+import com.jsyn.unitgen.*;
 import com.softsynth.shared.time.TimeStamp;
 import controlP5.ControlElement;
 
@@ -23,18 +13,14 @@ public class InstrumentJSynAdv extends Instrument {
     private final LineOut mLineOut;
 
     private final FilterLowPass mLowPassFilter;
-
-    private UnitGenerator mOsc;
-
     private final SineOscillator mLFO;
-
     private final Add mAddUnit;
-
-    private SegmentedEnvelope mEnvData;
-
     private final VariableRateMonoReader mEnvPlayer;
-
+    private UnitGenerator mOsc;
+    private SegmentedEnvelope mEnvData;
     private float mAmp = 0.9f;
+    private float mFreq = 0.0f;
+    private float mFreqOffset = 0.0f;
 
     public InstrumentJSynAdv(SynthesisEngine pSynth, LineOut pLineOut, int pName) {
         super(pName);
@@ -108,11 +94,10 @@ public class InstrumentJSynAdv extends Instrument {
     }
 
     private void update_data() {
-        double[] mData = {
-            mAttack, 1.0 * mAmp, // get_attack
-            mDecay, // get_decay
-            mSustain * mAmp, // get_sustain
-            mRelease, 0.0, // get_release
+        double[] mData = {mAttack, 1.0 * mAmp, // get_attack
+                          mDecay, // get_decay
+                          mSustain * mAmp, // get_sustain
+                          mRelease, 0.0, // get_release
         };
         mEnvData = new SegmentedEnvelope(mData);
     }
@@ -126,7 +111,8 @@ public class InstrumentJSynAdv extends Instrument {
         mEnvData.setSustainBegin(2);
         mEnvData.setSustainEnd(2);
         TimeStamp mTimeStamp = new TimeStamp(mSynth.getCurrentTime());
-        freq(pFreq);
+        mFreq = pFreq;
+        update_freq();
         mEnvPlayer.amplitude.set(pAmp, mTimeStamp);
         mEnvPlayer.dataQueue.queueOn(mEnvData, mTimeStamp);
     }
@@ -137,8 +123,8 @@ public class InstrumentJSynAdv extends Instrument {
         mEnvPlayer.dataQueue.queue(mEnvData, 0, mEnvData.getNumFrames());
     }
 
-    public void freq(float pFreq) {
-        mAddUnit.inputA.set(pFreq);
+    public void update_freq() {
+        mAddUnit.inputA.set(mFreq + mFreqOffset);
     }
 
     public void amp(float pAmp) {
@@ -154,38 +140,6 @@ public class InstrumentJSynAdv extends Instrument {
 
     VariableRateMonoReader env() {
         return mEnvPlayer;
-    }
-
-    public float get_lfo_amp() {
-        return (float) mLFO.amplitude.get();
-    }
-
-    public float get_lfo_freq() {
-        return (float) mLFO.frequency.get();
-    }
-
-    public float get_filter_q() {
-        return (float) mLowPassFilter.Q.get();
-    }
-
-    public float get_filter_freq() {
-        return (float) mLowPassFilter.frequency.get();
-    }
-
-    public int get_osc_type() {
-        int mOscID = -1;
-        if (mOsc instanceof SineOscillator) {
-            mOscID = SINE;
-        } else if (mOsc instanceof TriangleOscillator) {
-            mOscID = TRIANGLE;
-        } else if (mOsc instanceof SawtoothOscillator) {
-            mOscID = SAWTOOTH;
-        } else if (mOsc instanceof SquareOscillator) {
-            mOscID = SQUARE;
-        } else if (mOsc instanceof WhiteNoise) {
-            mOscID = NOISE;
-        }
-        return mOscID;
     }
 
     @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
@@ -208,7 +162,11 @@ public class InstrumentJSynAdv extends Instrument {
         super.release(pRelease);
     }
 
-    @ControlElement(properties = {"min=0.0", "max=" + (NUMBER_OF_OSCILLATORS - 1), "type=knob", "radius=20", "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
+    @ControlElement(properties = {"min=0.0",
+                                  "max=" + (NUMBER_OF_OSCILLATORS - 1),
+                                  "type=knob",
+                                  "radius=20",
+                                  "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
     public void osc_type(int pOsc) {
         disconnectOsc(mOsc);
         /*
@@ -218,7 +176,7 @@ public class InstrumentJSynAdv extends Instrument {
          SQUARE,
          NOISE
          */
-        switch ((int) pOsc) {
+        switch (pOsc) {
             case SINE:
                 mOsc = new SineOscillator();
                 break;
@@ -238,9 +196,29 @@ public class InstrumentJSynAdv extends Instrument {
         connectOsc(mOsc);
     }
 
+    public int get_osc_type() {
+        int mOscID = -1;
+        if (mOsc instanceof SineOscillator) {
+            mOscID = SINE;
+        } else if (mOsc instanceof TriangleOscillator) {
+            mOscID = TRIANGLE;
+        } else if (mOsc instanceof SawtoothOscillator) {
+            mOscID = SAWTOOTH;
+        } else if (mOsc instanceof SquareOscillator) {
+            mOscID = SQUARE;
+        } else if (mOsc instanceof WhiteNoise) {
+            mOscID = NOISE;
+        }
+        return mOscID;
+    }
+
     @ControlElement(properties = {"min=0.0", "max=100.0", "type=knob", "radius=20", "resolution=1000"}, x = 250, y = 0)
     public void lfo_amp(float pLFOAmp) {
         mLFO.amplitude.set(pLFOAmp);
+    }
+
+    public float get_lfo_amp() {
+        return (float) mLFO.amplitude.get();
     }
 
     @ControlElement(properties = {"min=0.0", "max=100.0", "type=knob", "radius=20", "resolution=1000"}, x = 300, y = 0)
@@ -248,13 +226,36 @@ public class InstrumentJSynAdv extends Instrument {
         mLFO.frequency.set(pLFOFreq);
     }
 
+    public float get_lfo_freq() {
+        return (float) mLFO.frequency.get();
+    }
+
     @ControlElement(properties = {"min=0.0", "max=5", "type=knob", "radius=20", "resolution=100"}, x = 350, y = 0)
     public void filter_q(float pQ) {
         mLowPassFilter.Q.set(pQ);
     }
 
+    public float get_filter_q() {
+        return (float) mLowPassFilter.Q.get();
+    }
+
     @ControlElement(properties = {"min=0.0", "max=30000", "type=knob", "radius=20", "resolution=300"}, x = 400, y = 0)
     public void filter_freq(float pFreq) {
         mLowPassFilter.frequency.set(pFreq);
+    }
+
+    public float get_filter_freq() {
+        return (float) mLowPassFilter.frequency.get();
+    }
+
+    @Override
+    public void pitch_bend(float freq_offset) {
+        mFreqOffset = freq_offset;
+        update_freq();
+    }
+
+    public void set_freq(float freq) {
+        mFreq = freq;
+        update_freq();
     }
 }

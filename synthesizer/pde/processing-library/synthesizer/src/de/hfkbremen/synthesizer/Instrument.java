@@ -107,4 +107,6 @@ public abstract class Instrument {
     public abstract void filter_freq(float f);
 
     public abstract float get_filter_freq();
+
+    public abstract void pitch_bend(float freq_offset);
 }
