@@ -11,7 +11,7 @@ import processing.core.PApplet;
  * mouse x-coordinates + mouse y-coordinates + time in seconds
  * 
 */
-public class SketchDataStreamFromDataStreams extends PApplet {
+public class AppDataStreamFromDataStreams extends PApplet {
 
     private NetzwerkClient mClient;
     private float mMouseX;
@@ -51,6 +51,6 @@ public class SketchDataStreamFromDataStreams extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchDataStreamFromDataStreams.class.getName());
+        PApplet.main(AppDataStreamFromDataStreams.class.getName());
     }
 }

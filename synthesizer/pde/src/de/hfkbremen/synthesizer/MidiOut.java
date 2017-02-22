@@ -106,8 +106,8 @@ public class MidiOut {
         MidiDevice.Info[] mInfos = MidiSystem.getMidiDeviceInfo();
         for (MidiDevice.Info mInfo : mInfos) {
             try {
-                MidiDevice device = MidiSystem.getMidiDevice(mInfo);
-                if (device.getMaxReceivers() != 0) {
+                MidiDevice mDevice = MidiSystem.getMidiDevice(mInfo);
+                if (mDevice.getMaxReceivers() != 0) {
                     mMidiOutputs.add(mInfo.getName());
                 }
             } catch (MidiUnavailableException e) {

@@ -22,9 +22,8 @@ public class SynthesizerMidi extends Synthesizer {
     }
 
     public void noteOn(int pNote, int pVelocity, float pDuration) {
-        mMidiOut.sendNoteOn(mChannel, pNote, pVelocity);
         mTimer.schedule(new MidiTimerNoteOffTask(mMidiOut, mChannel, pNote, pVelocity), (int) pDuration * 1000);
-        mLastPlayedNote = pNote;
+        noteOn(pNote, pVelocity);
     }
 
     public void noteOn(int pNote, int pVelocity) {
@@ -38,11 +37,10 @@ public class SynthesizerMidi extends Synthesizer {
     }
 
     public void noteOff() {
-        mMidiOut.sendNoteOff(mChannel, mLastPlayedNote, 0);
-        mLastPlayedNote = -1;
+        noteOff(mLastPlayedNote);
     }
 
-    public void controller(int pCC, int pValue) {
+    public void control_change(int pCC, int pValue) {
         mMidiOut.sendControllerChange(mChannel, pCC, pValue);
     }
 
@@ -68,7 +66,7 @@ public class SynthesizerMidi extends Synthesizer {
         return null;
     }
 
-    public ArrayList<Instrument> instruments() {
+    public ArrayList<? extends Instrument> instruments() {
         return null;
     }
 

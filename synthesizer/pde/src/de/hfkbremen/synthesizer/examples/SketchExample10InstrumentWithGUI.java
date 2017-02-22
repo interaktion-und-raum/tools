@@ -5,6 +5,7 @@ import de.hfkbremen.synthesizer.Beat;
 import de.hfkbremen.synthesizer.Instrument;
 import de.hfkbremen.synthesizer.Scale;
 import de.hfkbremen.synthesizer.Synthesizer;
+import de.hfkbremen.synthesizer.SynthesizerJSyn;
 import processing.core.PApplet;
 
 public class SketchExample10InstrumentWithGUI extends PApplet {
@@ -29,8 +30,8 @@ public class SketchExample10InstrumentWithGUI extends PApplet {
     }
 
     public void setup() {
-        mSynth = Synthesizer.getSynth("jsyn-adv"); // *jsyn-adv* features an LFO + a filter
-
+//        mSynth = Synthesizer.getSynth("jsyn-filter+lfo"); // *jsyn-filter+lfo* features an LFO + a filter
+        mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_SIMPLE);
         mSynth.instrument().osc_type(Instrument.SQUARE);
         mSynth.instrument().attack(0.01f);
         mSynth.instrument().decay(0.2f);

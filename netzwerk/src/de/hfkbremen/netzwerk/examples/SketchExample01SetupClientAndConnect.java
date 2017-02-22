@@ -42,4 +42,3 @@ public class SketchExample01SetupClientAndConnect extends PApplet {
         PApplet.main(SketchExample01SetupClientAndConnect.class.getName());
     }
 }
-

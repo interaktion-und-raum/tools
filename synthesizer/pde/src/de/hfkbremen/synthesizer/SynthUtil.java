@@ -45,9 +45,9 @@ public final class SynthUtil {
 
     public static void dumpMidiOutputDevices() {
         final String[] mOutputNames = MidiOut.availableOutputs();
-        System.out.println("### Midi Output Devices");
+        System.out.println("### Midi Output Devices\n");
         for (String mOutputName : mOutputNames) {
-            System.out.println("###\t" + mOutputName);
+            System.out.println("  - " + mOutputName);
         }
     }
 

@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 public abstract class Synthesizer {
 
+    public static final int INSTRUMENT_SIMPLE = 0;
+    public static final int INSTRUMENT_BASIC = 1;
+    public static final int INSTRUMENT_WITH_FILTER_AND_LFO = 2;
+
     public static final int NUMBERS_OF_INSTRUMENTS = 12;
     public static final String INSTRUMENT_STR = "instrument";
     public static final int GUI_ATTACK = 0;
@@ -46,7 +50,7 @@ public abstract class Synthesizer {
 
     public abstract void noteOff();
 
-    public abstract void controller(int pCC, int pValue);
+    public abstract void control_change(int pCC, int pValue);
 
     public abstract void pitch_bend(int pValue);
 
@@ -56,22 +60,22 @@ public abstract class Synthesizer {
 
     public abstract Instrument instrument();
 
-    public abstract ArrayList<Instrument> instruments();
+    public abstract ArrayList<? extends Instrument> instruments();
 
     public static Synthesizer getSynth() {
-        return new SynthesizerJSyn();
+        return new SynthesizerJSyn(INSTRUMENT_BASIC);
     }
 
     public static Synthesizer getSynth(String... pName) {
         if (pName[0].equalsIgnoreCase("minim")) {
             return new SynthesizerMinim();
         } else if (pName[0].equalsIgnoreCase("jsyn")) {
-            return new SynthesizerJSyn();
-        } else if (pName[0].equalsIgnoreCase("jsyn-adv")) {
-            return new SynthesizerJSyn(true);
-        } else if (pName[0].equalsIgnoreCase("midi")) {
+            return new SynthesizerJSyn(INSTRUMENT_BASIC);
+        } else if (pName[0].equalsIgnoreCase("jsyn-filter+lfo")) {
+            return new SynthesizerJSyn(INSTRUMENT_WITH_FILTER_AND_LFO);
+        } else if (pName[0].equalsIgnoreCase("midi") && pName.length >= 2) {
             return new SynthesizerMidi(pName[1]);
-        } else if (pName[0].equalsIgnoreCase("osc")) {
+        } else if (pName[0].equalsIgnoreCase("osc") && pName.length >= 2) {
             return new SynthesizerOSC(pName[1]);
         }
         return getSynth();

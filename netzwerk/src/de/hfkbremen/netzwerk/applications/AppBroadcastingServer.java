@@ -1,11 +1,11 @@
-package de.hfkbremen.netzwerk.examples;
+package de.hfkbremen.netzwerk.applications;
 
 import de.hfkbremen.netzwerk.NetzwerkServer;
 import netP5.NetAddress;
 import oscP5.OscMessage;
 import processing.core.PApplet;
 
-public class SketchAppBroadcastingServer extends PApplet {
+public class AppBroadcastingServer extends PApplet {
 
     private final float mFontSize = 10;
     NetzwerkServer mNetworkServer;
@@ -79,6 +79,6 @@ public class SketchAppBroadcastingServer extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchAppBroadcastingServer.class.getName());
+        PApplet.main(AppBroadcastingServer.class.getName());
     }
 }

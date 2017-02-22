@@ -4,7 +4,7 @@ import de.hfkbremen.netzwerk.NetzwerkClient;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class SketchDataStreamMouseLoggerNoLib extends PApplet {
+public class AppDataStreamMouseLoggerNoLib extends PApplet {
 
     private PVector mScreenSize;
     private PVector mPosition;
@@ -74,6 +74,6 @@ public class SketchDataStreamMouseLoggerNoLib extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchDataStreamMouseLoggerNoLib.class.getName());
+        PApplet.main(AppDataStreamMouseLoggerNoLib.class.getName());
     }
 }

@@ -3,7 +3,7 @@ package de.hfkbremen.netzwerk.applications;
 import de.hfkbremen.netzwerk.NetzwerkClient;
 import processing.core.PApplet;
 
-public class SketchDataStreamAtomicWorldClock extends PApplet {
+public class AppDataStreamAtomicWorldClock extends PApplet {
 
     private NetzwerkClient mClient;
 
@@ -19,6 +19,6 @@ public class SketchDataStreamAtomicWorldClock extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchDataStreamAtomicWorldClock.class.getName());
+        PApplet.main(AppDataStreamAtomicWorldClock.class.getName());
     }
 }
