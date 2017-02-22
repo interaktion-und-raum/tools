@@ -8,15 +8,15 @@ at the center of the library is a broadcasting server ( `NetzwerkServer` ) to wh
 
 ## instructions
 
-- run server `NetzwerkServer` ( e.g `AppBroadcastingServer` )
-- create client `NetzwerkClient`
+1. run server `NetzwerkServer` ( e.g `AppBroadcastingServer` )
+2. create client `NetzwerkClient`
     - specify server name or IP
     - specify sender name
-- connect to server with `connect()`
-- send messages via `send()`
+3. connect to server with `connect()`
+4. send messages via `send()`
     - message is sent to server
     - server relays message to all connected clients ( including the sending client itself )
-- receive messages via `receive()`
+5. receive messages via `receive()`
     - if method is implemented in sketch it gets called automatically when a message is received
     - note that the method gets called asynchronous i.e the instant the message arrives; similarly to a key stroke. this can cause unwanted behavior, especially when adding to or removing elements from collection classes ( e.g `ArrayList` or `Vector` ); watch out for `ConcurrentModificationException`.
 
@@ -38,8 +38,8 @@ there are 4 different types of messages. all four messages contain a *sender*, a
 example messages could look like this:
 
     /dennis/random/0.25
-	/jacob/coordinates/4.5,6.2,-10.2
-	/annelie/nameTag/"annelie"
+    /jacob/coordinates/4.5,6.2,-10.2
+    /annelie/nameTag/"annelie"
 
 ### sending messages
 
@@ -63,11 +63,11 @@ analogously there are 4 variations of `receive` methods, where the first argumen
 
 there are other methods for sending messages as well
   
-    - `send_direct()` : sends a message directly to another client omitting the server.
-    - `spoof()` : sends a message using another *sender*.
-    - `sneak()` : sends a message only to *localhost* ( the client itself )
-    - `send_raw()` : sends a raw OSC message
-    - `receive_raw()` : receives a raw OSC message
+- `send_direct()` : sends a message directly to another client omitting the server.
+- `spoof()` : sends a message using another *sender*.
+- `sneak()` : sends a message only to *localhost* ( the client itself )
+- `send_raw()` : sends a raw OSC message
+- `receive_raw()` : receives a raw OSC message
 
 ## dependencies
 
@@ -90,6 +90,6 @@ there are other methods for sending messages as well
 
 ## feature requests
 
-- connect servers to other servers
-- auto-connect client to server when sending first message
+- @NetzwerkServer connect servers to other servers
+- @NetzwerkServer auto-connect client to server when sending first message @maybe
 - @NetzwerkServer add timestamp and message_type ( broadcast, server ) to log
