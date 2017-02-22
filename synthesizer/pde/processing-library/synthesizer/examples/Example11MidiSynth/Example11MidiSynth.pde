@@ -11,7 +11,7 @@ void settings() {
 void setup() {
     background(255);
     SynthUtil.dumpMidiOutputDevices();
-    mSynth = new SynthesizerMidi("IAC-Driver"); // name of an available midi out device
+    mSynth = Synthesizer.getSynth("midi", "IAC-Driver"); // name of an available midi out device
 }
 void draw() {
     if (mIsPlaying) {
@@ -22,7 +22,7 @@ void draw() {
     }
 }
 void mouseMoved() {
-    mSynth.controller(SynthesizerMidi.CC_MODULATION, (int) map(mouseX, 0, width, 0, 127));
+    mSynth.control_change(SynthesizerMidi.CC_MODULATION, (int) map(mouseX, 0, width, 0, 127));
     mSynth.pitch_bend((int) map(mouseY, 0, height, 16383, 0));
 }
 void keyPressed() {
@@ -32,7 +32,6 @@ void keyPressed() {
         mSynth.noteOn(mNote, 127);
     } else {
         mSynth.noteOff();
-        mInstrument = (int) random(0, 15);
     }
     mIsPlaying = !mIsPlaying;
 }

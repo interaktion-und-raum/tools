@@ -18,7 +18,8 @@ void settings() {
     size(640, 480);
 }
 void setup() {
-    mSynth = Synthesizer.getSynth("jsyn-adv"); // *jsyn-adv* features an LFO + a filter
+//    mSynth = Synthesizer.getSynth("jsyn-filter+lfo"); // *jsyn-filter+lfo* features an LFO + a filter
+    mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_SIMPLE);
     mSynth.instrument().osc_type(Instrument.SQUARE);
     mSynth.instrument().attack(0.01f);
     mSynth.instrument().decay(0.2f);

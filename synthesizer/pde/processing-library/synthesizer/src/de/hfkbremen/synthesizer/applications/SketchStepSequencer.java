@@ -8,7 +8,7 @@ import processing.core.PApplet;
 
 public class SketchStepSequencer extends PApplet {
 
-    private final Synthesizer mSynth = Synthesizer.getSynth("jsyn-adv");
+    private final Synthesizer mSynth = Synthesizer.getSynth("jsyn-filter+lfo");
 
     private Beat mBeat;
 

@@ -9,6 +9,7 @@ void setup() {
     background(255);
 }
 void draw() {
+    background(mSynth.isPlaying() ? 255 : 0);
 }
 void mousePressed() {
     int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A3, (int) random(0, 10));

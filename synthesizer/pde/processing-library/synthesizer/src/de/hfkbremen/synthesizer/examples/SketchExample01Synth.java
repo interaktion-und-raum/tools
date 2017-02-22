@@ -17,6 +17,7 @@ public class SketchExample01Synth extends PApplet {
     }
 
     public void draw() {
+        background(mSynth.isPlaying() ? 255 : 0);
     }
 
     public void mousePressed() {

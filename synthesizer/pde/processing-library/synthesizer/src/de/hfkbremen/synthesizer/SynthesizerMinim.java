@@ -63,7 +63,7 @@ public class SynthesizerMinim extends Synthesizer {
         }
     }
 
-    public void controller(int pCC, int pValue) {
+    public void control_change(int pCC, int pValue) {
     }
 
     public void pitch_bend(int pValue) {
@@ -82,7 +82,7 @@ public class SynthesizerMinim extends Synthesizer {
         return instruments().get(mInstrumentID);
     }
 
-    public ArrayList<Instrument> instruments() {
+    public ArrayList<? extends Instrument> instruments() {
         return mInstruments;
     }
 

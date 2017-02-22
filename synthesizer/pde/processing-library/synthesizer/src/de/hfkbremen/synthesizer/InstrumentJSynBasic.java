@@ -2,80 +2,74 @@ package de.hfkbremen.synthesizer;
 
 import com.jsyn.data.SegmentedEnvelope;
 import com.jsyn.engine.SynthesisEngine;
-import com.jsyn.unitgen.*;
+import com.jsyn.unitgen.LineOut;
+import com.jsyn.unitgen.SawtoothOscillator;
+import com.jsyn.unitgen.SineOscillator;
+import com.jsyn.unitgen.SquareOscillator;
+import com.jsyn.unitgen.TriangleOscillator;
+import com.jsyn.unitgen.UnitGenerator;
+import com.jsyn.unitgen.UnitOscillator;
+import com.jsyn.unitgen.VariableRateMonoReader;
+import com.jsyn.unitgen.WhiteNoise;
 import com.softsynth.shared.time.TimeStamp;
 import controlP5.ControlElement;
 
-public class InstrumentJSynAdv extends Instrument {
+public class InstrumentJSynBasic extends InstrumentJSyn {
 
-    private final SynthesisEngine mSynth;
+    //    protected final SynthesisEngine mSynth;
+//    protected final LineOut mLineOut;
+    protected VariableRateMonoReader mEnvPlayer;
+    //    protected UnitGenerator mOsc;
+    protected SegmentedEnvelope mEnvData;
+//    protected float mAmp = 0.9f;
+//    protected float mFreq = 0.0f;
+//    protected float mFreqOffset = 0.0f;
 
-    private final LineOut mLineOut;
+    private boolean mDumpWarningLFO = true;
+    private boolean mDumpWarningFILTER = true;
 
-    private final FilterLowPass mLowPassFilter;
-    private final SineOscillator mLFO;
-    private final Add mAddUnit;
-    private final VariableRateMonoReader mEnvPlayer;
-    private UnitGenerator mOsc;
-    private SegmentedEnvelope mEnvData;
-    private float mAmp = 0.9f;
-    private float mFreq = 0.0f;
-    private float mFreqOffset = 0.0f;
+    public InstrumentJSynBasic(SynthesisEngine pSynth, LineOut pLineOut, int pName) {
+        super(pSynth, pLineOut, pName);
+//        mSynth = pSynth;
+//        mLineOut = pLineOut;
 
-    public InstrumentJSynAdv(SynthesisEngine pSynth, LineOut pLineOut, int pName) {
-        super(pName);
-        mSynth = pSynth;
-        mLineOut = pLineOut;
+//        mEnvPlayer = new VariableRateMonoReader();
+//        mSynth.add(mEnvPlayer);
+//        mEnvPlayer.start();
 
-        mLowPassFilter = new FilterLowPass();
-        mLowPassFilter.output.connect(0, mLineOut.input, 0);
-        mLowPassFilter.output.connect(0, mLineOut.input, 1);
-        mLowPassFilter.frequency.set(2000);
-        mLowPassFilter.Q.set(1);
-
-        update_data();
-
-        mEnvPlayer = new VariableRateMonoReader();
-
-        mOsc = new SineOscillator();
-
-        mLFO = new SineOscillator();
-        mLFO.amplitude.set(3);
-        mLFO.frequency.set(10.0f);
-
-        mAddUnit = new Add();
-        mAddUnit.inputA.set(220);
-        mLFO.output.connect(mAddUnit.inputB);
-
-        mSynth.add(mLowPassFilter);
-        mSynth.add(mEnvPlayer);
-        mSynth.add(mLFO);
-        mSynth.add(mAddUnit);
-        connectOsc(mOsc);
-        mEnvPlayer.start();
+//        mOsc = new SineOscillator();
+//        connectOsc(mOsc);
     }
 
-    private void connectOsc(UnitGenerator o) {
+    protected void setupModules() {
+        if (mEnvPlayer == null) {
+            update_data();
+            mEnvPlayer = new VariableRateMonoReader();
+            mSynth.add(mEnvPlayer);
+            mEnvPlayer.start();
+        }
+    }
+
+    protected void connectOsc(UnitGenerator o) {
+        setupModules();
         mSynth.add(o);
         if (o instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) o;
             uo.amplitude.set(0);
-            uo.output.connect(mLowPassFilter.input);
-//            uo.output.connect(0, mLineOut.input, 0);
-//            uo.output.connect(0, mLineOut.input, 1);
+            uo.frequency.set(220);
+            uo.output.connect(0, mLineOut.input, 0);
+            uo.output.connect(0, mLineOut.input, 1);
             mEnvPlayer.output.connect(uo.amplitude);
-            mAddUnit.output.connect(uo.frequency);
         } else if (o instanceof WhiteNoise) {
             WhiteNoise uo = (WhiteNoise) o;
             uo.amplitude.set(0);
-            uo.output.connect(mLowPassFilter.input);
-//            uo.output.connect(0, mLineOut.input, 0);
-//            uo.output.connect(0, mLineOut.input, 1);
+            uo.output.connect(0, mLineOut.input, 0);
+            uo.output.connect(0, mLineOut.input, 1);
             mEnvPlayer.output.connect(uo.amplitude);
         }
     }
 
-    private void disconnectOsc(UnitGenerator o) {
+    protected void disconnectOsc(UnitGenerator o) {
         o.stop();
         if (o instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) o;
@@ -93,15 +87,6 @@ public class InstrumentJSynAdv extends Instrument {
         mSynth.remove(o);
     }
 
-    private void update_data() {
-        double[] mData = {mAttack, 1.0 * mAmp, // get_attack
-                          mDecay, // get_decay
-                          mSustain * mAmp, // get_sustain
-                          mRelease, 0.0, // get_release
-        };
-        mEnvData = new SegmentedEnvelope(mData);
-    }
-
     public void noteOff() {
         mEnvPlayer.dataQueue.queueOff(mEnvData, true, new TimeStamp(mSynth.getCurrentTime()));
     }
@@ -113,18 +98,19 @@ public class InstrumentJSynAdv extends Instrument {
         TimeStamp mTimeStamp = new TimeStamp(mSynth.getCurrentTime());
         mFreq = pFreq;
         update_freq();
+//        if (mOsc instanceof UnitOscillator) {
+//            UnitOscillator uo = (UnitOscillator) mOsc;
+//            uo.frequency.set(frequency);
+//        }
         mEnvPlayer.amplitude.set(pAmp, mTimeStamp);
         mEnvPlayer.dataQueue.queueOn(mEnvData, mTimeStamp);
     }
 
-    public void trigger() {
-        mEnvPlayer.dataQueue.clear();
-        update_data();
-        mEnvPlayer.dataQueue.queue(mEnvData, 0, mEnvData.getNumFrames());
-    }
-
     public void update_freq() {
-        mAddUnit.inputA.set(mFreq + mFreqOffset);
+        if (mOsc instanceof UnitOscillator) {
+            UnitOscillator uo = (UnitOscillator) mOsc;
+            uo.frequency.set(mFreq + mFreqOffset);
+        }
     }
 
     public void amp(float pAmp) {
@@ -136,10 +122,6 @@ public class InstrumentJSynAdv extends Instrument {
             WhiteNoise uo = (WhiteNoise) mOsc;
             uo.amplitude.set(pAmp);
         }
-    }
-
-    VariableRateMonoReader env() {
-        return mEnvPlayer;
     }
 
     @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
@@ -212,43 +194,58 @@ public class InstrumentJSynAdv extends Instrument {
         return mOscID;
     }
 
-    @ControlElement(properties = {"min=0.0", "max=100.0", "type=knob", "radius=20", "resolution=1000"}, x = 250, y = 0)
+    @Override
     public void lfo_amp(float pLFOAmp) {
-        mLFO.amplitude.set(pLFOAmp);
-    }
-
-    public float get_lfo_amp() {
-        return (float) mLFO.amplitude.get();
-    }
-
-    @ControlElement(properties = {"min=0.0", "max=100.0", "type=knob", "radius=20", "resolution=1000"}, x = 300, y = 0)
-    public void lfo_freq(float pLFOFreq) {
-        mLFO.frequency.set(pLFOFreq);
-    }
-
-    public float get_lfo_freq() {
-        return (float) mLFO.frequency.get();
-    }
-
-    @ControlElement(properties = {"min=0.0", "max=5", "type=knob", "radius=20", "resolution=100"}, x = 350, y = 0)
-    public void filter_q(float pQ) {
-        mLowPassFilter.Q.set(pQ);
-    }
-
-    public float get_filter_q() {
-        return (float) mLowPassFilter.Q.get();
-    }
-
-    @ControlElement(properties = {"min=0.0", "max=30000", "type=knob", "radius=20", "resolution=300"}, x = 400, y = 0)
-    public void filter_freq(float pFreq) {
-        mLowPassFilter.frequency.set(pFreq);
-    }
-
-    public float get_filter_freq() {
-        return (float) mLowPassFilter.frequency.get();
+        if (mDumpWarningLFO) {
+            System.out.println("### LFO not implemented.");
+            mDumpWarningLFO = false;
+        }
     }
 
     @Override
+    public float get_lfo_amp() {
+        return 0;
+    }
+
+    @Override
+    public void lfo_freq(float pLFOFreq) {
+        if (mDumpWarningLFO) {
+            System.out.println("### LFO not implemented.");
+            mDumpWarningLFO = false;
+        }
+    }
+
+    @Override
+    public float get_lfo_freq() {
+        return 0;
+    }
+
+    @Override
+    public void filter_q(float f) {
+        if (mDumpWarningFILTER) {
+            System.out.println("### FILTER not implemented.");
+            mDumpWarningFILTER = false;
+        }
+    }
+
+    @Override
+    public float get_filter_q() {
+        return 0;
+    }
+
+    @Override
+    public void filter_freq(float f) {
+        if (mDumpWarningFILTER) {
+            System.out.println("### FILTER not implemented.");
+            mDumpWarningFILTER = false;
+        }
+    }
+
+    @Override
+    public float get_filter_freq() {
+        return 0;
+    }
+
     public void pitch_bend(float freq_offset) {
         mFreqOffset = freq_offset;
         update_freq();
@@ -257,5 +254,24 @@ public class InstrumentJSynAdv extends Instrument {
     public void set_freq(float freq) {
         mFreq = freq;
         update_freq();
+    }
+
+    protected void update_data() {
+        double[] mData = {mAttack, 1.0 * mAmp, // get_attack
+                          mDecay, // get_decay
+                          mSustain * mAmp, // get_sustain
+                          mRelease, 0.0, // get_release
+        };
+        mEnvData = new SegmentedEnvelope(mData);
+    }
+
+    public void trigger() {
+        mEnvPlayer.dataQueue.clear();
+        update_data();
+        mEnvPlayer.dataQueue.queue(mEnvData, 0, mEnvData.getNumFrames());
+    }
+
+    VariableRateMonoReader env() {
+        return mEnvPlayer;
     }
 }

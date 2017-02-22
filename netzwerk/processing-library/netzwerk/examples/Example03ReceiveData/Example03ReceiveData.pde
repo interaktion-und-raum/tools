@@ -3,6 +3,7 @@ import netP5.*;
 import oscP5.*;
 
 NetzwerkClient mClient;
+int mBackgroundColor = 0;
 void settings() {
     size(640, 480);
 }
@@ -11,7 +12,7 @@ void setup() {
     mClient.connect();
 }
 void draw() {
-    background(255);
+    background(mBackgroundColor);
 }
 void keyPressed() {
     if (key == '1') {
@@ -32,10 +33,13 @@ void keyPressed() {
  */
 void receive(String name, String tag, float x) {
     println("### received: " + name + " - " + tag + " - " + x);
+    mBackgroundColor = (int) x;
 }
 void receive(String name, String tag, float x, float y) {
     println("### received: " + name + " - " + tag + " - " + x + ", " + y);
+    mBackgroundColor = (int) x;
 }
 void receive(String name, String tag, float x, float y, float z) {
     println("### received: " + name + " - " + tag + " - " + x + ", " + y + ", " + z);
+    mBackgroundColor = (int) x;
 }

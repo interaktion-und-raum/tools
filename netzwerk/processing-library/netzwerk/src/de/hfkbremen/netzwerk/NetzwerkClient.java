@@ -23,26 +23,24 @@ public class NetzwerkClient {
     private final NetAddress mBroadcastLocation;
     private final String mSenderName;
     private final Object mClientParent;
+    private final NetzwerkClientListener mNetzwerkClientListener;
     private final String mIP;
     private final int mPort;
-    private Method mMethodReceive3f;
-    private Method mMethodReceive2f;
     private Method mMethodReceive1f;
+    private Method mMethodReceive2f;
+    private Method mMethodReceive3f;
     private Method mMethodReceiveStr;
     private Method mMethodReceiveRaw;
-    private Method mMethodPing;
+    private Method mMethodReceivePing;
 
-    public NetzwerkClient(Object pClientParent, String pServer, String pSenderName) {
-        this(pClientParent, pServer, pSenderName, Netzwerk.SERVER_DEFAULT_BROADCAST_PORT, findAvailablePort());
-    }
-
-    public NetzwerkClient(Object pClientParent,
-                          String pServer,
-                          String pSenderName,
-                          int pServerListeningPort,
-                          int pClientListeningPort) {
+    private NetzwerkClient(Object pClientParent,
+                           NetzwerkClientListener pNetzwerkClientListener,
+                           String pServer,
+                           String pSenderName,
+                           int pServerListeningPort,
+                           int pClientListeningPort) {
         mClientParent = pClientParent;
-
+        mNetzwerkClientListener = pNetzwerkClientListener;
         mPort = pClientListeningPort;
 
         mOSC = new OscP5(this, mPort);
@@ -52,6 +50,34 @@ public class NetzwerkClient {
         mBroadcastLocation = new NetAddress(pServer, pServerListeningPort);
         mSenderName = pSenderName;
         log("+++", "server is @ " + pServer + " + listening on port " + pServerListeningPort);
+    }
+
+    public NetzwerkClient(Object pClientParent, String pServer, String pSenderName) {
+        this(pClientParent, pServer, pSenderName, Netzwerk.SERVER_DEFAULT_BROADCAST_PORT, findAvailablePort());
+    }
+
+    public NetzwerkClient(NetzwerkClientListener pNetzwerkClientListener, String pServer, String pSenderName) {
+        this(pNetzwerkClientListener,
+             pServer,
+             pSenderName,
+             Netzwerk.SERVER_DEFAULT_BROADCAST_PORT,
+             findAvailablePort());
+    }
+
+    public NetzwerkClient(NetzwerkClientListener pNetzwerkClientListener,
+                          String pServer,
+                          String pSenderName,
+                          int pServerListeningPort,
+                          int pClientListeningPort) {
+        this(null, pNetzwerkClientListener, pServer, pSenderName, pServerListeningPort, pClientListeningPort);
+    }
+
+    public NetzwerkClient(Object pClientParent,
+                          String pServer,
+                          String pSenderName,
+                          int pServerListeningPort,
+                          int pClientListeningPort) {
+        this(pClientParent, null, pServer, pSenderName, pServerListeningPort, pClientListeningPort);
 
         try {
             mMethodReceive1f = mClientParent.getClass().getDeclaredMethod(mReceiveMethod,
@@ -89,7 +115,7 @@ public class NetzwerkClient {
         } catch (NoSuchMethodException ignored) {
         }
         try {
-            mMethodPing = mClientParent.getClass().getDeclaredMethod(mPingMethod);
+            mMethodReceivePing = mClientParent.getClass().getDeclaredMethod(mPingMethod);
         } catch (NoSuchMethodException ignored) {
         }
 
@@ -283,80 +309,23 @@ public class NetzwerkClient {
         return getAddressPattern(mSenderName, pTag);
     }
 
-    private void receive(String name, String tag, float x) {
-        try {
-            mMethodReceive1f.invoke(mClientParent, name, tag, x);
-        } catch (Exception ignored) {
-        }
-    }
-
-    private void receive(String name, String tag, float x, float y) {
-        try {
-            mMethodReceive2f.invoke(mClientParent, name, tag, x, y);
-        } catch (Exception ignored) {
-        }
-    }
-
-    private void receive(String name, String tag, float x, float y, float z) {
-        try {
-            mMethodReceive3f.invoke(mClientParent, name, tag, x, y, z);
-        } catch (Exception ignored) {
-        }
-    }
-
-    private void receive(String name, String tag, String message) {
-        try {
-            mMethodReceiveStr.invoke(mClientParent, name, tag, message);
-        } catch (Exception ignored) {
-        }
-    }
-
-    private void receive_raw(OscMessage m) {
-        try {
-            mMethodReceiveRaw.invoke(mClientParent, m);
-        } catch (Exception ignored) {
-        }
-    }
-
-    private void receive_ping() {
-        try {
-            mMethodPing.invoke(mClientParent);
-        } catch (Exception ignored) {
-        }
-    }
-
     public void oscEvent(OscMessage m) {
         if (m.checkAddrPattern(Netzwerk.SERVER_PATTERN_PING)) {
-            if (mMethodPing != null) {
-                receive_ping();
-            }
+            receive_ping();
         } else if (m.typetag().equalsIgnoreCase("f")) {
-            if (mMethodReceive1f != null) {
-                receive(getName(m.addrPattern()), getTag(m.addrPattern()), m.get(0).floatValue());
-            }
+            receive(getName(m.addrPattern()), getTag(m.addrPattern()), m.get(0).floatValue());
         } else if (m.typetag().equalsIgnoreCase("ff")) {
-            if (mMethodReceive2f != null) {
-                receive(getName(m.addrPattern()),
-                        getTag(m.addrPattern()),
-                        m.get(0).floatValue(),
-                        m.get(1).floatValue());
-            }
+            receive(getName(m.addrPattern()), getTag(m.addrPattern()), m.get(0).floatValue(), m.get(1).floatValue());
         } else if (m.typetag().equalsIgnoreCase("fff")) {
-            if (mMethodReceive3f != null) {
-                receive(getName(m.addrPattern()),
-                        getTag(m.addrPattern()),
-                        m.get(0).floatValue(),
-                        m.get(1).floatValue(),
-                        m.get(2).floatValue());
-            }
+            receive(getName(m.addrPattern()),
+                    getTag(m.addrPattern()),
+                    m.get(0).floatValue(),
+                    m.get(1).floatValue(),
+                    m.get(2).floatValue());
         } else if (m.typetag().equalsIgnoreCase("s")) {
-            if (mMethodReceiveStr != null) {
-                receive(getName(m.addrPattern()), getTag(m.addrPattern()), m.get(0).stringValue());
-            }
+            receive(getName(m.addrPattern()), getTag(m.addrPattern()), m.get(0).stringValue());
         } else {
-            if (mMethodReceiveRaw != null) {
-                receive_raw(m);
-            }
+            receive_raw(m);
 //            log("### ", "client couldn t parse message:");
 //            log("### ", theOscMessage.toString());
         }
@@ -404,5 +373,81 @@ public class NetzwerkClient {
                 disconnect();
             }
         }));
+    }
+
+    /* --- callback methods --- */
+
+    private void receive(String name, String tag, float x) {
+        if (mMethodReceive1f != null) {
+            try {
+                mMethodReceive1f.invoke(mClientParent, name, tag, x);
+            } catch (Exception ignored) {
+            }
+        }
+        if (mNetzwerkClientListener != null) {
+            mNetzwerkClientListener.receive(name, tag, x);
+
+        }
+    }
+
+    private void receive(String name, String tag, float x, float y) {
+        if (mMethodReceive2f != null) {
+            try {
+                mMethodReceive2f.invoke(mClientParent, name, tag, x, y);
+            } catch (Exception ignored) {
+            }
+        }
+        if (mNetzwerkClientListener != null) {
+            mNetzwerkClientListener.receive(name, tag, x, y);
+        }
+    }
+
+    private void receive(String name, String tag, float x, float y, float z) {
+        if (mMethodReceive3f != null) {
+            try {
+                mMethodReceive3f.invoke(mClientParent, name, tag, x, y, z);
+            } catch (Exception ignored) {
+            }
+        }
+        if (mNetzwerkClientListener != null) {
+            mNetzwerkClientListener.receive(name, tag, x, y, z);
+
+        }
+    }
+
+    private void receive(String name, String tag, String message) {
+        if (mMethodReceiveStr != null) {
+            try {
+                mMethodReceiveStr.invoke(mClientParent, name, tag, message);
+            } catch (Exception ignored) {
+            }
+        }
+        if (mNetzwerkClientListener != null) {
+            mNetzwerkClientListener.receive(name, tag, message);
+        }
+    }
+
+    private void receive_raw(OscMessage m) {
+        if (mMethodReceiveRaw != null) {
+            try {
+                mMethodReceiveRaw.invoke(mClientParent, m);
+            } catch (Exception ignored) {
+            }
+        }
+        if (mNetzwerkClientListener != null) {
+            mNetzwerkClientListener.receive_raw(m);
+        }
+    }
+
+    private void receive_ping() {
+        if (mMethodReceivePing != null) {
+            try {
+                mMethodReceivePing.invoke(mClientParent);
+            } catch (Exception ignored) {
+            }
+        }
+        if (mNetzwerkClientListener != null) {
+            mNetzwerkClientListener.receive_ping();
+        }
     }
 }

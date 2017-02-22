@@ -6,6 +6,7 @@ import processing.core.PApplet;
 public class SketchExample03ReceiveData extends PApplet {
 
     private NetzwerkClient mClient;
+    private int mBackgroundColor = 0;
 
     public void settings() {
         size(640, 480);
@@ -17,7 +18,7 @@ public class SketchExample03ReceiveData extends PApplet {
     }
 
     public void draw() {
-        background(255);
+        background(mBackgroundColor);
     }
 
     public void keyPressed() {
@@ -40,14 +41,17 @@ public class SketchExample03ReceiveData extends PApplet {
      */
     public void receive(String name, String tag, float x) {
         println("### received: " + name + " - " + tag + " - " + x);
+        mBackgroundColor = (int) x;
     }
 
     public void receive(String name, String tag, float x, float y) {
         println("### received: " + name + " - " + tag + " - " + x + ", " + y);
+        mBackgroundColor = (int) x;
     }
 
     public void receive(String name, String tag, float x, float y, float z) {
         println("### received: " + name + " - " + tag + " - " + x + ", " + y + ", " + z);
+        mBackgroundColor = (int) x;
     }
 
     public static void main(String[] args) {

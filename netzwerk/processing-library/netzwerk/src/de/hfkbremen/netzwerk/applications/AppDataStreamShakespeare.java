@@ -3,7 +3,7 @@ package de.hfkbremen.netzwerk.applications;
 import de.hfkbremen.netzwerk.NetzwerkClient;
 import processing.core.PApplet;
 
-public class SketchDataStreamShakespeare extends PApplet {
+public class AppDataStreamShakespeare extends PApplet {
 
     private int mLineNum = 0;
     private int mCharNum = 0;
@@ -50,7 +50,7 @@ public class SketchDataStreamShakespeare extends PApplet {
     }
 
     public static void main(String[] args) {
-        SketchDataStreamShakespeare.main(SketchDataStreamShakespeare.class.getName());
+        AppDataStreamShakespeare.main(AppDataStreamShakespeare.class.getName());
     }
 
     /* downloaded from: http://www.textfiles.com/etext/AUTHORS/SHAKESPEARE/shakespeare-midsummer-16.txt */

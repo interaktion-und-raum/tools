@@ -1,9 +1,9 @@
-package de.hfkbremen.netzwerk.examples;
+package de.hfkbremen.netzwerk.applications;
 
 import de.hfkbremen.netzwerk.NetzwerkClient;
 import processing.core.PApplet;
 
-public class SketchToolChatOutput extends PApplet {
+public class AppChatOutput extends PApplet {
 
     private controlP5.ControlP5 cp5;
 
@@ -53,6 +53,6 @@ public class SketchToolChatOutput extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchToolChatOutput.class.getName());
+        PApplet.main(AppChatOutput.class.getName());
     }
 }

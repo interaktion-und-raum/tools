@@ -1,2 +1,2 @@
 LIB_NAME=netzwerk
-IO_EXAMPLE_PATHS=( examples )
+IO_EXAMPLE_PATHS=( examples applications )

@@ -18,19 +18,16 @@ public class SynthesizerJSyn extends Synthesizer {
 
     private static final boolean USE_AMP_FRACTION = false;
     private final SynthesisEngine mSynth;
-    private final ArrayList<Instrument> mInstruments;
+    private final ArrayList<InstrumentJSyn> mInstruments;
     private final Timer mTimer;
     private int mInstrumentID;
     private boolean mIsPlaying = false;
 
     public SynthesizerJSyn() {
-        this(false);
+        this(INSTRUMENT_BASIC);
     }
 
-    public SynthesizerJSyn(boolean pAdvancedInstruments) {
-        final JavaSoundAudioDevice mDevice = new JavaSoundAudioDevice();
-
-//        SynthUtil.dumpAudioDeviceInfo(mDevice);
+    public SynthesizerJSyn(int pDefaultInstrumentType) {
         mSynth = new SynthesisEngine();
         prepareExitHandler();
 
@@ -40,20 +37,25 @@ public class SynthesizerJSyn extends Synthesizer {
 
         mInstruments = new ArrayList<>();
         for (int i = 0; i < NUMBERS_OF_INSTRUMENTS; i++) {
-            if (pAdvancedInstruments) {
-                InstrumentJSynAdv mInstrumentJSyn = new InstrumentJSynAdv(mSynth, mLineOut, i);
-                mInstruments.add(mInstrumentJSyn);
-                mInstrumentJSyn.osc_type(i % NUMBER_OF_OSCILLATORS);
-                mInstrumentJSyn.amp(1.0f);
-            } else {
-                InstrumentJSyn mInstrumentJSyn = new InstrumentJSyn(mSynth, mLineOut, i);
-                mInstruments.add(mInstrumentJSyn);
-                mInstrumentJSyn.osc_type(i % NUMBER_OF_OSCILLATORS);
-                mInstrumentJSyn.amp(1.0f);
+            final InstrumentJSyn mInstrumentJSyn;
+            switch (pDefaultInstrumentType) {
+                case INSTRUMENT_WITH_FILTER_AND_LFO:
+                    mInstrumentJSyn = new InstrumentJSynFilterLFO(mSynth, mLineOut, i);
+                    break;
+                case INSTRUMENT_SIMPLE:
+                    mInstrumentJSyn = new InstrumentJSyn(mSynth, mLineOut, i);
+                    break;
+                default:
+                    mInstrumentJSyn = new InstrumentJSynBasic(mSynth, mLineOut, i);
             }
+            mInstrumentJSyn.osc_type(i % NUMBER_OF_OSCILLATORS);
+            mInstrumentJSyn.amp(1.0f);
+            mInstruments.add(mInstrumentJSyn);
         }
         mInstrumentID = 0;
 
+//        SynthUtil.dumpAudioDeviceInfo(mDevice);
+        final JavaSoundAudioDevice mDevice = new JavaSoundAudioDevice();
         mSynth.start(44100, mDevice.getDefaultInputDeviceID(), 2, mDevice.getDefaultOutputDeviceID(), 2);
 
         mTimer = new Timer();
@@ -83,21 +85,14 @@ public class SynthesizerJSyn extends Synthesizer {
         }
         TimeStamp mOnTime = new TimeStamp(mSynth.getCurrentTime());
         TimeStamp mOffTime = mOnTime.makeRelative(pDuration);
-        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSyn) {
-            InstrumentJSyn mInstrument = (InstrumentJSyn) mInstruments.get(getInstrumentID());
-            mInstrument.amp(mAmp);
-            mInstrument.set_freq(mFreq);
-            mInstrument.env().start(mOnTime);
-            mInstrument.env().stop(mOffTime);
-            mInstrument.trigger();
-        }
-        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSynAdv) {
-            InstrumentJSynAdv mInstrument = (InstrumentJSynAdv) mInstruments.get(getInstrumentID());
-            mInstrument.amp(mAmp);
-            mInstrument.set_freq(mFreq);
-            mInstrument.env().start(mOnTime);
-            mInstrument.env().stop(mOffTime);
-            mInstrument.trigger();
+        InstrumentJSyn mInstrument = getInstrument(getInstrumentID());
+        mInstrument.amp(mAmp);
+        mInstrument.set_freq(mFreq);
+        if (mInstrument instanceof InstrumentJSynBasic) {
+            InstrumentJSynBasic mInstrumentJSynBasic = (InstrumentJSynBasic) mInstrument;
+            mInstrumentJSynBasic.env().start(mOnTime);
+            mInstrumentJSynBasic.env().stop(mOffTime);
+            mInstrumentJSynBasic.trigger();
         }
     }
 
@@ -108,14 +103,7 @@ public class SynthesizerJSyn extends Synthesizer {
         if (USE_AMP_FRACTION) {
             mAmp /= (float) NUMBERS_OF_INSTRUMENTS;
         }
-        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSyn) {
-            InstrumentJSyn mInstrument = (InstrumentJSyn) mInstruments.get(getInstrumentID());
-            mInstrument.noteOn(mFreq, mAmp);
-        }
-        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSynAdv) {
-            InstrumentJSynAdv mInstrument = (InstrumentJSynAdv) mInstruments.get(getInstrumentID());
-            mInstrument.noteOn(mFreq, mAmp);
-        }
+        getInstrument(getInstrumentID()).noteOn(mFreq, mAmp);
     }
 
     public void noteOff(int pNote) {
@@ -124,17 +112,17 @@ public class SynthesizerJSyn extends Synthesizer {
 
     public void noteOff() {
         mIsPlaying = false;
-        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSyn) {
-            InstrumentJSyn mInstrument = (InstrumentJSyn) mInstruments.get(getInstrumentID());
-            mInstrument.noteOff();
-        }
-        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSynAdv) {
-            InstrumentJSynAdv mInstrument = (InstrumentJSynAdv) mInstruments.get(getInstrumentID());
-            mInstrument.noteOff();
-        }
+        getInstrument(getInstrumentID()).noteOff();
+//        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSyn) {
+//        }
+//        if (mInstruments.get(getInstrumentID()) instanceof InstrumentJSynFilterLFO) {
+//            InstrumentJSynFilterLFO mInstrument = (InstrumentJSynFilterLFO) mInstruments.get(getInstrumentID());
+//            mInstrument.noteOff();
+//        }
     }
 
-    public void controller(int pCC, int pValue) {
+    public void control_change(int pCC, int pValue) {
+        // not used in jsyn synthesizer
     }
 
     public void pitch_bend(int pValue) {
@@ -153,11 +141,31 @@ public class SynthesizerJSyn extends Synthesizer {
     }
 
     public Instrument instrument() {
-        return instruments().get(mInstrumentID);
+        return mInstruments.get(mInstrumentID);
     }
 
-    public ArrayList<Instrument> instruments() {
+    public ArrayList<? extends Instrument> instruments() {
         return mInstruments;
+    }
+
+    public InstrumentJSyn getInstrument(int pInstrumentID) {
+        return mInstruments.get(mInstrumentID);
+    }
+
+    public InstrumentJSynBasic getInstrumentBasic(int pInstrumentID) {
+        if (mInstruments.get(mInstrumentID) instanceof InstrumentJSynBasic) {
+            return (InstrumentJSynBasic) mInstruments.get(mInstrumentID);
+        } else {
+            return null;
+        }
+    }
+
+    public InstrumentJSynFilterLFO getInstrumentFilterLFO(int pInstrumentID) {
+        if (mInstruments.get(mInstrumentID) instanceof InstrumentJSynFilterLFO) {
+            return (InstrumentJSynFilterLFO) mInstruments.get(mInstrumentID);
+        } else {
+            return null;
+        }
     }
 
     private int getInstrumentID() {

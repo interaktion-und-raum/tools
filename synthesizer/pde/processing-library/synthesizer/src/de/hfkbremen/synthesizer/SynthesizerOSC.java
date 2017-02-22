@@ -50,7 +50,7 @@ public class SynthesizerOSC extends Synthesizer {
         noteOff(-1);
     }
 
-    public void controller(int pCC, int pValue) {
+    public void control_change(int pCC, int pValue) {
     }
 
     public void pitch_bend(int pValue) {
@@ -69,7 +69,7 @@ public class SynthesizerOSC extends Synthesizer {
         return null;
     }
 
-    public ArrayList<Instrument> instruments() {
+    public ArrayList<? extends Instrument> instruments() {
         return null;
     }
 

@@ -1,7 +1,7 @@
 import de.hfkbremen.synthesizer.*;
 import controlP5.*;
 
-final Synthesizer mSynth = Synthesizer.getSynth("jsyn-adv");
+final Synthesizer mSynth = Synthesizer.getSynth("jsyn-filter+lfo");
 Beat mBeat;
 final int[] mSteps = {0, 0, 5, 5, 0, 0, 3, 3, 0, 0, 4, 4, 1, 2, 3, 4};
 int mColor = 0;
