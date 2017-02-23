@@ -11,6 +11,10 @@ a library for processing that acts as a simple adapter to various outputs like O
 
 ## releases
 
+### 2017022
+
+- added simple *jsyn instrument* as a blueprint for own instrument designs
+
 ### 20170220
 
 - intial commit

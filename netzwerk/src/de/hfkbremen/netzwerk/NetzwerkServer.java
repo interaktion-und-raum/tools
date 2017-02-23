@@ -6,31 +6,39 @@ import oscP5.OscMessage;
 import oscP5.OscP5;
 import processing.core.PApplet;
 
-import java.util.HashMap;
-
+import static de.hfkbremen.netzwerk.Netzwerk.SERVER_DEFAULT_SERVER_LISTENING_PORT;
 import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_CONNECT;
-import static de.hfkbremen.netzwerk.Netzwerk.SERVER_DEFAULT_BROADCAST_PORT;
+import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_CONNECT_SERVER;
+import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_CONNECT_SERVER_TO_SERVER;
 import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_DISCONNECT;
+import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_PING;
+import static de.hfkbremen.netzwerk.Netzwerk.SERVER_PATTERN_SERVER_TO_SERVER_COMM;
 
 public class NetzwerkServer {
 
+    private static final int LOG_TYPE_MESSAGE = 0;
+    private static final int LOG_TYPE_WARNING = 1;
+    private static final int LOG_TYPE_ERROR = 2;
     public static boolean SHOW_LOG = true;
-    private final NetAddressList mNetAddressList = new NetAddressList();
+    private final NetAddressList mNetAddressListClients = new NetAddressList();
+    private final NetAddressList mNetAddressListServers = new NetAddressList();
     private final String mConnectPattern;
     private final String mDisconnectPattern;
     private final OscMessage[] mMessages;
-    private final HashMap<String, String> mAddressMap = new HashMap<>();
+    //    private final HashMap<String, String> mAddressMap = new HashMap<>();
     private final String mIP;
+    private final int mListeningPort;
     private int mMessagePtr;
     private OscP5 mOSC;
 
     public NetzwerkServer() {
-        this(SERVER_DEFAULT_BROADCAST_PORT, SERVER_PATTERN_CONNECT, SERVER_PATTERN_DISCONNECT);
+        this(SERVER_DEFAULT_SERVER_LISTENING_PORT);
     }
 
-    public NetzwerkServer(int pListeningPort, String pConnectPattern, String pDisconnectPattern) {
-        mConnectPattern = pConnectPattern;
-        mDisconnectPattern = pDisconnectPattern;
+    public NetzwerkServer(int pListeningPort) {
+        mListeningPort = pListeningPort;
+        mConnectPattern = SERVER_PATTERN_CONNECT;
+        mDisconnectPattern = SERVER_PATTERN_DISCONNECT;
 
         final int mMaxMessages = 32;
         mMessagePtr = 0;
@@ -39,11 +47,11 @@ public class NetzwerkServer {
             mMessages[i] = new OscMessage("");
         }
 
-        mOSC = new OscP5(this, pListeningPort);
+        mOSC = new OscP5(this, mListeningPort);
 
         mIP = mOSC.ip();
-        log("+++", "server is @ " + mIP + " + listening on port " + pListeningPort);
-        // todo write logfile of number if messages to HD / once a second
+        log(LOG_TYPE_MESSAGE, "server is @ " + mIP + " + listening on port " + mListeningPort);
+        // todo write logfile to HD / once a second
     }
 
     public String ip() {
@@ -51,9 +59,12 @@ public class NetzwerkServer {
     }
 
     public synchronized void purge_clients() {
-        mAddressMap.clear();
-        for (int i = 0; i < mNetAddressList.size(); i++) {
-            disconnect(mNetAddressList.get(i).address(), mNetAddressList.get(i).port());
+//        mAddressMap.clear();
+        for (int i = 0; i < mNetAddressListClients.size(); i++) {
+            disconnect_client(mNetAddressListClients.get(i).address(), mNetAddressListClients.get(i).port());
+        }
+        for (int i = 0; i < mNetAddressListServers.size(); i++) {
+            disconnect_server(mNetAddressListServers.get(i).address(), mNetAddressListServers.get(i).port());
         }
     }
 
@@ -67,71 +78,116 @@ public class NetzwerkServer {
     }
 
     public NetAddressList clients() {
-        return mNetAddressList;
+        return mNetAddressListClients;
     }
 
     public synchronized void oscEvent(OscMessage m) {
+        /* store copy of message */
+        mMessages[mMessagePtr] = new OscMessage(m);
+        mMessagePtr++;
+        mMessagePtr %= mMessages.length;
+
         /* check if the address pattern fits any of our patterns, accepting `int` and `float` as typetag */
-        if (m.checkAddrPattern(Netzwerk.SERVER_PATTERN_PING) && m.checkTypetag("i")) {
+        if (m.checkAddrPattern(SERVER_PATTERN_PING) && m.checkTypetag("i")) {
             NetAddress mNetAddress = new NetAddress(m.netAddress().address(), m.get(0).intValue());
             mOSC.send(m, mNetAddress);
-        } else if (m.checkAddrPattern(Netzwerk.SERVER_PATTERN_CONNECT_SERVER) && m.checkTypetag("s")) {
-            System.err.println("### this server should connect to another server with the address: " + m.get(0).stringValue());
+        } else if (m.checkAddrPattern(SERVER_PATTERN_CONNECT_SERVER_TO_SERVER) && m.checkTypetag("i")) {
+            int mRemoteServerPort = m.get(0).intValue();
+            String mRemoteServerIP = m.netAddress().address();
+            log(LOG_TYPE_MESSAGE,
+                "remote server requesting to connect from " + mRemoteServerIP + ":" + mRemoteServerPort);
+        } else if (m.checkAddrPattern(SERVER_PATTERN_CONNECT_SERVER) && m.checkTypetag("si")) {
+            String mServerIP = m.get(0).stringValue();
+            int mServerPort = m.get(1).intValue();
+            log(LOG_TYPE_MESSAGE, "trying to connect to remote server " + mServerIP + ":" + mServerPort);
+            if (mServerIP.equals(mIP) && mServerPort == mListeningPort) {
+                log(LOG_TYPE_ERROR, "should not connect server to itself ( same IP:port ).");
+            } else {
+                OscMessage mMessage = new OscMessage(SERVER_PATTERN_CONNECT_SERVER_TO_SERVER);
+                mMessage.add(mListeningPort);
+                NetAddress mNetAddress = new NetAddress(mServerIP, mServerPort);
+                mOSC.send(mMessage, mNetAddress);
+                connect_server(mServerIP, mServerPort);
+            }
         } else if (m.checkAddrPattern(mConnectPattern) && m.checkTypetag("i")) {
-            connect(m.netAddress().address(), m.get(0).intValue());
+            connect_client(m.netAddress().address(), m.get(0).intValue());
         } else if (m.checkAddrPattern(mDisconnectPattern) && m.checkTypetag("i")) {
-            disconnect(m.netAddress().address(), m.get(0).intValue());
+            disconnect_client(m.netAddress().address(), m.get(0).intValue());
         } else {
             /*
              * if pattern matching was not successful, then broadcast the incoming
              * message to all addresses in the netAddresList.
              */
-            mOSC.send(m, mNetAddressList);
-
-            // @todo try to connect with first message
-            /* try to connect name and IP:port */
-            //            System.out.println("### trying to connect name and IP:port.");
-            //            /* check if the message has a name+tag. if yes check the the 'name' matches with an IP in the address map */
-            //            final String mAddress = pOscMessage.netAddress().address() + ":" + pOscMessage.netAddress().port();
-            //            String mValue = mAddressMap.get(mAddress);
-            //            if (mValue == null) {
-            //                System.out.println("### address not yet in address map");
-            //                mAddressMap.put(mAddress, "foobar");
-            //            } else {
-            //                System.out.println("### found " + mValue + "in address map.");
-            //            }
+            /* if message from remote server then chop off pattern else send to server */
+            if (m.addrPattern().startsWith(SERVER_PATTERN_SERVER_TO_SERVER_COMM)) {
+                m.setAddrPattern(m.addrPattern().substring(SERVER_PATTERN_SERVER_TO_SERVER_COMM.length()));
+            } else {
+                mOSC.send(m, mNetAddressListServers);
+            }
+            mOSC.send(m, mNetAddressListClients);
         }
-
-        /* store messages */
-        mMessages[mMessagePtr] = m;
-        mMessagePtr++;
-        mMessagePtr %= mMessages.length;
     }
 
-    private void connect(String theIPaddress, int pBroadcastPort) {
-        if (!mNetAddressList.contains(theIPaddress, pBroadcastPort)) {
-            mNetAddressList.add(new NetAddress(theIPaddress, pBroadcastPort));
-            log("###", "adding " + theIPaddress + " to list.");
+    private void connect_client(String theIPaddress, int pBroadcastPort) {
+        if (!mNetAddressListClients.contains(theIPaddress, pBroadcastPort)) {
+            mNetAddressListClients.add(new NetAddress(theIPaddress, pBroadcastPort));
+            log(LOG_TYPE_MESSAGE, "adding client " + theIPaddress + ":" + pBroadcastPort + " to list.");
         } else {
-            log("---", theIPaddress + " is already connected.");
+            log(LOG_TYPE_ERROR, theIPaddress + " is already connected.");
         }
-        log("###", "currently there are " + mNetAddressList.list().size() + " remote locations connected.");
-        log("###", mNetAddressList.list() + "");
+        log(LOG_TYPE_MESSAGE,
+            "currently there are " + mNetAddressListClients.list().size() + " remote locations connected.");
+        log(LOG_TYPE_MESSAGE, mNetAddressListClients.list().toString());
     }
 
-    private void disconnect(String theIPaddress, int pBroadcastPort) {
-        if (mNetAddressList.contains(theIPaddress, pBroadcastPort)) {
-            mNetAddressList.remove(theIPaddress, pBroadcastPort);
-            log("###", "removing " + theIPaddress + " from list.");
+    private void disconnect_client(String theIPaddress, int pBroadcastPort) {
+        if (mNetAddressListClients.contains(theIPaddress, pBroadcastPort)) {
+            mNetAddressListClients.remove(theIPaddress, pBroadcastPort);
+            log(LOG_TYPE_MESSAGE, "removing client " + theIPaddress + ":" + pBroadcastPort + " from list.");
         } else {
-            log("---", theIPaddress + " is not connected.");
+            log(LOG_TYPE_ERROR, theIPaddress + " is not connected.");
         }
-        log("###", "currently there are " + mNetAddressList.list().size() + " remote locations connected.");
+        log(LOG_TYPE_MESSAGE,
+            "currently there are " + mNetAddressListClients.list().size() + " remote locations connected.");
     }
 
-    private void log(String p, String m) {
+    private void connect_server(String theIPaddress, int pBroadcastPort) {
+        if (!mNetAddressListServers.contains(theIPaddress, pBroadcastPort)) {
+            mNetAddressListServers.add(new NetAddress(theIPaddress, pBroadcastPort));
+            log(LOG_TYPE_MESSAGE, "adding server " + theIPaddress + " to list.");
+        } else {
+            log(LOG_TYPE_ERROR, theIPaddress + " is already connected.");
+        }
+        log(LOG_TYPE_MESSAGE,
+            "currently there are " + mNetAddressListServers.list().size() + " remote servers connected.");
+        log(LOG_TYPE_MESSAGE, mNetAddressListServers.list().toString());
+    }
+
+    private void disconnect_server(String theIPaddress, int pBroadcastPort) {
+        if (mNetAddressListServers.contains(theIPaddress, pBroadcastPort)) {
+            mNetAddressListServers.remove(theIPaddress, pBroadcastPort);
+            log(LOG_TYPE_MESSAGE, "removing server" + theIPaddress + " from list.");
+        } else {
+            log(LOG_TYPE_ERROR, theIPaddress + " is not connected.");
+        }
+        log(LOG_TYPE_MESSAGE,
+            "currently there are " + mNetAddressListServers.list().size() + " remote servers connected.");
+    }
+
+    private void log(int pLogType, String m) {
         if (SHOW_LOG) {
-            System.out.println(p + "\t" + m);
+            switch (pLogType) {
+                case LOG_TYPE_MESSAGE:
+                    System.out.print("###");
+                    break;
+                case LOG_TYPE_WARNING:
+                    System.out.print("+++");
+                    break;
+                case LOG_TYPE_ERROR:
+                    System.out.print("---");
+                    break;
+            }
+            System.out.println("\t" + m);
         }
     }
 

@@ -25,7 +25,7 @@ public class NetzwerkClient {
     private final Object mClientParent;
     private final NetzwerkClientListener mNetzwerkClientListener;
     private final String mIP;
-    private final int mPort;
+    private final int mListeningPort;
     private Method mMethodReceive1f;
     private Method mMethodReceive2f;
     private Method mMethodReceive3f;
@@ -41,11 +41,11 @@ public class NetzwerkClient {
                            int pClientListeningPort) {
         mClientParent = pClientParent;
         mNetzwerkClientListener = pNetzwerkClientListener;
-        mPort = pClientListeningPort;
+        mListeningPort = pClientListeningPort;
 
-        mOSC = new OscP5(this, mPort);
+        mOSC = new OscP5(this, mListeningPort);
         mIP = mOSC.ip();
-        log("+++", "client is @ " + mIP + " + sending on port " + mPort);
+        log("+++", "client is @ " + mIP + " + sending on port " + mListeningPort);
 
         mBroadcastLocation = new NetAddress(pServer, pServerListeningPort);
         mSenderName = pSenderName;
@@ -53,14 +53,14 @@ public class NetzwerkClient {
     }
 
     public NetzwerkClient(Object pClientParent, String pServer, String pSenderName) {
-        this(pClientParent, pServer, pSenderName, Netzwerk.SERVER_DEFAULT_BROADCAST_PORT, findAvailablePort());
+        this(pClientParent, pServer, pSenderName, Netzwerk.SERVER_DEFAULT_SERVER_LISTENING_PORT, findAvailablePort());
     }
 
     public NetzwerkClient(NetzwerkClientListener pNetzwerkClientListener, String pServer, String pSenderName) {
         this(pNetzwerkClientListener,
              pServer,
              pSenderName,
-             Netzwerk.SERVER_DEFAULT_BROADCAST_PORT,
+             Netzwerk.SERVER_DEFAULT_SERVER_LISTENING_PORT,
              findAvailablePort());
     }
 
@@ -139,7 +139,7 @@ public class NetzwerkClient {
     }
 
     public int port() {
-        return mPort;
+        return mListeningPort;
     }
 
     private static boolean available(int port) {
@@ -169,26 +169,27 @@ public class NetzwerkClient {
 
     public void connect() {
         OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_CONNECT);
-        m.add(mPort);
+        m.add(mListeningPort);
         // todo       // System.out.println("### also connect with a name `m.add(mSenderName`); so that IPs can be mapped to names.");
         mOSC.send(m, mBroadcastLocation);
     }
 
     public void disconnect() {
         OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_DISCONNECT);
-        m.add(mPort);
+        m.add(mListeningPort);
         mOSC.send(m, mBroadcastLocation);
     }
 
     public void ping() {
         OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_PING);
-        m.add(mPort);
+        m.add(mListeningPort);
         mOSC.send(m, mBroadcastLocation);
     }
 
-    public void connect_server(String address) {
+    public void connect_server(String address, int port) {
         OscMessage m = new OscMessage(Netzwerk.SERVER_PATTERN_CONNECT_SERVER);
         m.add(address);
+        m.add(port);
         mOSC.send(m, mBroadcastLocation);
     }
 
@@ -232,7 +233,7 @@ public class NetzwerkClient {
     public void send_direct(String IP, String tag, float x) {
         OscMessage m = new OscMessage(getAddressPattern(tag));
         m.add(x);
-        NetAddress mLocal = new NetAddress(IP, mPort);
+        NetAddress mLocal = new NetAddress(IP, mListeningPort);
         OscP5.flush(m, mLocal);
     }
 
@@ -240,7 +241,7 @@ public class NetzwerkClient {
         OscMessage m = new OscMessage(getAddressPattern(tag));
         m.add(x);
         m.add(y);
-        NetAddress mLocal = new NetAddress(IP, mPort);
+        NetAddress mLocal = new NetAddress(IP, mListeningPort);
         OscP5.flush(m, mLocal);
     }
 
@@ -249,14 +250,14 @@ public class NetzwerkClient {
         m.add(x);
         m.add(y);
         m.add(z);
-        NetAddress mLocal = new NetAddress(IP, mPort);
+        NetAddress mLocal = new NetAddress(IP, mListeningPort);
         OscP5.flush(m, mLocal);
     }
 
     public void send_direct(String IP, String tag, String message) {
         OscMessage m = new OscMessage(getAddressPattern(tag));
         m.add(message);
-        NetAddress mLocal = new NetAddress(IP, mPort);
+        NetAddress mLocal = new NetAddress(IP, mListeningPort);
         OscP5.flush(m, mLocal);
     }
 

@@ -68,6 +68,7 @@ there are other methods for sending messages as well
 - `sneak()` : sends a message only to *localhost* ( the client itself )
 - `send_raw()` : sends a raw OSC message
 - `receive_raw()` : receives a raw OSC message
+- `ping()` : sends/receives a ping from/to server
 
 ## dependencies
 
@@ -75,6 +76,10 @@ there are other methods for sending messages as well
 - [controlP5](http://dm-hb.de/da)
 
 ## releases
+
+### 20170223
+
+- client can now connect server to other servers
 
 ### 20170218
 
@@ -90,6 +95,4 @@ there are other methods for sending messages as well
 
 ## feature requests
 
-- @NetzwerkServer connect servers to other servers
-- @NetzwerkServer auto-connect client to server when sending first message @maybe
 - @NetzwerkServer add timestamp and message_type ( broadcast, server ) to log
