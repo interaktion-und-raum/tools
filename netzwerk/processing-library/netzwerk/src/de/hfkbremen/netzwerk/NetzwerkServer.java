@@ -122,7 +122,11 @@ public class NetzwerkServer {
             if (m.addrPattern().startsWith(SERVER_PATTERN_SERVER_TO_SERVER_COMM)) {
                 m.setAddrPattern(m.addrPattern().substring(SERVER_PATTERN_SERVER_TO_SERVER_COMM.length()));
             } else {
-                mOSC.send(m, mNetAddressListServers);
+                if (mNetAddressListServers.size() > 0) {
+                    OscMessage mMessageS2S = new OscMessage(m);
+                    mMessageS2S.setAddrPattern(SERVER_PATTERN_SERVER_TO_SERVER_COMM + m.addrPattern());
+                    mOSC.send(mMessageS2S, mNetAddressListServers);
+                }
             }
             mOSC.send(m, mNetAddressListClients);
         }
