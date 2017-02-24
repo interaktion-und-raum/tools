@@ -12,7 +12,7 @@ void draw() {
     background(mSynth.isPlaying() ? 255 : 0);
 }
 void mousePressed() {
-    int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A3, (int) random(0, 10));
+    int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A3, (int) random(0, 10));
     mSynth.noteOn(mNote, 127);
 }
 void mouseReleased() {

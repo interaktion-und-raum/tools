@@ -28,20 +28,20 @@ public class SynthesizerMinim extends Synthesizer {
         for (int i = 0; i < NUMBERS_OF_INSTRUMENTS; i++) {
             mInstruments.add(new InstrumentMinim(mMinim, i));
             mInstruments.get(i).osc_type(i % NUMBER_OF_OSCILLATORS);
-            ((InstrumentMinim) mInstruments.get(i)).amp(1.0f);
+            ((InstrumentMinim) mInstruments.get(i)).set_amp(1.0f);
         }
     }
 
-    public void noteOn(int pNote, int pVelocity, float pDuration) {
-        noteOn(pNote, pVelocity);
+    public void noteOn(int note, int velocity, float duration) {
+        noteOn(note, velocity);
         TimerTask mTask = new NoteOffTask();
-        mTimer.schedule(mTask, (long) (pDuration * 1000));
+        mTimer.schedule(mTask, (long) (duration * 1000));
     }
 
-    public void noteOn(int pNote, int pVelocity) {
+    public void noteOn(int note, int velocity) {
         mIsPlaying = true;
-        final float mFreq = note_to_frequency(clamp127(pNote));
-        float mAmp = clamp127(pVelocity) / 127.0f;
+        final float mFreq = note_to_frequency(clamp127(note));
+        float mAmp = clamp127(velocity) / 127.0f;
         if (USE_AMP_FRACTION) {
             mAmp /= (float) NUMBERS_OF_INSTRUMENTS;
         }
@@ -51,7 +51,7 @@ public class SynthesizerMinim extends Synthesizer {
         }
     }
 
-    public void noteOff(int pNote) {
+    public void noteOff(int note) {
         noteOff();
     }
 

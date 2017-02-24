@@ -15,7 +15,7 @@ public class SketchExample21SendingDirectMessages extends PApplet {
 
     public void setup() {
         mClient = new NetzwerkClient(this, "", "client");
-        /* no need to connect to a server, when messages are send directly */
+        /* no need to connect to a server, when messages are sent directly */
     }
 
     public void draw() {

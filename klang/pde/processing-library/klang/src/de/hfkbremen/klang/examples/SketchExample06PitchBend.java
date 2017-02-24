@@ -1,5 +1,6 @@
 package de.hfkbremen.klang.examples;
 
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
@@ -21,7 +22,7 @@ public class SketchExample06PitchBend extends PApplet {
     }
 
     public void mousePressed() {
-        int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A3, (int) random(0, 10));
+        int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A3, (int) random(0, 10));
         mSynth.noteOn(mNote, 127);
     }
 

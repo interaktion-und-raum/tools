@@ -8,12 +8,14 @@ import processing.core.PConstants;
 
 public final class SynthUtil {
 
+    private static final int NOTE_OFFSET = (69 - 12);
+
     public static float note_to_frequency(int pMidiNote, float pBaseFreq) {
         return pBaseFreq * (float) Math.pow(2.0, (pMidiNote / 12.0));
     }
 
     public static float note_to_frequency(int pMidiNote) {
-        return note_to_frequency(pMidiNote - 69, 440); // A4 440 Hz
+        return note_to_frequency(pMidiNote - NOTE_OFFSET, 440); // A4 440 Hz
     }
 
     public static String note_to_string(int noteNum) {
@@ -23,12 +25,11 @@ public final class SynthUtil {
 
         octave = noteNum / 12 - 1;
         note = notes.substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
-        String mNoteName = PApplet.trim(note) + "" + octave;
-        return mNoteName;
+        return PApplet.trim(note) + octave;
     }
 
     public static int frequency_to_note(int pFreq) {
-        return frequency_to_note(pFreq, 440, 69);
+        return frequency_to_note(pFreq, 440, NOTE_OFFSET);
     }
 
     public static int frequency_to_note(int pFreq, float pBaseFreq, int pOffset) {
@@ -72,7 +73,7 @@ public final class SynthUtil {
                                                    mListWidth,
                                                    mListHeight);
 
-//        dl.toUpperCase(true);
+        //        dl.toUpperCase(true);
         dl.setItemHeight(16);
         dl.setBarHeight(16);
         dl.getCaptionLabel().align(PConstants.LEFT, PConstants.CENTER);

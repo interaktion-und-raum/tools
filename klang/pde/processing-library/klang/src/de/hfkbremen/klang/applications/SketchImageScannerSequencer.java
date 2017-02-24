@@ -2,6 +2,7 @@ package de.hfkbremen.klang.applications;
 
 import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.Instrument;
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerJSyn;
@@ -140,7 +141,7 @@ public class SketchImageScannerSequencer extends PApplet {
         }
         float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
         final int mSteps = 10;
-        final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A2, (int) (mBrightnessNorm * mSteps));
+        final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) (mBrightnessNorm * mSteps));
         if (mNote != mLastNote) {
             mSynth.noteOn(mNote, 127);
         }

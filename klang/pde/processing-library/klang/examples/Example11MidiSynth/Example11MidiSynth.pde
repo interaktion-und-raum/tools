@@ -3,7 +3,7 @@ import controlP5.*;
 
 Synthesizer mSynth;
 boolean mIsPlaying = false;
-int mNote = Scale.NOTE_A2;
+int mNote = Note.NOTE_A2;
 int mInstrument = 0;
 void settings() {
     size(640, 480);
@@ -15,7 +15,7 @@ void setup() {
 }
 void draw() {
     if (mIsPlaying) {
-        int mColor = (mNote - Scale.NOTE_A2) * 5 + 50;
+        int mColor = (mNote - Note.NOTE_A2) * 5 + 50;
         background(mColor);
     } else {
         background(255);
@@ -27,7 +27,7 @@ void mouseMoved() {
 }
 void keyPressed() {
     if (!mIsPlaying) {
-        mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A2, (int) random(0, 10));
+        mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) random(0, 10));
         mSynth.instrument(mInstrument);
         mSynth.noteOn(mNote, 127);
     } else {

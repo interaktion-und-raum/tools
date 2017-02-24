@@ -1,6 +1,7 @@
 package de.hfkbremen.klang.examples;
 
 import de.hfkbremen.klang.Instrument;
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerJSyn;
@@ -38,7 +39,7 @@ public class SketchExample05ADSR extends PApplet {
 
     public void draw() {
         if (mIsPlaying) {
-            int mColor = (mNote - Scale.NOTE_A2) * 5 + 50;
+            int mColor = (mNote - Note.NOTE_A2) * 5 + 50;
             background(mColor);
         } else {
             background(255);
@@ -54,7 +55,7 @@ public class SketchExample05ADSR extends PApplet {
             if (mIsPlaying) {
                 mSynth.noteOff();
             } else {
-                mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A2, (int) random(0, 10));
+                mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) random(0, 10));
                 mSynth.noteOn(mNote, 127);
             }
             mIsPlaying = !mIsPlaying;

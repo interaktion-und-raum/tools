@@ -2,7 +2,7 @@ package de.hfkbremen.klang.applications;
 
 import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.Instrument;
-import de.hfkbremen.klang.Scale;
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerJSyn;
 import processing.core.PApplet;
@@ -38,19 +38,19 @@ public class SketchAlgorithmicComposition extends PApplet {
 
     public void play() {
         if (mBeatCounter % 2 == 0) {
-            mSynth.noteOn(Scale.NOTE_A2 + (mBeatCounter % 4) * 3, 100);
+            mSynth.noteOn(Note.NOTE_A2 + (mBeatCounter % 4) * 3, 100);
         }
         if (mBeatCounter % 8 == 0) {
-            mSynth.noteOn(Scale.NOTE_A3, 100);
+            mSynth.noteOn(Note.NOTE_A3, 100);
         }
         if (mBeatCounter % 32 == 0) {
-            mSynth.noteOn(Scale.NOTE_A4, 100);
+            mSynth.noteOn(Note.NOTE_A4, 100);
         }
         if (mBeatCounter % 11 == 0) {
-            mSynth.noteOn(Scale.NOTE_C4, 100);
+            mSynth.noteOn(Note.NOTE_C4, 100);
         }
         if (mBeatCounter % 13 == 0) {
-            mSynth.noteOn(Scale.NOTE_C5, 100);
+            mSynth.noteOn(Note.NOTE_C5, 100);
         }
     }
 

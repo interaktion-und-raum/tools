@@ -1,8 +1,6 @@
 package de.hfkbremen.klang;
 
 import com.jsyn.data.SegmentedEnvelope;
-import com.jsyn.engine.SynthesisEngine;
-import com.jsyn.unitgen.LineOut;
 import com.jsyn.unitgen.SawtoothOscillator;
 import com.jsyn.unitgen.SineOscillator;
 import com.jsyn.unitgen.SquareOscillator;
@@ -14,7 +12,7 @@ import com.jsyn.unitgen.WhiteNoise;
 import com.softsynth.shared.time.TimeStamp;
 import controlP5.ControlElement;
 
-public class InstrumentJSynBasic extends InstrumentJSyn {
+public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
 
     protected VariableRateMonoReader mEnvPlayer;
     protected SegmentedEnvelope mEnvData;
@@ -22,20 +20,20 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
     private boolean mDumpWarningLFO = true;
     private boolean mDumpWarningFILTER = true;
 
-    public InstrumentJSynBasic(SynthesisEngine pSynth, LineOut pLineOut, int pName) {
-        super(pSynth, pLineOut, pName);
+    public InstrumentJSynOscillatorADSR(SynthesizerJSyn mSynthesizerJSyn, int pID) {
+        super(mSynthesizerJSyn, pID);
     }
 
     protected void setupModules() {
         if (mEnvPlayer == null) {
-            update_data();
+            update_env_data();
             mEnvPlayer = new VariableRateMonoReader();
             mSynth.add(mEnvPlayer);
             mEnvPlayer.start();
         }
     }
 
-    protected void connectOsc(UnitGenerator o) {
+    protected void connectModules(UnitGenerator o) {
         setupModules();
         mSynth.add(o);
         if (o instanceof UnitOscillator) {
@@ -54,7 +52,7 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
         }
     }
 
-    protected void disconnectOsc(UnitGenerator o) {
+    protected void disconnectModules(UnitGenerator o) {
         o.stop();
         if (o instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) o;
@@ -72,25 +70,6 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
         mSynth.remove(o);
     }
 
-    public void noteOff() {
-        mEnvPlayer.dataQueue.queueOff(mEnvData, true, new TimeStamp(mSynth.getCurrentTime()));
-    }
-
-    public void noteOn(float pFreq, float pAmp) {
-        update_data();
-        mEnvData.setSustainBegin(2);
-        mEnvData.setSustainEnd(2);
-        TimeStamp mTimeStamp = new TimeStamp(mSynth.getCurrentTime());
-        mFreq = pFreq;
-        update_freq();
-//        if (mOsc instanceof UnitOscillator) {
-//            UnitOscillator uo = (UnitOscillator) mOsc;
-//            uo.frequency.set(frequency);
-//        }
-        mEnvPlayer.amplitude.set(pAmp, mTimeStamp);
-        mEnvPlayer.dataQueue.queueOn(mEnvData, mTimeStamp);
-    }
-
     public void update_freq() {
         if (mOsc instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) mOsc;
@@ -98,7 +77,7 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
         }
     }
 
-    public void amp(float pAmp) {
+    public void set_amp(float pAmp) {
         mAmp = pAmp;
         if (mOsc instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) mOsc;
@@ -109,24 +88,24 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
         }
     }
 
-    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
-    public void attack(float pAttack) {
-        super.attack(pAttack);
+    public void set_freq(float freq) {
+        mFreq = freq;
+        update_freq();
     }
 
-    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 50, y = 0)
-    public void decay(float pDecay) {
-        super.decay(pDecay);
+    public void noteOff() {
+        mEnvPlayer.dataQueue.queueOff(mEnvData, true, new TimeStamp(mSynth.getCurrentTime()));
     }
 
-    @ControlElement(properties = {"min=0.0", "max=1.0", "type=knob", "radius=20", "resolution=100"}, x = 100, y = 0)
-    public void sustain(float pSustain) {
-        super.sustain(pSustain);
-    }
-
-    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 150, y = 0)
-    public void release(float pRelease) {
-        super.release(pRelease);
+    public void noteOn(float pFreq, float pAmp) {
+        update_env_data();
+        mEnvData.setSustainBegin(2);
+        mEnvData.setSustainEnd(2);
+        mFreq = pFreq;
+        update_freq();
+        TimeStamp mTimeStamp = new TimeStamp(mSynth.getCurrentTime());
+        mEnvPlayer.amplitude.set(pAmp, mTimeStamp);
+        mEnvPlayer.dataQueue.queueOn(mEnvData, mTimeStamp);
     }
 
     @ControlElement(properties = {"min=0.0",
@@ -135,7 +114,7 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
                                   "radius=20",
                                   "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
     public void osc_type(int pOsc) {
-        disconnectOsc(mOsc);
+        disconnectModules(mOsc);
         /*
          SINE,
          TRIANGLE,
@@ -160,7 +139,7 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
                 mOsc = new WhiteNoise();
                 break;
         }
-        connectOsc(mOsc);
+        connectModules(mOsc);
     }
 
     public int get_osc_type() {
@@ -236,12 +215,27 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
         update_freq();
     }
 
-    public void set_freq(float freq) {
-        mFreq = freq;
-        update_freq();
+    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
+    public void attack(float pAttack) {
+        super.attack(pAttack);
     }
 
-    protected void update_data() {
+    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 50, y = 0)
+    public void decay(float pDecay) {
+        super.decay(pDecay);
+    }
+
+    @ControlElement(properties = {"min=0.0", "max=1.0", "type=knob", "radius=20", "resolution=100"}, x = 100, y = 0)
+    public void sustain(float pSustain) {
+        super.sustain(pSustain);
+    }
+
+    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 150, y = 0)
+    public void release(float pRelease) {
+        super.release(pRelease);
+    }
+
+    protected void update_env_data() {
         double[] mData = {mAttack, 1.0 * mAmp, // get_attack
                           mDecay, // get_decay
                           mSustain * mAmp, // get_sustain
@@ -252,7 +246,7 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
 
     public void trigger() {
         mEnvPlayer.dataQueue.clear();
-        update_data();
+        update_env_data();
         mEnvPlayer.dataQueue.queue(mEnvData, 0, mEnvData.getNumFrames());
     }
 

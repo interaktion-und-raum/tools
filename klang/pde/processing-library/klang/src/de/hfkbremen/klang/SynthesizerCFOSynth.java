@@ -102,16 +102,16 @@ public class SynthesizerCFOSynth extends Synthesizer {
         return mCurrentlyPlayingNote;
     }
 
-    public void noteOn(int pNote, int pVelocity, float pDuration) {
-        sendNoteOn(pNote, pVelocity);
+    public void noteOn(int note, int velocity, float duration) {
+        sendNoteOn(note, velocity);
     }
 
-    public void noteOn(int pNote, int pVelocity) {
-        sendNoteOn(pNote, pVelocity);
+    public void noteOn(int note, int velocity) {
+        sendNoteOn(note, velocity);
     }
 
-    public void noteOff(int pNote) {
-        sendNoteOff(pNote, 0);
+    public void noteOff(int note) {
+        sendNoteOff(note, 0);
     }
 
     public void noteOff() {

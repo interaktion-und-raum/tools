@@ -57,7 +57,7 @@ void beat(int pBeat) {
         mSynth.instrument(i);
         int mStep = mSteps[i][pBeat % mSteps[i].length];
         if (mStep == I) {
-            int mNote = Scale.note(Scale.HALF_TONE, Scale.NOTE_C3, mStep);
+            int mNote = Scale.note(Scale.HALF_TONE, Note.NOTE_C3, mStep);
             mSynth.noteOn(mNote, 127);
         } else {
             mSynth.noteOff();

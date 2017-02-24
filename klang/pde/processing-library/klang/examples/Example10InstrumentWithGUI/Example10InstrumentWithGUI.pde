@@ -18,8 +18,7 @@ void settings() {
     size(640, 480);
 }
 void setup() {
-//    mSynth = Synthesizer.getSynth("jsyn-filter+lfo"); // *jsyn-filter+lfo* features an LFO + a filter
-    mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_SIMPLE);
+    mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
     mSynth.instrument().osc_type(Instrument.SQUARE);
     mSynth.instrument().attack(0.01f);
     mSynth.instrument().decay(0.2f);
@@ -39,7 +38,7 @@ void draw() {
 void beat(int pBeat) {
     int mStep = mSteps[pBeat % mSteps.length];
     if (mStep != NO) {
-        int mNote = Scale.note(Scale.HALF_TONE, Scale.NOTE_C4, mStep);
+        int mNote = Scale.note(Scale.HALF_TONE, Note.NOTE_C4, mStep);
         mSynth.noteOn(mNote, 127);
     } else {
         mSynth.noteOff();

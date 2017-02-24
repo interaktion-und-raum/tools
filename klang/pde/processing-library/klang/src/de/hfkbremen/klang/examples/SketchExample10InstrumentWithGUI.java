@@ -3,6 +3,7 @@ package de.hfkbremen.klang.examples;
 import controlP5.ControlP5;
 import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.Instrument;
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerJSyn;
@@ -30,8 +31,7 @@ public class SketchExample10InstrumentWithGUI extends PApplet {
     }
 
     public void setup() {
-//        mSynth = Synthesizer.getSynth("jsyn-filter+lfo"); // *jsyn-filter+lfo* features an LFO + a filter
-        mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_SIMPLE);
+        mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
         mSynth.instrument().osc_type(Instrument.SQUARE);
         mSynth.instrument().attack(0.01f);
         mSynth.instrument().decay(0.2f);
@@ -55,7 +55,7 @@ public class SketchExample10InstrumentWithGUI extends PApplet {
     public void beat(int pBeat) {
         int mStep = mSteps[pBeat % mSteps.length];
         if (mStep != NO) {
-            int mNote = Scale.note(Scale.HALF_TONE, Scale.NOTE_C4, mStep);
+            int mNote = Scale.note(Scale.HALF_TONE, Note.NOTE_C4, mStep);
             mSynth.noteOn(mNote, 127);
         } else {
             mSynth.noteOff();

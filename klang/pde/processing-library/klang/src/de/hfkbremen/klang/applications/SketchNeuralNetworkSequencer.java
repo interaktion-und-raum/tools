@@ -2,6 +2,7 @@ package de.hfkbremen.klang.applications;
 
 import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.Instrument;
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
@@ -82,7 +83,7 @@ public class SketchNeuralNetworkSequencer extends PApplet {
     }
 
     Node node(float x, float y, int pNote) {
-        int mNote = Scale.note(Scale.MINOR_PENTATONIC, Scale.NOTE_C3, pNote);
+        int mNote = Scale.note(Scale.MINOR_PENTATONIC, Note.NOTE_C3, pNote);
         Node n = new Node(x, y, mNote);
         mNodes.add(n);
         return n;

@@ -3,10 +3,10 @@
 source config.build
 
 ROOT=$(pwd)
+BASE_COLOR=23
 C0=$(tput sgr0)
-C1=$(tput setaf 46)
-C2=$(tput setaf 22)
-# 22 28 34 40 46
+C1=$(tput setaf $(expr $BASE_COLOR + 72))
+C2=$(tput setaf $BASE_COLOR)
 
 printJob()
 {

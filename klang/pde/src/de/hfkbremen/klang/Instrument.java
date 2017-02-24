@@ -23,7 +23,7 @@ public abstract class Instrument {
                                               + "    [A   ][D][S   ][R]\n";
 
     /**
-     * time parameter defining the time it takes for the amp to reach maximum
+     * time parameter defining the time it takes for the set_amp to reach maximum
      * level.
      */
     protected float mAttack = DEFAULT_ATTACK;
@@ -41,7 +41,7 @@ public abstract class Instrument {
     protected float mSustain = DEFAULT_SUSTAIN;
 
     /**
-     * time parameter defining the time it takes for the amp to reach zero after
+     * time parameter defining the time it takes for the set_amp to reach zero after
      * note is off.
      */
     protected float mRelease = DEFAULT_RELEASE;

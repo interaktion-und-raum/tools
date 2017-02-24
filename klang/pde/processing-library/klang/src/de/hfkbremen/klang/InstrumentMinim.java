@@ -30,7 +30,7 @@ public class InstrumentMinim extends Instrument {
         adsr.patch(out);
     }
 
-    private final void setADSR() {
+    private void setADSR() {
         adsr.setParameters(1.0f, mAttack, mDecay, mSustain, mRelease <= 0 ? 0.001f : mRelease, 0.0f, 0.0f);
     }
 
@@ -39,18 +39,18 @@ public class InstrumentMinim extends Instrument {
     }
 
     public void noteOn(float pFrequency, float pAmplitude) {
-        freq(pFrequency);
-        amp(pAmplitude);
+        set_freq(pFrequency);
+        set_amp(pAmplitude);
         setADSR();
         adsr.noteOn();
     }
 
-    public void freq(float pFreq) {
+    public void set_freq(float pFreq) {
         mFreq = pFreq;
         mOsc.setFrequency(mFreq);
     }
 
-    public void amp(float pAmp) {
+    public void set_amp(float pAmp) {
         mAmp = pAmp;
         mOsc.setAmplitude(mAmp);
     }
@@ -83,7 +83,7 @@ public class InstrumentMinim extends Instrument {
                                   "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
     public void osc_type(int pOsc) {
         System.out.println("minim pOsc: " + pOsc);
-        switch ((int) pOsc) {
+        switch (pOsc) {
             case SINE:
                 mOsc.setWaveform(Waves.SINE);
                 break;
@@ -103,7 +103,7 @@ public class InstrumentMinim extends Instrument {
     }
 
     public int get_osc_type() {
-        int mOscID = -1;
+        int mOscID;
         if (mOsc.getWaveform() == Waves.SINE) {
             mOscID = SINE;
         } else if (mOsc.getWaveform() == Waves.TRIANGLE) {

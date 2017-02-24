@@ -108,7 +108,7 @@ void beat(int pBeat) {
     }
     float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
     final int mSteps = 10;
-    final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A2, (int) (mBrightnessNorm * mSteps));
+    final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) (mBrightnessNorm * mSteps));
     if (mNote != mLastNote) {
         mSynth.noteOn(mNote, 127);
     }

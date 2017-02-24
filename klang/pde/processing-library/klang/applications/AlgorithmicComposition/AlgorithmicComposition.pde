@@ -24,19 +24,19 @@ void draw() {
 }
 void play() {
     if (mBeatCounter % 2 == 0) {
-        mSynth.noteOn(Scale.NOTE_A2 + (mBeatCounter % 4) * 3, 100);
+        mSynth.noteOn(Note.NOTE_A2 + (mBeatCounter % 4) * 3, 100);
     }
     if (mBeatCounter % 8 == 0) {
-        mSynth.noteOn(Scale.NOTE_A3, 100);
+        mSynth.noteOn(Note.NOTE_A3, 100);
     }
     if (mBeatCounter % 32 == 0) {
-        mSynth.noteOn(Scale.NOTE_A4, 100);
+        mSynth.noteOn(Note.NOTE_A4, 100);
     }
     if (mBeatCounter % 11 == 0) {
-        mSynth.noteOn(Scale.NOTE_C4, 100);
+        mSynth.noteOn(Note.NOTE_C4, 100);
     }
     if (mBeatCounter % 13 == 0) {
-        mSynth.noteOn(Scale.NOTE_C5, 100);
+        mSynth.noteOn(Note.NOTE_C5, 100);
     }
 }
 void beat(int pBeat) {

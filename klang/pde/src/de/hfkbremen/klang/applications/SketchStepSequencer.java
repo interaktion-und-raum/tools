@@ -2,6 +2,7 @@ package de.hfkbremen.klang.applications;
 
 import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.Instrument;
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
@@ -37,7 +38,7 @@ public class SketchStepSequencer extends PApplet {
 
     public void beat(int pBeat) {
         int mStep = mSteps[pBeat % mSteps.length]; // read current value from array
-        int mNote = Scale.note(Scale.MINOR_PENTATONIC, Scale.NOTE_C3, mStep); // compute note from step
+        int mNote = Scale.note(Scale.MINOR_PENTATONIC, Note.NOTE_C3, mStep); // compute note from step
         mSynth.noteOn(mNote, 127);
         mColor = mStep * 30 + 100; // compute background color from step
     }

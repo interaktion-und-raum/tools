@@ -9,7 +9,7 @@ void settings() {
 }
 void setup() {
     mClient = new NetzwerkClient(this, "", "client");
-    /* no need to connect to a server, when messages are send directly */
+    /* no need to connect to a server, when messages are sent directly */
 }
 void draw() {
     /* draw the last message received */

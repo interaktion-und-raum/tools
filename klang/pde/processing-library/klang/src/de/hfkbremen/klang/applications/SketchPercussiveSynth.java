@@ -2,6 +2,7 @@ package de.hfkbremen.klang.applications;
 
 import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.Instrument;
+import de.hfkbremen.klang.Note;
 import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
@@ -77,7 +78,7 @@ public class SketchPercussiveSynth extends PApplet {
             mSynth.instrument(i);
             int mStep = mSteps[i][pBeat % mSteps[i].length];
             if (mStep == I) {
-                int mNote = Scale.note(Scale.HALF_TONE, Scale.NOTE_C3, mStep);
+                int mNote = Scale.note(Scale.HALF_TONE, Note.NOTE_C3, mStep);
                 mSynth.noteOn(mNote, 127);
             } else {
                 mSynth.noteOff();

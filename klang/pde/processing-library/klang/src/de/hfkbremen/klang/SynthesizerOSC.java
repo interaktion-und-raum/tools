@@ -26,23 +26,23 @@ public class SynthesizerOSC extends Synthesizer {
         this("127.0.0.1");
     }
 
-    public void noteOn(int pNote, int pVelocity, float pDuration) {
-        noteOn(pNote, pVelocity);
+    public void noteOn(int note, int velocity, float duration) {
+        noteOn(note, velocity);
         TimerTask mTask = new NoteOffTask();
-        mTimer.schedule(mTask, (long) (pDuration * 1000));
+        mTimer.schedule(mTask, (long) (duration * 1000));
     }
 
-    public void noteOn(int pNote, int pVelocity) {
+    public void noteOn(int note, int velocity) {
         mIsPlaying = true;
         OscMessage m = new OscMessage("/note" + mChannel + "/on");
-        m.add(pNote);
+        m.add(note);
         mOscP5.send(m, mRemoteLocation);
     }
 
-    public void noteOff(int pNote) {
+    public void noteOff(int note) {
         mIsPlaying = false;
         OscMessage m = new OscMessage("/note" + mChannel + "/off");
-        m.add(pNote);
+        m.add(note);
         mOscP5.send(m, mRemoteLocation);
     }
 

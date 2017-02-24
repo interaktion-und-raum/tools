@@ -22,7 +22,7 @@ void mousePressed() {
 }
 void beat(int pBeat) {
     int mStep = mSteps[pBeat % mSteps.length]; // read current value from array
-    int mNote = Scale.note(Scale.MINOR_PENTATONIC, Scale.NOTE_C3, mStep); // compute note from step
+    int mNote = Scale.note(Scale.MINOR_PENTATONIC, Note.NOTE_C3, mStep); // compute note from step
     mSynth.noteOn(mNote, 127);
     mColor = mStep * 30 + 100; // compute background color from step
 }

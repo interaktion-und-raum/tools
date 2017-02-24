@@ -21,18 +21,18 @@ public class SynthesizerMidi extends Synthesizer {
         prepareExitHandler();
     }
 
-    public void noteOn(int pNote, int pVelocity, float pDuration) {
-        mTimer.schedule(new MidiTimerNoteOffTask(mMidiOut, mChannel, pNote, pVelocity), (int) pDuration * 1000);
-        noteOn(pNote, pVelocity);
+    public void noteOn(int note, int velocity, float duration) {
+        mTimer.schedule(new MidiTimerNoteOffTask(mMidiOut, mChannel, note, velocity), (int) duration * 1000);
+        noteOn(note, velocity);
     }
 
-    public void noteOn(int pNote, int pVelocity) {
-        mMidiOut.sendNoteOn(mChannel, pNote, pVelocity);
-        mLastPlayedNote = pNote;
+    public void noteOn(int note, int velocity) {
+        mMidiOut.sendNoteOn(mChannel, note, velocity);
+        mLastPlayedNote = note;
     }
 
-    public void noteOff(int pNote) {
-        mMidiOut.sendNoteOff(mChannel, pNote, 0);
+    public void noteOff(int note) {
+        mMidiOut.sendNoteOff(mChannel, note, 0);
         mLastPlayedNote = -1;
     }
 
