@@ -3,13 +3,18 @@
 source config.build
 
 ROOT=$(pwd)
+C0=$(tput sgr0)
+C1=$(tput setaf 46)
+C2=$(tput setaf 22)
+# 22 28 34 40 46
 
 printJob()
 {
 	echo ""
-	echo "################################"
-	echo "# "$1
-	echo "################################"
+	echo $C2"#########################################"
+	echo $C2"# "$C1$1
+	echo $C2"#########################################"
+	echo $C0
 }
 
 printJob "create folder"

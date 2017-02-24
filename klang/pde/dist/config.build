@@ -1,0 +1,2 @@
+LIB_NAME=klang
+IO_EXAMPLE_PATHS=( examples applications )

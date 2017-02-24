@@ -25,6 +25,6 @@ void keyPressed() {
         mClient.connect();
     }
     if (key == ' ') {
-        mClient.connect_server("192.168.1.6", 32001);
+        mClient.connect_server("itp2017.local", 32000);
     }
 }
