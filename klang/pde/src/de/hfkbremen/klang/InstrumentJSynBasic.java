@@ -16,29 +16,14 @@ import controlP5.ControlElement;
 
 public class InstrumentJSynBasic extends InstrumentJSyn {
 
-    //    protected final SynthesisEngine mSynth;
-//    protected final LineOut mLineOut;
     protected VariableRateMonoReader mEnvPlayer;
-    //    protected UnitGenerator mOsc;
     protected SegmentedEnvelope mEnvData;
-//    protected float mAmp = 0.9f;
-//    protected float mFreq = 0.0f;
-//    protected float mFreqOffset = 0.0f;
 
     private boolean mDumpWarningLFO = true;
     private boolean mDumpWarningFILTER = true;
 
     public InstrumentJSynBasic(SynthesisEngine pSynth, LineOut pLineOut, int pName) {
         super(pSynth, pLineOut, pName);
-//        mSynth = pSynth;
-//        mLineOut = pLineOut;
-
-//        mEnvPlayer = new VariableRateMonoReader();
-//        mSynth.add(mEnvPlayer);
-//        mEnvPlayer.start();
-
-//        mOsc = new SineOscillator();
-//        connectOsc(mOsc);
     }
 
     protected void setupModules() {
@@ -124,12 +109,12 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
         }
     }
 
-    @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
+    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
     public void attack(float pAttack) {
         super.attack(pAttack);
     }
 
-    @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 50, y = 0)
+    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 50, y = 0)
     public void decay(float pDecay) {
         super.decay(pDecay);
     }
@@ -139,7 +124,7 @@ public class InstrumentJSynBasic extends InstrumentJSyn {
         super.sustain(pSustain);
     }
 
-    @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 150, y = 0)
+    @ControlElement(properties = {"min=0.0", "max=2.0", "type=knob", "radius=20", "resolution=1000"}, x = 150, y = 0)
     public void release(float pRelease) {
         super.release(pRelease);
     }

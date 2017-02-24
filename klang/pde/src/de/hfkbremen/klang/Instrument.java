@@ -2,10 +2,10 @@ package de.hfkbremen.klang;
 
 public abstract class Instrument {
 
-    protected final float DEFAULT_ATTACK = 0.25f;
+    protected final float DEFAULT_ATTACK = 0.001f;
     protected final float DEFAULT_DECAY = 0.0f;
     protected final float DEFAULT_SUSTAIN = 1.0f;
-    protected final float DEFAULT_RELEASE = 0.5f;
+    protected final float DEFAULT_RELEASE = 0.1f;
 
     public static final int SINE = 0;
     public static final int TRIANGLE = 1;

@@ -9,7 +9,7 @@ import processing.core.PGraphics;
 
 import java.util.ArrayList;
 
-public class SketchNetworkSequencer extends PApplet {
+public class SketchNeuralNetworkSequencer extends PApplet {
 
     private final Synthesizer mSynth = Synthesizer.getSynth();
     private final ArrayList<Node> mNodes = new ArrayList();
@@ -172,6 +172,6 @@ public class SketchNetworkSequencer extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchNetworkSequencer.class.getName());
+        PApplet.main(SketchNeuralNetworkSequencer.class.getName());
     }
 }

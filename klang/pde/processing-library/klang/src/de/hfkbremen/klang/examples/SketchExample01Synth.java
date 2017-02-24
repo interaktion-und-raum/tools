@@ -1,6 +1,5 @@
 package de.hfkbremen.klang.examples;
 
-import de.hfkbremen.klang.Scale;
 import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
 
@@ -21,17 +20,12 @@ public class SketchExample01Synth extends PApplet {
     }
 
     public void mousePressed() {
-        int mNote = Scale.note(Scale.MAJOR_CHORD_7, Scale.NOTE_A3, (int) random(0, 10));
+        int mNote = 45 + (int) random(0, 12);
         mSynth.noteOn(mNote, 127);
     }
 
     public void mouseReleased() {
         mSynth.noteOff();
-        mSynth.pitch_bend(8192);
-    }
-
-    public void mouseDragged() {
-        mSynth.pitch_bend((int) map(mouseY, 0, height, 16383, 0));
     }
 
     public static void main(String[] args) {
