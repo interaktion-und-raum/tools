@@ -6,7 +6,7 @@ import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
 
 /**
- * his examples shows how use pitch bending e.g offsetting the actual frequency.
+ * this examples shows how use pitch bending e.g offsetting the actual frequency.
  */
 public class SketchExample06PitchBend extends PApplet {
 

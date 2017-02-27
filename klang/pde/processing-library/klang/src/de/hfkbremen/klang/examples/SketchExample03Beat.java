@@ -6,7 +6,7 @@ import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
 
 /**
- * his examples shows how to use a beat. once instantiated the beat object calls the `beat(int)` at a defined *beats per
+ * this examples shows how to use a beat. once instantiated the beat object calls the `beat(int)` at a defined *beats per
  * minute* (bpm).
  */
 public class SketchExample03Beat extends PApplet {

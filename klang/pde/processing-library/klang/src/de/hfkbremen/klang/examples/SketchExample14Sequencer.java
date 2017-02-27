@@ -8,14 +8,14 @@ import de.hfkbremen.klang.SynthesizerJSyn;
 import processing.core.PApplet;
 
 /**
- * his examples shows how to implement the concept of a sequencer to repeatedly play a pattern..
+ * this examples shows how to implement the concept of a sequencer to repeatedly play a pattern..
  */
 public class SketchExample14Sequencer extends PApplet {
 
     private static final int NO = -1;
     private Synthesizer mSynth;
     private int mNote;
-
+    private Beat mBeat;
     private final int[] mSteps = {
             0, NO, 12, NO,
             0, NO, 12, NO,
@@ -34,12 +34,16 @@ public class SketchExample14Sequencer extends PApplet {
     public void setup() {
         mSynth = new SynthesizerJSyn();
 
-        Beat mBeat = new Beat(this);
+        mBeat = new Beat(this);
         mBeat.bpm(120 * 4);
     }
 
     public void draw() {
         background(mNote * 2);
+    }
+
+    public void mousePressed() {
+        mBeat.bpm((float) mouseX / width * 200 * 4);
     }
 
     public void beat(int pBeat) {

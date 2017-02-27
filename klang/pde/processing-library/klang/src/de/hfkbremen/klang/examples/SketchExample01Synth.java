@@ -3,6 +3,9 @@ package de.hfkbremen.klang.examples;
 import de.hfkbremen.klang.Synthesizer;
 import processing.core.PApplet;
 
+/**
+ * this examples shows how to instantiate a synthesizer object and play notes with it.
+ */
 public class SketchExample01Synth extends PApplet {
 
     private final Synthesizer mSynth = Synthesizer.getSynth();

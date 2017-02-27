@@ -4,6 +4,7 @@ import controlP5.*;
 static final int NO = -1;
 Synthesizer mSynth;
 int mNote;
+Beat mBeat;
 final int[] mSteps = {
         0, NO, 12, NO,
         0, NO, 12, NO,
@@ -19,11 +20,14 @@ void settings() {
 }
 void setup() {
     mSynth = new SynthesizerJSyn();
-    Beat mBeat = new Beat(this);
+    mBeat = new Beat(this);
     mBeat.bpm(120 * 4);
 }
 void draw() {
     background(mNote * 2);
+}
+void mousePressed() {
+    mBeat.bpm((float) mouseX / width * 200 * 4);
 }
 void beat(int pBeat) {
     int mStep = mSteps[pBeat % mSteps.length];
