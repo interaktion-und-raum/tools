@@ -7,6 +7,9 @@ import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerJSyn;
 import processing.core.PApplet;
 
+/**
+ * his examples shows how to use an instrument with an amplitude envelope ( ADSR ).
+ */
 public class SketchExample05ADSR extends PApplet {
 
     private Synthesizer mSynth;

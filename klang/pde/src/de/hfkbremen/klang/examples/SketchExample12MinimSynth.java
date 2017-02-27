@@ -7,6 +7,10 @@ import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerMinim;
 import processing.core.PApplet;
 
+/**
+ * this examples shows how to use the minim library for sound synthesis ( note that the basic concept of sound synthesis
+ * is very similar to the jsyn library )
+ */
 public class SketchExample12MinimSynth extends PApplet {
 
     private Synthesizer mSynth;

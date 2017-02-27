@@ -7,6 +7,10 @@ import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerMidi;
 import processing.core.PApplet;
 
+/**
+ * this examples shows how to control a midi instrument. make sure to set up the midi configuration properly in the
+ * system control panel.
+ */
 public class SketchExample11MidiSynth extends PApplet {
 
     private Synthesizer mSynth;

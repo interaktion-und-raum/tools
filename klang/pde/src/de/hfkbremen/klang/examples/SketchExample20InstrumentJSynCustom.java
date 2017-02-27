@@ -8,6 +8,10 @@ import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerJSyn;
 import processing.core.PApplet;
 
+/**
+ * this examples shows how to create a custom jsyn instrument. for further information on jsyn visit the website:
+ * http://www.softsynth.com/jsyn/
+ */
 public class SketchExample20InstrumentJSynCustom extends PApplet {
 
     private InstrumentJSynCustom mInstrument;

@@ -4,6 +4,9 @@ import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.SpeechSynthesis;
 import processing.core.PApplet;
 
+/**
+ * this examples shows how to use the built in speech synthesis engine ( MacOS only )
+ */
 public class SketchExample13SpeechSynthesis extends PApplet {
 
     private SpeechSynthesis mSpeech;

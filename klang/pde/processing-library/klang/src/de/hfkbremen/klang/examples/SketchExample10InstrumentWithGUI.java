@@ -9,6 +9,9 @@ import de.hfkbremen.klang.Synthesizer;
 import de.hfkbremen.klang.SynthesizerJSyn;
 import processing.core.PApplet;
 
+/**
+ * his examples shows how to use controlP5 to control instrument paramters via visual interface.
+ */
 public class SketchExample10InstrumentWithGUI extends PApplet {
 
     private static final int NO = -1;
