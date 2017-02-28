@@ -16,10 +16,10 @@ public class MidiOut {
     private final Receiver mMidiOut;
 
     public MidiOut(String pMidiOutputDevice) {
-        mMidiOut = findReceiver(pMidiOutputDevice);
+        mMidiOut = find(pMidiOutputDevice);
     }
 
-    private Receiver findReceiver(String pMidiOutputDevice) {
+    private Receiver find(String pMidiOutputDevice) {
         MidiDevice.Info[] mInfos = MidiSystem.getMidiDeviceInfo();
         for (MidiDevice.Info mInfo : mInfos) {
             try {
@@ -117,4 +117,5 @@ public class MidiOut {
         String[] mMidiOutputsStr = new String[mMidiOutputs.size()];
         return mMidiOutputs.toArray(mMidiOutputsStr);
     }
+
 }

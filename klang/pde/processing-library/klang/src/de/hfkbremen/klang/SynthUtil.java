@@ -52,6 +52,14 @@ public final class SynthUtil {
         }
     }
 
+    public static void dumpMidiInputDevices() {
+        final String[] mInputNames = MidiIn.availableInputs();
+        System.out.println("### Midi Input Devices\n");
+        for (String mOutputName : mInputNames) {
+            System.out.println("  - " + mOutputName);
+        }
+    }
+
     public static void dumpAudioDeviceInfo(final JavaSoundAudioDevice mDevice) {
         System.out.println("********");
         System.out.println(mDevice.getDefaultOutputDeviceID());
