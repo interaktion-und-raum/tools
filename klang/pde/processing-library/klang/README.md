@@ -4,10 +4,11 @@ a library that acts as a simple adapter to various outputs like OSC, Midi, and J
 
 ## dependencies
 
-- [JSyn](https://github.com/philburk/jsyn/)
-- [Minim](http://code.compartmental.net/tools/minim/)
-- [oscP5](http://sojamo.de/code/)
-- [controlP5](http://sojamo.de/code/) please note, that currently a modified version of controlP5 is required and resides in the *library* folder. make sure to uninstall any prior version of controlP5.
+- [JSyn](https://github.com/philburk/jsyn/) *included in the distribution*
+- [Minim](http://code.compartmental.net/tools/minim/) *installed via processing library installer*
+- [oscP5](http://sojamo.de/code/) *installed via processing library installer*
+- [controlP5](http://sojamo.de/code/) *installed via processing library installer*
+- [video]() *installed via processing library installer* 
 
 ## releases
 

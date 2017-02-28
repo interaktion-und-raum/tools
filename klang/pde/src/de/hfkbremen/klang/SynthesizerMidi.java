@@ -1,7 +1,5 @@
 package de.hfkbremen.klang;
 
-//import themidibus.MidiBus;
-
 import java.util.ArrayList;
 import java.util.Timer;
 

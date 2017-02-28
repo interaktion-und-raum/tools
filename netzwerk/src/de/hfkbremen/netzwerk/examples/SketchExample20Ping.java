@@ -25,13 +25,13 @@ public class SketchExample20Ping extends PApplet {
         textFont(createFont("Courier", 10));
         background(255);
 
-        mClient = new NetzwerkClient(this, "localhost", "client");
+        mClient = new NetzwerkClient(this, "itp2017.local", "client");
         mClient.connect();
     }
 
     public void draw() {
         /* draw latency */
-        float mDurationLine = height - map(mDuration,0, 3000, 0, height);
+        float mDurationLine = height - map(mDuration,0, 20000, 0, height);
         stroke(255);
         line(mLineCounter, 0, mLineCounter, mDurationLine);
         stroke(0);

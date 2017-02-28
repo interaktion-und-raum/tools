@@ -83,7 +83,7 @@ public class MidiOut {
     }
 
     public void sendPitchBend(int channel, int pitchbend_lsb, int pitchbend_msb) {
-//        http://home.snafu.de/sicpaul/midi/midi3.htm
+        //        http://home.snafu.de/sicpaul/midi/midi3.htm
         sendMessage(ShortMessage.PITCH_BEND, channel, pitchbend_lsb, pitchbend_msb);
     }
 
