@@ -19,6 +19,7 @@ public class NetzwerkServer {
     private static final int LOG_TYPE_MESSAGE = 0;
     private static final int LOG_TYPE_WARNING = 1;
     private static final int LOG_TYPE_ERROR = 2;
+    public static boolean PRINT_MESSAGES_TO_CONSOLE = false;
     public static boolean SHOW_LOG = true;
     private final NetAddressList mNetAddressListClients = new NetAddressList();
     private final NetAddressList mNetAddressListServers = new NetAddressList();
@@ -59,7 +60,7 @@ public class NetzwerkServer {
     }
 
     public synchronized void purge_clients() {
-//        mAddressMap.clear();
+        //        mAddressMap.clear();
         for (int i = 0; i < mNetAddressListClients.size(); i++) {
             disconnect_client(mNetAddressListClients.get(i).address(), mNetAddressListClients.get(i).port());
         }
@@ -114,6 +115,9 @@ public class NetzwerkServer {
         } else if (m.checkAddrPattern(mDisconnectPattern) && m.checkTypetag("i")) {
             disconnect_client(m.netAddress().address(), m.get(0).intValue());
         } else {
+            if (PRINT_MESSAGES_TO_CONSOLE) {
+                System.out.println("    " + "| " + m.toString() + " | " + getAsString(m.arguments()));
+            }
             /*
              * if pattern matching was not successful, then broadcast the incoming
              * message to all addresses in the netAddresList.

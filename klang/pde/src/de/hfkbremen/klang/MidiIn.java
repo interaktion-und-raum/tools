@@ -20,6 +20,7 @@ public class MidiIn implements Receiver {
     private static final int NOTE_ON = 0x90;
     private static final int CONTROL_CHANGE = 0xB0;
     private static final int PROGRAM_CHANGE = 0xC0;
+    private static boolean DUMP_MESSAGES = false;
     private final ArrayList<MidiInListener> mListener;
 
     public MidiIn(String pMidiOutputDevice) {
@@ -84,10 +85,14 @@ public class MidiIn implements Receiver {
                     receiveProgramChange(mChannel, midiData1, midiData2);
                     break;
                 default:
-                    System.err.println("### MidiIn / could not parse midi message: " + mShortMessage);
+                    if (DUMP_MESSAGES) {
+                        System.err.println("### MidiIn / could not parse midi message: " + mShortMessage);
+                    }
             }
         } else {
-            System.err.println("### MidiIn / could not parse midi message: " + message);
+            if (DUMP_MESSAGES) {
+                System.err.println("### MidiIn / could not parse midi message: " + message);
+            }
         }
     }
 
