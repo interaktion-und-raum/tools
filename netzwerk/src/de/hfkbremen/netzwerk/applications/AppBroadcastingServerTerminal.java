@@ -2,15 +2,14 @@ package de.hfkbremen.netzwerk.applications;
 
 import de.hfkbremen.netzwerk.NetzwerkServer;
 
-/**
- * run this from the terminal. make sure to point it to the required JARs. like this e.g:
- * <p>
- * <pre><code>
- *     java -cp /Users/dennisppaul/Documents/Processing/libraries/netzwerk/library/netzwerk
- *     .jar:/Users/dennisppaul/Documents/Processing/libraries/oscP5/library/oscP5.jar:/Applications/Pressing
- *     .app/Contents/Java/core/library/core.jar
- * de.hfkbremen.netzwerk.applications.AppBroadcastingServerTerminal
- * </code></pre>
+/*
+ * run this command from the terminal. adjust the paths and to point it to the required JARs. like this e.g:
+ *
+java -cp  /Users/dennisppaul/Documents/Processing/libraries/netzwerk/library/netzwerk.jar:\
+/Users/dennisppaul/Documents/Processing/libraries/oscP5/library/oscP5.jar:\
+/Applications/Processing.app/Contents/Java/core/library/core.jar \
+de.hfkbremen.netzwerk.applications.AppBroadcastingServerTerminal
+ *
  */
 public class AppBroadcastingServerTerminal {
 
