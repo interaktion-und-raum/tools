@@ -61,8 +61,8 @@ public class SynthesizerJSyn extends Synthesizer {
         }
         mInstrumentID = 0;
 
-        //        SynthUtil.dumpAudioDeviceInfo(mDevice);
         final JavaSoundAudioDevice mDevice = new JavaSoundAudioDevice();
+        SynthUtil.dumpAudioDeviceInfo(mDevice);
         mSynth.start(44100, mDevice.getDefaultInputDeviceID(), 2, mDevice.getDefaultOutputDeviceID(), 2);
 
         mTimer = new Timer();
