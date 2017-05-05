@@ -3,7 +3,6 @@
 source config.build
 
 ROOT=$(pwd)
-BASE_COLOR=54
 C0=$(tput sgr0)
 C1=$(tput setaf $(expr $BASE_COLOR + 72))
 C2=$(tput setaf $BASE_COLOR)

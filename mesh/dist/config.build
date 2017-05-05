@@ -1,1 +1,3 @@
 LIB_NAME=mesh
+IO_EXAMPLE_PATHS=( examples )
+BASE_COLOR=100
