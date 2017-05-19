@@ -1,3 +1,4 @@
 LIB_NAME=skeleton
 IO_EXAMPLE_PATHS=( examples )
 BASE_COLOR=54
+EXTRA_LIBS=( extra.jar )

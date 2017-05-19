@@ -1,3 +1,4 @@
 LIB_NAME=mesh
 IO_EXAMPLE_PATHS=( examples )
 BASE_COLOR=100
+EXTRA_LIBS=( j3dcore.jar j3dutils.jar vecmath.jar libCGALAlphaShape3.jnilib libCGALBooleanOperations3.jnilib )

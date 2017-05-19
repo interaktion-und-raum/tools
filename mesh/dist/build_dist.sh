@@ -20,6 +20,10 @@ printJob "create folder"
 sh $ROOT/create-folder.sh $LIB_NAME
 printJob "copying jar"
 sh $ROOT/copy_jar.sh $LIB_NAME
+printJob "copying extra libs"
+for i in ${EXTRA_LIBS[@]}; do
+	sh $ROOT/copy_extra_libs.sh $LIB_NAME $i
+done
 printJob "copying src"
 sh $ROOT/copy_src.sh $LIB_NAME
 printJob "copying README"
