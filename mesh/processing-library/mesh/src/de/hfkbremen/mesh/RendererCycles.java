@@ -297,11 +297,11 @@ public class RendererCycles extends PGraphics3D {
     // ..............................................................
 
     public void beginShape(int kind) {
-        System.out.println("beginShape"); // TODO `beginShape` only gets called
+        System.out.println("beginShape"); // TODO `beginShape` only gets called once
         shape = kind;
 
         if ((shape != LINES) && (shape != TRIANGLES) && (shape != POLYGON)) {
-            String err = "renderer can only be used with beginRaw(), " + "because it only supports lines and triangles";
+            String err = "renderer can only be used with beginRaw(), " + "because it only supports lines and triangles_continuous";
             throw new RuntimeException(err);
         }
 
@@ -313,7 +313,7 @@ public class RendererCycles extends PGraphics3D {
     }
 
     public void endShape(int mode) {
-        System.out.println("endShape"); // TODO `endShape` only gets called, this creates a problem with shaders
+        System.out.println("endShape"); // TODO `endShape` only gets called once, this creates a problem with shaders
         if (shape == POLYGON) {
             for (int i = 0; i < vertexCount - 1; i++) {
                 writeLine(i, i + 1);
