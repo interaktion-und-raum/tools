@@ -1,4 +1,4 @@
-package de.hfkbremen.mesh;
+package de.hfkbremen.mesh.sandbox;
 
 import java.io.IOException;
 import java.nio.file.Files;
