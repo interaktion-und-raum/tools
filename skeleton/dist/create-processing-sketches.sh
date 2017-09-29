@@ -49,6 +49,8 @@ do
 			s/private //
 			s/protected //
 			s/public //
+			# simplify generics
+			s/new ArrayList<>()/new ArrayList()/
 			# remove main method
 			/static void main/,/}$/ {
 				D

@@ -3,6 +3,7 @@ import processing.serial.*;
 import de.hfkbremen.mesh.*; 
 
 
+   	ArrayList<PVector> mList = new ArrayList();
 void settings() {
     size(640, 480);
 }

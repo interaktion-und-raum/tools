@@ -5,6 +5,8 @@ import processing.core.PVector;
 
 public class SketchSkeletonExample extends PApplet {
 
+   	private ArrayList<PVector> mList = new ArrayList<>();
+
     public void settings() {
         size(640, 480);
     }
