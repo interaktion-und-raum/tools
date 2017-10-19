@@ -1,4 +1,6 @@
-import de.hfkbremen.simulators.*;
+import de.hfkbremen.simulators.*; 
+import de.hfkbremen.mesh.*; 
+
 
 MyScreen mScreen;
 void settings() {
@@ -28,7 +30,7 @@ class MyScreen extends OffscreenContext {
     }
     void setup(PGraphics graphics) {
         /* call processing methods with a `parent.` e.g: */
-        System.out.println("parent screen height is " + parent.height);
+        System.out.println("screen height is " + parent.height);
         /* call processing drawing methods with a `graphics.` e.g: */
         graphics.background(255);
     }

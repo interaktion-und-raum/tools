@@ -3,4 +3,4 @@ IO_EXAMPLE_PATHS=( examples )
 PROJECT_PACKAGE=de.hfkbremen
 SKETCH_IMPORTS=( processing.serial.* de.hfkbremen.mesh.* )
 BASE_COLOR=54
-EXTRA_LIBS=( extra.jar )
+ADDITIONAL_LIBS=( extra.jar )
