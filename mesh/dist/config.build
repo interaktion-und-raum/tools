@@ -1,4 +1,6 @@
 LIB_NAME=mesh
 IO_EXAMPLE_PATHS=( examples )
+PROJECT_PACKAGE=de.hfkbremen
+SKETCH_IMPORTS=( )
 BASE_COLOR=100
-EXTRA_LIBS=( cycles j3dcore.jar j3dutils.jar vecmath.jar libCGALAlphaShape3.jnilib libCGALBooleanOperations3.jnilib )
+ADDITIONAL_LIBS=( cycles j3dcore.jar j3dutils.jar vecmath.jar libCGALAlphaShape3.jnilib libCGALBooleanOperations3.jnilib )

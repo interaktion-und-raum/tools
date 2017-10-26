@@ -1,4 +1,5 @@
-import de.hfkbremen.mesh.*;
+import de.hfkbremen.mesh.*; 
+
 
 void settings() {
     size(1024, 768, P3D);
@@ -21,7 +22,7 @@ void drawSpiral() {
     final float mLineWidth = 8;
     final int mStep = 12;
     final int mHeightInc = 9;
-    ArrayList<PVector> mVertices = new ArrayList<>();
+    ArrayList<PVector> mVertices = new ArrayList();
     for (int i = -360 * 3; i < 360 * 3; i += mStep) {
         float r = radians(i);
         PVector p = new PVector(sin(r) * mRadius, cos(r) * mRadius, mHeightInc * i / mStep);

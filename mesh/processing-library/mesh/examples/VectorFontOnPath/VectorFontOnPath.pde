@@ -1,4 +1,5 @@
-import de.hfkbremen.mesh.*;
+import de.hfkbremen.mesh.*; 
+
 
 VectorFont mPathCreator;
 void settings() {
@@ -18,7 +19,7 @@ void draw() {
     mPathCreator.outline_flatness(mOutlineFlatness);
     mPathCreator.path_flatness(mPathFlatness);
     /* create path */
-    final ArrayList<PVector> mPath = new ArrayList<>();
+    final ArrayList<PVector> mPath = new ArrayList();
     for (int x = 0; x < width; x += 20) {
         float y = sin(radians(x * 0.5f + frameCount * 5)) * 50 + height / 2;
         mPath.add(new PVector(x, y));
