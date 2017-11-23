@@ -2,6 +2,7 @@ package de.hfkbremen.skeleton.examples;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import java.util.ArrayList;
 
 public class SketchSkeletonExample extends PApplet {
 

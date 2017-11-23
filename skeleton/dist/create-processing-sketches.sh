@@ -7,8 +7,8 @@ source config.build
 LIB_NAME=$1
 INPUT_FOLDER=$2
 OUTPUT_FOLDER=$2
-M_PACKAGE_FOLDER=$(echo $PROJECT_PACKAGE | sed -e 's/\./\//')
-SRC_PATH="../src/$M_PACKAGE_FOLDER/$LIB_NAME/$INPUT_FOLDER/"
+M_PACKAGE_FOLDER=$(echo $PROJECT_PACKAGE | sed -e 's/\./\//g')
+SRC_PATH="../src/$M_PACKAGE_FOLDER/$INPUT_FOLDER/"
 OUTPUT_DIR="../processing-library/$LIB_NAME/$OUTPUT_FOLDER"
 
 if [ -d "$OUTPUT_DIR" ]; then
@@ -17,7 +17,7 @@ fi
 mkdir -p "$OUTPUT_DIR"
 
 # compile imports
-M_IMPORTS='import '$PROJECT_PACKAGE'.'$LIB_NAME'.*; \
+M_IMPORTS='import '$PROJECT_PACKAGE'.*; \
 '
 for j in ${SKETCH_IMPORTS[@]}; do
 	M_IMPORTS=$M_IMPORTS'import '$j'; \
@@ -28,7 +28,7 @@ done
 for file in $SRC_PATH/*.java
 do
 	#echo "$file"
-	FILENAME=$(echo $file | sed -e 's/.*\///') # retreive filename
+	FILENAME=$(echo $file | sed -e 's/.*\///') # retrieve filename
 	SKETCHNAME=$(echo $FILENAME | sed -e 's/.java//')
 	SKETCHNAME=$(echo $SKETCHNAME | sed -e 's/Sketch//')
 	SKETCHFILE_NAME="$SKETCHNAME.pde"
