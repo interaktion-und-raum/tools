@@ -1,9 +1,12 @@
-import de.hfkbremen.klang.*;
-import controlP5.*;
+import de.hfkbremen.klang.*; 
+import controlP5.*; 
+import ddf.minim.*; 
+import com.jsyn.unitgen.*; 
+
 
 static final int NO = -1;
 Synthesizer mSynth;
-ControlP5 cp5;
+controlP5.ControlP5 cp5;
 final int[] mSteps = {
         0, NO, 12, NO,
         0, NO, 12, NO,

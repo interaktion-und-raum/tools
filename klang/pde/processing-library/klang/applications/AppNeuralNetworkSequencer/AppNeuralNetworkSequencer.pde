@@ -1,5 +1,8 @@
-import de.hfkbremen.klang.*;
-import controlP5.*;
+import de.hfkbremen.klang.*; 
+import controlP5.*; 
+import ddf.minim.*; 
+import com.jsyn.unitgen.*; 
+
 
 final Synthesizer mSynth = Synthesizer.getSynth();
 final ArrayList<Node> mNodes = new ArrayList();

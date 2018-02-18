@@ -1,2 +1,6 @@
 LIB_NAME=klang
 IO_EXAMPLE_PATHS=( examples applications )
+PROJECT_PACKAGE=de.hfkbremen.klang
+SKETCH_IMPORTS=( controlP5.* ddf.minim.* com.jsyn.unitgen.* )
+BASE_COLOR=54
+ADDITIONAL_LIBS=( jsyn.jar )

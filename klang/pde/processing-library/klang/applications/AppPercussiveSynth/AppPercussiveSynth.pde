@@ -1,5 +1,8 @@
-import de.hfkbremen.klang.*;
-import controlP5.*;
+import de.hfkbremen.klang.*; 
+import controlP5.*; 
+import ddf.minim.*; 
+import com.jsyn.unitgen.*; 
+
 
 Synthesizer mSynth;
 Beat mBeat;

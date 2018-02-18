@@ -1,5 +1,8 @@
-import de.hfkbremen.klang.*;
-import controlP5.*;
+import de.hfkbremen.klang.*; 
+import controlP5.*; 
+import ddf.minim.*; 
+import com.jsyn.unitgen.*; 
+
 
 static final int NO = -1;
 Synthesizer mSynth;
@@ -20,7 +23,7 @@ void keyPressed() {
     if (key == ' ') {
         mStep++;
         mStep %= 12;
-        mNote = Scale.note(mScale, Note.NOTE_C2, mStep);
+        mNote = Scale.note(mScale, Note.NOTE_C3, mStep);
         mSynth.noteOn(mNote, 127);
     }
     if (key == '1') {

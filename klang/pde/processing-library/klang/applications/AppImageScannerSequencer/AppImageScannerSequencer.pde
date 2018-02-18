@@ -1,5 +1,8 @@
-import de.hfkbremen.klang.*;
-import controlP5.*;
+import de.hfkbremen.klang.*; 
+import controlP5.*; 
+import ddf.minim.*; 
+import com.jsyn.unitgen.*; 
+
 
  import processing.video.Capture;
 final Synthesizer mSynth = new SynthesizerJSyn();

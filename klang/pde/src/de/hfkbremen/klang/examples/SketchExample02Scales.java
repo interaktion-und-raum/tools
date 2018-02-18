@@ -35,7 +35,7 @@ public class SketchExample02Scales extends PApplet {
         if (key == ' ') {
             mStep++;
             mStep %= 12;
-            mNote = Scale.note(mScale, Note.NOTE_C2, mStep);
+            mNote = Scale.note(mScale, Note.NOTE_C3, mStep);
             mSynth.noteOn(mNote, 127);
         }
         if (key == '1') {

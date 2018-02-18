@@ -1,6 +1,5 @@
 package de.hfkbremen.klang.examples;
 
-import controlP5.ControlP5;
 import de.hfkbremen.klang.Beat;
 import de.hfkbremen.klang.Instrument;
 import de.hfkbremen.klang.Note;
@@ -16,7 +15,7 @@ public class SketchExample10InstrumentWithGUI extends PApplet {
 
     private static final int NO = -1;
     private Synthesizer mSynth;
-    private ControlP5 cp5;
+    private controlP5.ControlP5 cp5;
 
     private final int[] mSteps = {
             0, NO, 12, NO,

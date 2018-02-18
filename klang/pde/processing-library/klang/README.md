@@ -10,22 +10,6 @@ a library that acts as a simple adapter to various outputs like OSC, Midi, and J
 - [controlP5](http://sojamo.de/code/) *installed via processing library installer*
 - [video]() *installed via processing library installer* 
 
-## releases
-
-### 2017022
-
-- added simple *jsyn instrument* as a blueprint for own instrument designs
-
-### 20170220
-
-- intial commit
-
-## TODO
-
-- fix modified controlp5 bug in processing dist
-
----
-
 ## copyright
 
 ### JSyn
