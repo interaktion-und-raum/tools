@@ -1,4 +1,6 @@
 import de.hfkbremen.mesh.*; 
+import java.awt.*; 
+import java.awt.geom.*; 
 
 
 CGALAlphaShape3 cgal;
