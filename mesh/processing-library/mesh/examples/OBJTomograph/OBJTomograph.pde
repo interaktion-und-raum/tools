@@ -30,12 +30,12 @@ void draw() {
         vertex(t.c.x, t.c.y, t.c.z);
     }
     endShape();
-    stroke(255, 127, 0);
-    noFill();
     final float mTomographRadius = 250;
     final float mHeight = mouseY * 2;
     final float mTomographScanPoints = 72;
     ArrayList<PVector> mOutline = scanSlice(mTriangles, mHeight, mTomographScanPoints, mTomographRadius);
+    stroke(255, 127, 0);
+    noFill();
     beginShape();
     for (PVector p : mOutline) {
         vertex(p.x, mHeight, p.y);
@@ -57,8 +57,8 @@ ArrayList<PVector> scanSlice(ArrayList<Triangle> pTriangles, float pHeight, floa
         PVector p0 = new PVector(sin(r) * pRadius, pHeight, cos(r) * pRadius);
         PVector p1 = new PVector(sin(r + PI) * pRadius, pHeight, cos(r + PI) * pRadius);
         PVector mResult = new PVector();
-        boolean mSucess = findIntersection(pTriangles, p0, p1, mResult);
-        if (mSucess) {
+        boolean mSuccess = findIntersection(pTriangles, p0, p1, mResult);
+        if (mSuccess) {
             mOutline.add(mResult);
         }
     }
@@ -72,7 +72,7 @@ ArrayList<PVector> scanSlice(ArrayList<Triangle> pTriangles, float pHeight, floa
 boolean findIntersection(ArrayList<Triangle> pTriangles, PVector p0, PVector p1, PVector pResult) {
     final PVector pRayOrigin = p1;
     final PVector pRayDirection = PVector.sub(p1, p0);
-    for (Triangle t : mTriangles) {
+    for (Triangle t : pTriangles) {
         final PVector mResult = new PVector();
         boolean mSuccess = MeshUtil.findRayTriangleIntersectionPoint(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult, true);
         if (mSuccess) {

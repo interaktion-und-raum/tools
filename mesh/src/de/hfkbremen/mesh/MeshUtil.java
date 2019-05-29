@@ -125,18 +125,18 @@ public class MeshUtil {
         theResultNormal.normalize();
     }
 
-//    public static void findRayTriangleIntersections(ArrayList<Triangle> pTriangles,
-//                                                    PVector pRayOrigin,
-//                                                    PVector pRayDirection,
-//                                                    ArrayList<PVector> pIntersectionResults) {
-//        for (Triangle t : pTriangles) {
-//            final PVector mResult = new PVector();
-//            boolean mSuccess = MeshUtil.findRayTriangleIntersectionPoint(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult, true);
-//            if (mSuccess) {
-//                pIntersectionResults.add(mResult);
-//            }
-//        }
-//    }
+    //    public static void findRayTriangleIntersections(ArrayList<Triangle> pTriangles,
+    //                                                    PVector pRayOrigin,
+    //                                                    PVector pRayDirection,
+    //                                                    ArrayList<PVector> pIntersectionResults) {
+    //        for (Triangle t : pTriangles) {
+    //            final PVector mResult = new PVector();
+    //            boolean mSuccess = MeshUtil.findRayTriangleIntersectionPoint(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult, true);
+    //            if (mSuccess) {
+    //                pIntersectionResults.add(mResult);
+    //            }
+    //        }
+    //    }
 
     public static boolean findRayTriangleIntersectionPoint(PVector pRayOrigin,
                                                            PVector pRayDirection,
@@ -243,25 +243,18 @@ public class MeshUtil {
         return true;
     }
 
-    public static boolean isPointInsideMesh(ArrayList<Triangle> pTriangles, PVector pRayOrigin, PVector pRayDirection) {
-        final int mNumberOfIntersections = countRayTrianglesIntersections(pTriangles, pRayOrigin, pRayDirection);
-        return isNumberOdd(mNumberOfIntersections);
-    }
-
-    public static boolean isNumberOdd(int i) {
-        return !(i % 2 == 0);
-    }
-
-    public static int countRayTrianglesIntersections(ArrayList<Triangle> pTriangles, PVector pRayOrigin, PVector pRayDirection) {
-        int mResults = 0;
-        for (Triangle t : pTriangles) {
-            final PVector mResult = new PVector();
-            boolean mSuccess = MeshUtil.rayIntersectsTriangleMollerTrumbore(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult);
-            if (mSuccess) {
-                mResults++;
-            }
-        }
-        return mResults;
+    public static boolean findRayTriangleIntersectionPoint(PVector pRayOrigin,
+                                                           PVector pRayVector,
+                                                           PVector pTriangleVertex0,
+                                                           PVector pTriangleVertex1,
+                                                           PVector pTriangleVertex2,
+                                                           PVector pIntersectionPoint) {
+        return rayIntersectsTriangleMollerTrumbore(pRayOrigin,
+                                                   pRayVector,
+                                                   pTriangleVertex0,
+                                                   pTriangleVertex1,
+                                                   pTriangleVertex2,
+                                                   pIntersectionPoint);
     }
 
     public static boolean rayIntersectsTriangleMollerTrumbore(PVector pRayOrigin,
@@ -269,7 +262,7 @@ public class MeshUtil {
                                                               PVector pTriangleVertex0,
                                                               PVector pTriangleVertex1,
                                                               PVector pTriangleVertex2,
-                                                              PVector outIntersectionPoint) {
+                                                              PVector pIntersectionPoint) {
         // from https://en.wikipedia.org/wiki/Möller–Trumbore_intersection_algorithm
         PVector h;
         PVector s;
@@ -297,14 +290,35 @@ public class MeshUtil {
         float t = f * edge2.dot(q);
         if (t > EPSILON) // ray intersection
         {
-            outIntersectionPoint.set(pRayVector);
-            outIntersectionPoint.mult(t);
-            outIntersectionPoint.add(pRayOrigin);
+            pIntersectionPoint.set(pRayVector);
+            pIntersectionPoint.mult(t);
+            pIntersectionPoint.add(pRayOrigin);
             return true;
         } else // This means that there is a line intersection but not a ray intersection.
         {
             return false;
         }
+    }
+
+    public static boolean isPointInsideMesh(ArrayList<Triangle> pTriangles, PVector pRayOrigin, PVector pRayDirection) {
+        final int mNumberOfIntersections = countRayTrianglesIntersections(pTriangles, pRayOrigin, pRayDirection);
+        return isNumberOdd(mNumberOfIntersections);
+    }
+
+    public static int countRayTrianglesIntersections(ArrayList<Triangle> pTriangles, PVector pRayOrigin, PVector pRayDirection) {
+        int mResults = 0;
+        for (Triangle t : pTriangles) {
+            final PVector mResult = new PVector();
+            boolean mSuccess = MeshUtil.rayIntersectsTriangleMollerTrumbore(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult);
+            if (mSuccess) {
+                mResults++;
+            }
+        }
+        return mResults;
+    }
+
+    public static boolean isNumberOdd(int i) {
+        return !(i % 2 == 0);
     }
 
     public static ArrayList<PVector> giftWrap(ArrayList<PVector> points) {
