@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public class MeshUtil {
 
+    private static double EPSILON = 0.0000001;
+
     public static int isClockWise2D(final ArrayList<PVector> mPoints) {
 
         if (mPoints.size() < 3) {
@@ -42,15 +44,40 @@ public class MeshUtil {
 
         int c = 0;
         for (int i = 0, j = thePolygon.size() - 1; i < thePolygon.size(); j = i++) {
-            if ((((thePolygon.get(i).y <= y) && (y < thePolygon.get(j).y)) || ((thePolygon.get(j).y <= y) && (y < thePolygon.get(i).y)))
-                    && (x < (thePolygon
-                    .get(j).x - thePolygon.get(i).x) * (y - thePolygon.get(i).y) / (thePolygon.get(j).y - thePolygon.get(i).y) +
-                    thePolygon.get(
-                    i).x)) {
+            if ((((thePolygon.get(i).y <= y) && (y < thePolygon.get(j).y)) || ((thePolygon.get(j).y <= y) && (y < thePolygon.get(i).y))) && (x < (thePolygon
+                                                                                                                                                          .get(j).x - thePolygon
+                                                                                                                                                          .get(i).x) * (y - thePolygon
+                    .get(i).y) / (thePolygon.get(j).y - thePolygon.get(i).y) + thePolygon.get(i).x)) {
                 c = (c + 1) % 2;
             }
         }
         return c == 1;
+    }
+
+    public static int[] toArray(final ArrayList<Integer> theData) {
+        int[] myArray = new int[theData.size()];
+        for (int i = 0; i < myArray.length; i++) {
+            if (theData.get(i) != null) {
+                myArray[i] = theData.get(i);
+            }
+        }
+        return myArray;
+    }
+
+    public static Mesh mesh(ArrayList<PVector> pTriangles) {
+        return mesh(pTriangles, false);
+    }
+
+    public static Mesh mesh(ArrayList<PVector> pTriangles, final boolean pCreateNormals) {
+        final float[] mVertices = toArray3f(pTriangles);
+        final float[] mNormals;
+        if (pCreateNormals) {
+            mNormals = new float[mVertices.length];
+            createNormals(mVertices, mNormals);
+        } else {
+            mNormals = null;
+        }
+        return new Mesh(mVertices, 3, null, 4, null, 2, mNormals, PGraphics.TRIANGLES);
     }
 
     public static float[] toArray3f(final ArrayList<PVector> theData) {
@@ -98,33 +125,37 @@ public class MeshUtil {
         theResultNormal.normalize();
     }
 
-    public static int[] toArray(final ArrayList<Integer> theData) {
-        int[] myArray = new int[theData.size()];
-        for (int i = 0; i < myArray.length; i++) {
-            if (theData.get(i) != null) {
-                myArray[i] = theData.get(i);
+//    public static void findRayTriangleIntersections(ArrayList<Triangle> pTriangles,
+//                                                    PVector pRayOrigin,
+//                                                    PVector pRayDirection,
+//                                                    ArrayList<PVector> pIntersectionResults) {
+//        for (Triangle t : pTriangles) {
+//            final PVector mResult = new PVector();
+//            boolean mSuccess = MeshUtil.findRayTriangleIntersectionPoint(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult, true);
+//            if (mSuccess) {
+//                pIntersectionResults.add(mResult);
+//            }
+//        }
+//    }
+
+    public static boolean findRayTriangleIntersectionPoint(PVector pRayOrigin,
+                                                           PVector pRayDirection,
+                                                           PVector v0,
+                                                           PVector v1,
+                                                           PVector v2,
+                                                           PVector pIntersectionPoint,
+                                                           boolean pCullingFlag) {
+        IntersectionResult pIntersectionResult = new IntersectionResult();
+        boolean mSuccess = intersectRayTriangle(pRayOrigin, pRayDirection, v0, v1, v2, pIntersectionResult, pCullingFlag);
+        if (mSuccess) {
+            if (pIntersectionResult.t <= 0) {
+                pIntersectionPoint.set(pRayDirection);
+                pIntersectionPoint.mult(pIntersectionResult.t);
+                pIntersectionPoint.add(pRayOrigin);
             }
         }
-        return myArray;
+        return mSuccess;
     }
-
-    public static Mesh mesh(ArrayList<PVector> pTriangles) {
-        return mesh(pTriangles, false);
-    }
-
-    public static Mesh mesh(ArrayList<PVector> pTriangles, final boolean pCreateNormals) {
-        final float[] mVertices = toArray3f(pTriangles);
-        final float[] mNormals;
-        if (pCreateNormals) {
-            mNormals = new float[mVertices.length];
-            createNormals(mVertices, mNormals);
-        } else {
-            mNormals = null;
-        }
-        return new Mesh(mVertices, 3, null, 4, null, 2, mNormals, PGraphics.TRIANGLES);
-    }
-
-    /* convex hull 2D */
 
     public static boolean intersectRayTriangle(final PVector pRayOrigin,
                                                final PVector pRayDirection,
@@ -212,41 +243,69 @@ public class MeshUtil {
         return true;
     }
 
-    public static boolean findRayTriangleIntersectionPoint(PVector pRayOrigin,
-                                                           PVector pRayDirection,
-                                                           PVector v0,
-                                                           PVector v1,
-                                                           PVector v2,
-                                                           PVector pIntersectionPoint,
-                                                           boolean pCullingFlag) {
-        IntersectionResult pIntersectionResult = new IntersectionResult();
-        boolean mSuccess = intersectRayTriangle(pRayOrigin, pRayDirection, v0, v1, v2, pIntersectionResult, pCullingFlag);
-        if (mSuccess) {
-            if (pIntersectionResult.t <= 0) {
-                pIntersectionPoint.set(pRayDirection);
-                pIntersectionPoint.mult(pIntersectionResult.t);
-                pIntersectionPoint.add(pRayOrigin);
+    public static boolean isPointInsideMesh(ArrayList<Triangle> pTriangles, PVector pRayOrigin, PVector pRayDirection) {
+        final int mNumberOfIntersections = countRayTrianglesIntersections(pTriangles, pRayOrigin, pRayDirection);
+        return isNumberOdd(mNumberOfIntersections);
+    }
+
+    public static boolean isNumberOdd(int i) {
+        return !(i % 2 == 0);
+    }
+
+    public static int countRayTrianglesIntersections(ArrayList<Triangle> pTriangles, PVector pRayOrigin, PVector pRayDirection) {
+        int mResults = 0;
+        for (Triangle t : pTriangles) {
+            final PVector mResult = new PVector();
+            boolean mSuccess = MeshUtil.rayIntersectsTriangleMollerTrumbore(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult);
+            if (mSuccess) {
+                mResults++;
             }
         }
-        return mSuccess;
+        return mResults;
     }
 
-    public static class IntersectionResult {
-
-        public float t;
-
-        public float u;
-
-        public float v;
-
-        public void clear() {
-            v = 0;
-            u = 0;
-            t = 0;
+    public static boolean rayIntersectsTriangleMollerTrumbore(PVector pRayOrigin,
+                                                              PVector pRayVector,
+                                                              PVector pTriangleVertex0,
+                                                              PVector pTriangleVertex1,
+                                                              PVector pTriangleVertex2,
+                                                              PVector outIntersectionPoint) {
+        // from https://en.wikipedia.org/wiki/Möller–Trumbore_intersection_algorithm
+        PVector h;
+        PVector s;
+        PVector q;
+        float a, f, u, v;
+        PVector edge1 = PVector.sub(pTriangleVertex1, pTriangleVertex0);
+        PVector edge2 = PVector.sub(pTriangleVertex2, pTriangleVertex0);
+        h = pRayVector.cross(edge2);
+        a = edge1.dot(h);
+        if (a > -EPSILON && a < EPSILON) {
+            return false;    // This ray is parallel to this triangle.
+        }
+        f = 1.0f / a;
+        s = PVector.sub(pRayOrigin, pTriangleVertex0);
+        u = f * (s.dot(h));
+        if (u < 0.0 || u > 1.0) {
+            return false;
+        }
+        q = s.cross(edge1);
+        v = f * pRayVector.dot(q);
+        if (v < 0.0 || u + v > 1.0) {
+            return false;
+        }
+        // At this stage we can compute t to find out where the intersection point is on the line.
+        float t = f * edge2.dot(q);
+        if (t > EPSILON) // ray intersection
+        {
+            outIntersectionPoint.set(pRayVector);
+            outIntersectionPoint.mult(t);
+            outIntersectionPoint.add(pRayOrigin);
+            return true;
+        } else // This means that there is a line intersection but not a ray intersection.
+        {
+            return false;
         }
     }
-
-    /* --- */
 
     public static ArrayList<PVector> giftWrap(ArrayList<PVector> points) {
         // initialize CH points output array.
@@ -290,6 +349,8 @@ public class MeshUtil {
         return outputList;
     }
 
+    /* --- */
+
     // Orientation test: Returns true if all points are ccw or colinear
     public static boolean ccw(PVector a, PVector b, PVector c) {
         float sol = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
@@ -300,5 +361,20 @@ public class MeshUtil {
     public static boolean cw(PVector a, PVector b, PVector c) {
         float sol = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
         return !(sol < 0);
+    }
+
+    public static class IntersectionResult {
+
+        public float t;
+
+        public float u;
+
+        public float v;
+
+        public void clear() {
+            v = 0;
+            u = 0;
+            t = 0;
+        }
     }
 }

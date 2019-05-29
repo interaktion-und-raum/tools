@@ -92,7 +92,7 @@ public class SketchOBJTomograph extends PApplet {
     private boolean findIntersection(ArrayList<Triangle> pTriangles, PVector p0, PVector p1, PVector pResult) {
         final PVector pRayOrigin = p1;
         final PVector pRayDirection = PVector.sub(p1, p0);
-        for (Triangle t : mTriangles) {
+        for (Triangle t : pTriangles) {
             final PVector mResult = new PVector();
             boolean mSuccess = MeshUtil.findRayTriangleIntersectionPoint(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult, true);
             if (mSuccess) {

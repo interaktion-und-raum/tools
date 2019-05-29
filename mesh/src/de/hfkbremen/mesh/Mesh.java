@@ -260,6 +260,16 @@ public class Mesh {
         }
     }
 
+    public PVector calcCenterOfMass() {
+        PVector mCenterOfMass = new PVector();
+        for (int i = 0; i < mVertices.length; i += 3) {
+            PVector v = new PVector().set(mVertices[i + 0], mVertices[i + 1], mVertices[i + 2]);
+            mCenterOfMass.add(v);
+        }
+        mCenterOfMass.div(mVertices.length / 3);
+        return mCenterOfMass;
+    }
+
     public void translate(PVector p) {
         translate(p.x, p.y, p.z);
     }
