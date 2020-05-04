@@ -37,9 +37,6 @@ class MyScreen extends OffscreenContext {
     void draw(PGraphics graphics) {
         graphics.stroke(0);
         float mY = parent.random(0, graphics.height);
-        graphics.line(
-                parent.random(0, graphics.width), mY,
-                parent.random(0, graphics.width), mY
-        );
+        graphics.line(parent.random(0, graphics.width), mY, parent.random(0, graphics.width), mY);
     }
 }

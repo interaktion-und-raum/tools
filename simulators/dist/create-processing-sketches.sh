@@ -7,7 +7,7 @@ source config.build
 LIB_NAME=$1
 INPUT_FOLDER=$2
 OUTPUT_FOLDER=$2
-M_PACKAGE_FOLDER=$(echo $PROJECT_PACKAGE | sed -e 's/\./\//g')
+M_PACKAGE_FOLDER=$(echo $PROJECT_PACKAGE | sed -e 's/\./\//')
 SRC_PATH="../src/$M_PACKAGE_FOLDER/$LIB_NAME/$INPUT_FOLDER/"
 OUTPUT_DIR="../processing-library/$LIB_NAME/$OUTPUT_FOLDER"
 
