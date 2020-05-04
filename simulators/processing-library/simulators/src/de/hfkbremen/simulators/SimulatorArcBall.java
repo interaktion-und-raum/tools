@@ -6,7 +6,7 @@ import processing.core.PVector;
 /**
  http://de.wikipedia.org/wiki/Rolling-Ball-Rotation
  */
-public class ArcBall {
+public class SimulatorArcBall {
 
     private final PApplet mParent;
     private final PVector mCenter;
@@ -19,7 +19,7 @@ public class ArcBall {
     private Quaternion mDragQuaternion;
     private boolean mLastActiveState = false;
 
-    public ArcBall(PApplet pApplet, boolean pDONT_REGISTER) {
+    public SimulatorArcBall(PApplet pApplet, boolean pDONT_REGISTER) {
         this(pApplet.g.width / 2.0f,
              pApplet.g.height / 2.0f,
              -Math.min(pApplet.g.width / 2.0f, pApplet.g.height / 2.0f),
@@ -28,15 +28,15 @@ public class ArcBall {
              pDONT_REGISTER);
     }
 
-    public ArcBall(PApplet parent) {
+    public SimulatorArcBall(PApplet parent) {
         this(parent, false);
     }
 
-    public ArcBall(float theCenterX, float theCenterY, float theCenterZ, float theRadius, PApplet pApplet, boolean pDONT_REGISTER) {
+    public SimulatorArcBall(float theCenterX, float theCenterY, float theCenterZ, float theRadius, PApplet pApplet, boolean pDONT_REGISTER) {
         this(new PVector(theCenterX, theCenterY, theCenterZ), theRadius, pApplet, pDONT_REGISTER);
     }
 
-    public ArcBall(final PVector theCenter, final float theRadius, final PApplet pApplet, boolean pDONT_REGISTER) {
+    public SimulatorArcBall(final PVector theCenter, final float theRadius, final PApplet pApplet, boolean pDONT_REGISTER) {
         mParent = pApplet;
 
         if (!pDONT_REGISTER) {
@@ -136,22 +136,22 @@ public class ArcBall {
         update();
     }
 
-    public static ArcBall setupRotateAroundCenter(PApplet pApplet) {
-        return new ArcBall(pApplet.width / 2,
+    public static SimulatorArcBall setupRotateAroundCenter(PApplet pApplet) {
+        return new SimulatorArcBall(pApplet.width / 2,
                            pApplet.height / 2,
-                           0,
-                           Math.min(pApplet.g.width / 2.0f, pApplet.g.height / 2.0f),
-                           pApplet,
-                           false);
+                                    0,
+                                    Math.min(pApplet.g.width / 2.0f, pApplet.g.height / 2.0f),
+                                    pApplet,
+                                    false);
     }
 
-    public static ArcBall setupRotateAroundCenter(PApplet pApplet, boolean pDONT_REGISTER) {
-        return new ArcBall(pApplet.width / 2,
+    public static SimulatorArcBall setupRotateAroundCenter(PApplet pApplet, boolean pDONT_REGISTER) {
+        return new SimulatorArcBall(pApplet.width / 2,
                            pApplet.height / 2,
-                           0,
-                           Math.min(pApplet.g.width / 2.0f, pApplet.g.height / 2.0f),
-                           pApplet,
-                           pDONT_REGISTER);
+                                    0,
+                                    Math.min(pApplet.g.width / 2.0f, pApplet.g.height / 2.0f),
+                                    pApplet,
+                                    pDONT_REGISTER);
     }
 
     private class Quaternion {

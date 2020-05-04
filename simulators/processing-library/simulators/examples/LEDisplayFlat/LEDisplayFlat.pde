@@ -2,14 +2,14 @@ import de.hfkbremen.simulators.*;
 import de.hfkbremen.mesh.*; 
 
 
-ArcBall mArcBall;
+SimulatorArcBall mArcBall;
 PGraphics mDisplayContent;
 LEDisplay mLEDisplay;
 void settings() {
     size(1024, 768, P3D);
 }
 void setup() {
-    mArcBall = new ArcBall(this, true);
+    mArcBall = new SimulatorArcBall(this, true);
     mDisplayContent = createGraphics(100, 20);
     mDisplayContent.beginDraw();
     mDisplayContent.background(255);

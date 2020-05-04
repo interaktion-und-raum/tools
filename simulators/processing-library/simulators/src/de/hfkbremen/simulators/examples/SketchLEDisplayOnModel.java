@@ -1,13 +1,13 @@
 package de.hfkbremen.simulators.examples;
 
-import de.hfkbremen.simulators.ArcBall;
+import de.hfkbremen.simulators.SimulatorArcBall;
 import de.hfkbremen.simulators.LEDisplay;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
 public class SketchLEDisplayOnModel extends PApplet {
 
-    private ArcBall mArcBall;
+    private SimulatorArcBall mArcBall;
     private PGraphics mDisplayContent;
     private LEDisplay mLEDisplay;
     private float[] mModelData;
@@ -19,7 +19,7 @@ public class SketchLEDisplayOnModel extends PApplet {
     }
 
     public void setup() {
-        mArcBall = new ArcBall(this, true);
+        mArcBall = new SimulatorArcBall(this, true);
 
         mDisplayContent = createGraphics(100, 20);
         mModelData = createModelData();

@@ -1,13 +1,13 @@
 package de.hfkbremen.simulators.examples;
 
-import de.hfkbremen.simulators.ArcBall;
+import de.hfkbremen.simulators.SimulatorArcBall;
 import de.hfkbremen.simulators.LEDisplay;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class SketchLEDisplay extends PApplet {
+public class SketchLEDisplayFlat extends PApplet {
 
-    private ArcBall mArcBall;
+    private SimulatorArcBall mArcBall;
     private PGraphics mDisplayContent;
     private LEDisplay mLEDisplay;
 
@@ -16,7 +16,7 @@ public class SketchLEDisplay extends PApplet {
     }
 
     public void setup() {
-        mArcBall = new ArcBall(this, true);
+        mArcBall = new SimulatorArcBall(this, true);
 
         mDisplayContent = createGraphics(100, 20);
         mDisplayContent.beginDraw();
@@ -40,7 +40,7 @@ public class SketchLEDisplay extends PApplet {
         /* draw LEDisplay */
         mArcBall.update();
         pushMatrix();
-        translate(width / 2, height / 2);
+        translate(width / 2.0f, height / 2.0f);
         scale(8);
         mLEDisplay.draw(g);
         popMatrix();
@@ -56,6 +56,6 @@ public class SketchLEDisplay extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchLEDisplay.class.getName());
+        PApplet.main(SketchLEDisplayFlat.class.getName());
     }
 }
