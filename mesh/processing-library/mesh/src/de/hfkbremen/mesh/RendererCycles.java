@@ -16,6 +16,9 @@ import static de.hfkbremen.mesh.Location.exists;
 
 public class RendererCycles extends PGraphics3D {
 
+    /* [cycles](https://www.cycles-renderer.org/development/) */
+    /* [Blender -- Command Line](https://docs.blender.org/manual/en/latest/advanced/command_line/index.html) */
+
     private static final String EXEC_FILE_NAME = "cycles";
     private static final String XML_NODE_CYCLES = "cycles";
     private static final String XML_NODE_CAMERA = "camera";
@@ -42,10 +45,9 @@ public class RendererCycles extends PGraphics3D {
     private static final String SHADER_TYPE_DIFFUSE = "diffuse";
     private static final char DELIMITER = ' ';
     private static final String SHADER_NAME = "s_";
-
+    public static String CYCLES_BINARY_NAME = "cycles";
     private final ArrayList<Float> mTriangleList = new ArrayList<>();
     private final ArrayList<Float> mLineList = new ArrayList<>();
-
     private boolean RENDERING_PROCESS_BLOCKING = false;
     private String mCameraType = "perspective";
     private File mFile;
@@ -54,12 +56,11 @@ public class RendererCycles extends PGraphics3D {
     private int mShaderNameID = 0;
 
     public RendererCycles() {
-        this("/Users/dennisppaul/dev/tools/git/tools/mesh/lib/cycles");
-        //        this(EXEC_FILE_NAME);
+        this(getLocation() + "/" + CYCLES_BINARY_NAME);
     }
 
-    public RendererCycles(String path_to_executable) {
-        mExecPath = Location.get(path_to_executable);
+    private RendererCycles(String pPathToCycles) {
+        mExecPath = Location.get(pPathToCycles);
         if (!exists(mExecPath)) {
             /* try default location */
             error("couldn t find `cycles` at location `" + mExecPath + "` trying default location `" + Location.get(
@@ -74,16 +75,192 @@ public class RendererCycles extends PGraphics3D {
         }
     }
 
-    private void error(String pErrorMessage) {
-        System.err.println("### @" + getClass().getSimpleName() + " / " + pErrorMessage);
-    }
-
-    private void console(String pErrorMessage) {
-        System.out.println("+++ @" + getClass().getSimpleName() + " / " + pErrorMessage);
+    public static RendererCycles beginRaw(PApplet pParent, String pOutputPath) {
+        return (RendererCycles) pParent.beginRaw(RendererCycles.class.getName(), pOutputPath);
     }
 
     public XML getXML() {
         return mXML;
+    }
+
+    public void setPath(String pPath) {
+        path = pPath;
+        if (pPath != null) {
+            mFile = new File(pPath);
+            if (!mFile.isAbsolute()) {
+                mFile = null;
+            }
+        }
+        if (mFile == null) {
+            error("coulnd t create output file `" + pPath + "`");
+        }
+    }
+
+    public boolean displayable() {
+        return false;
+    }
+
+    public void beginDraw() {
+        if (mXML == null) {
+            mXML = new XML(XML_NODE_CYCLES);
+        }
+    }
+
+    public void endDraw() {
+        buildCamera(mXML);
+        buildBackground(mXML);
+
+        if (mXML != null && mFile != null) {
+            mXML.save(mFile);
+            //            mXML.print();
+            launchRenderer(mFile.getPath());
+            mXML = null;
+        }
+    }
+
+    public void beginShape(int kind) {
+        System.out.println("beginShape"); // TODO `beginShape` only gets called once
+        shape = kind;
+
+        if ((shape != LINES) && (shape != TRIANGLES) && (shape != POLYGON)) {
+            String err = "renderer can only be used with beginRaw(), " + "because it only supports lines and " +
+                         "triangles_continuous";
+            throw new RuntimeException(err);
+        }
+
+        if ((shape == POLYGON) && fill) {
+            throw new RuntimeException("renderer only supports non-filled shapes.");
+        }
+
+        vertexCount = 0;
+    }
+
+    public void endShape(int mode) {
+        System.out.println("endShape"); // TODO `endShape` only gets called once, this creates a problem with shaders
+        if (shape == POLYGON) {
+            for (int i = 0; i < vertexCount - 1; i++) {
+                writeLine(i, i + 1);
+            }
+            if (mode == CLOSE) {
+                writeLine(vertexCount - 1, 0);
+            }
+        }
+
+    /*
+    if ((vertexCount != 0) &&
+        ((shape != LINE_STRIP) && (vertexCount != 1))) {
+      System.err.println("Extra vertex boogers found.");
+    }
+    */
+
+        final String mCurrentShaderName = SHADER_NAME + mShaderNameID;
+        mShaderNameID++;
+
+        buildShader(mXML, mCurrentShaderName, fillR, fillG, fillB); // TODO fillA?
+        buildObject(mXML, mCurrentShaderName, toArray(mTriangleList));
+        mTriangleList.clear();
+
+        /* TODO handle line list, build object */
+        mLineList.clear();
+    }
+
+    public void vertex(float x, float y) {
+        vertex(x, y, 0);
+    }
+
+    public void vertex(float x, float y, float z) {
+        float[] vertex = vertices[vertexCount];
+
+        vertex[X] = x;  // note: not mx, my, mz like PGraphics3
+        vertex[Y] = y;
+        vertex[Z] = z;
+
+        if (fill) {
+            vertex[R] = fillR;
+            vertex[G] = fillG;
+            vertex[B] = fillB;
+            vertex[A] = fillA;
+        }
+
+        if (stroke) {
+            vertex[SR] = strokeR;
+            vertex[SG] = strokeG;
+            vertex[SB] = strokeB;
+            vertex[SA] = strokeA;
+            vertex[SW] = strokeWeight;
+        }
+
+        if (textureImage != null) {  // for the future?
+            vertex[U] = textureU;
+            vertex[V] = textureV;
+        }
+        vertexCount++;
+
+        if ((shape == LINES) && (vertexCount == 2)) {
+            writeLine(0, 1);
+            vertexCount = 0;
+
+/*
+    } else if ((shape == LINE_STRIP) && (vertexCount == 2)) {
+      writeLineStrip();
+*/
+
+        } else if ((shape == TRIANGLES) && (vertexCount == 3)) {
+            writeTriangle();
+        }
+    }
+
+    public boolean is2D() {
+        return false;
+    }
+
+    public boolean is3D() {
+        return true;
+    }
+
+    /* --- PGraphics --- */
+
+    protected void writeLine(int index1, int index2) {
+        mTriangleList.add(vertices[index1][X]);
+        mTriangleList.add(vertices[index1][Y]);
+        mTriangleList.add(vertices[index1][Z]);
+
+        mTriangleList.add(vertices[index2][X]);
+        mTriangleList.add(vertices[index2][Y]);
+        mTriangleList.add(vertices[index2][Z]);
+    }
+
+    protected void writeTriangle() {
+        for (int i = 0; i < 3; i++) {
+            mTriangleList.add(vertices[i][X]);
+            mTriangleList.add(vertices[i][Y]);
+            mTriangleList.add(vertices[i][Z]);
+        }
+        vertexCount = 0;
+    }
+
+    // ..............................................................
+
+    private static String getLocation() {
+        String mLocation = "";
+        try {
+            File mFile = new File(RendererCycles.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            mLocation = mFile.getParentFile().getAbsolutePath();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("### @" + RendererCycles.class.getSimpleName() + " / " + "can not locate library location using relative path.");
+        }
+        return mLocation;
+    }
+
+    private void error(String pErrorMessage) {
+        System.err.println("### @" + getClass().getSimpleName() + " / " + pErrorMessage);
+    }
+
+    // ..............................................................
+
+    private void console(String pErrorMessage) {
+        System.out.println("+++ @" + getClass().getSimpleName() + " / " + pErrorMessage);
     }
 
     private void buildCamera(XML pXML) {
@@ -255,165 +432,6 @@ public class RendererCycles extends PGraphics3D {
         }
     }
 
-    /* --- PGraphics --- */
-
-    public void setPath(String pPath) {
-        path = pPath;
-        if (pPath != null) {
-            mFile = new File(pPath);
-            if (!mFile.isAbsolute()) {
-                mFile = null;
-            }
-        }
-        if (mFile == null) {
-            error("coulnd t create output file `" + pPath + "`");
-        }
-    }
-
-    public boolean displayable() {
-        return false;
-    }
-
-    // ..............................................................
-
-    public void beginDraw() {
-        if (mXML == null) {
-            mXML = new XML(XML_NODE_CYCLES);
-        }
-    }
-
-    public void endDraw() {
-        buildCamera(mXML);
-        buildBackground(mXML);
-
-        if (mXML != null && mFile != null) {
-            mXML.save(mFile);
-//            mXML.print();
-            launchRenderer(mFile.getPath());
-            mXML = null;
-        }
-    }
-
-    // ..............................................................
-
-    public void beginShape(int kind) {
-        System.out.println("beginShape"); // TODO `beginShape` only gets called once
-        shape = kind;
-
-        if ((shape != LINES) && (shape != TRIANGLES) && (shape != POLYGON)) {
-            String err = "renderer can only be used with beginRaw(), " + "because it only supports lines and triangles_continuous";
-            throw new RuntimeException(err);
-        }
-
-        if ((shape == POLYGON) && fill) {
-            throw new RuntimeException("renderer only supports non-filled shapes.");
-        }
-
-        vertexCount = 0;
-    }
-
-    public void endShape(int mode) {
-        System.out.println("endShape"); // TODO `endShape` only gets called once, this creates a problem with shaders
-        if (shape == POLYGON) {
-            for (int i = 0; i < vertexCount - 1; i++) {
-                writeLine(i, i + 1);
-            }
-            if (mode == CLOSE) {
-                writeLine(vertexCount - 1, 0);
-            }
-        }
-
-    /*
-    if ((vertexCount != 0) &&
-        ((shape != LINE_STRIP) && (vertexCount != 1))) {
-      System.err.println("Extra vertex boogers found.");
-    }
-    */
-
-        final String mCurrentShaderName = SHADER_NAME + mShaderNameID;
-        mShaderNameID++;
-
-        buildShader(mXML, mCurrentShaderName, fillR, fillG, fillB); // TODO fillA?
-        buildObject(mXML, mCurrentShaderName, toArray(mTriangleList));
-        mTriangleList.clear();
-
-        /* TODO handle line list, build object */
-        mLineList.clear();
-    }
-
-    public void vertex(float x, float y) {
-        vertex(x, y, 0);
-    }
-
-    public void vertex(float x, float y, float z) {
-        float vertex[] = vertices[vertexCount];
-
-        vertex[X] = x;  // note: not mx, my, mz like PGraphics3
-        vertex[Y] = y;
-        vertex[Z] = z;
-
-        if (fill) {
-            vertex[R] = fillR;
-            vertex[G] = fillG;
-            vertex[B] = fillB;
-            vertex[A] = fillA;
-        }
-
-        if (stroke) {
-            vertex[SR] = strokeR;
-            vertex[SG] = strokeG;
-            vertex[SB] = strokeB;
-            vertex[SA] = strokeA;
-            vertex[SW] = strokeWeight;
-        }
-
-        if (textureImage != null) {  // for the future?
-            vertex[U] = textureU;
-            vertex[V] = textureV;
-        }
-        vertexCount++;
-
-        if ((shape == LINES) && (vertexCount == 2)) {
-            writeLine(0, 1);
-            vertexCount = 0;
-
-/*
-    } else if ((shape == LINE_STRIP) && (vertexCount == 2)) {
-      writeLineStrip();
-*/
-
-        } else if ((shape == TRIANGLES) && (vertexCount == 3)) {
-            writeTriangle();
-        }
-    }
-
-    public boolean is2D() {
-        return false;
-    }
-
-    public boolean is3D() {
-        return true;
-    }
-
-    protected void writeLine(int index1, int index2) {
-        mTriangleList.add(vertices[index1][X]);
-        mTriangleList.add(vertices[index1][Y]);
-        mTriangleList.add(vertices[index1][Z]);
-
-        mTriangleList.add(vertices[index2][X]);
-        mTriangleList.add(vertices[index2][Y]);
-        mTriangleList.add(vertices[index2][Z]);
-    }
-
-    protected void writeTriangle() {
-        for (int i = 0; i < 3; i++) {
-            mTriangleList.add(vertices[i][X]);
-            mTriangleList.add(vertices[i][Y]);
-            mTriangleList.add(vertices[i][Z]);
-        }
-        vertexCount = 0;
-    }
-
     private static float[] toArray(List<Float> pFloatList) {
         float[] mArray = new float[pFloatList.size()];
         for (int i = 0; i < mArray.length; i++) {
@@ -422,17 +440,13 @@ public class RendererCycles extends PGraphics3D {
         return mArray;
     }
 
-    public static RendererCycles beginRaw(PApplet pParent, String pOutputPath) {
-        return (RendererCycles) pParent.beginRaw(RendererCycles.class.getName(), pOutputPath);
-    }
-
     /* --- console output--- */
 
-    private class StreamConsumer extends Thread {
+    private static class StreamConsumer extends Thread {
 
-        private InputStream mStream;
+        private final InputStream mStream;
 
-        private String mStreamName;
+        private final String mStreamName;
 
         StreamConsumer(InputStream theStream, String theStreamName) {
             mStream = theStream;

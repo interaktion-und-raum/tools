@@ -17,7 +17,7 @@ public class Sketch25D extends PApplet {
         background(255);
 
         // camera
-        translate(width / 2, height / 2);
+        translate(width / 2.0f, height / 2.0f);
         rotateX(radians(mouseY * 0.25f));
         rotateZ(radians(mouseX * 0.25f));
 
@@ -25,7 +25,7 @@ public class Sketch25D extends PApplet {
         noFill();
         drawMirror(0, 0, radians(frameCount));
 
-        rect(-width / 2, -height / 2, width / 2, height / 2);
+        rect(-width / 2.0f, -height / 2.0f, width / 2.0f, height / 2.0f);
 
         stroke(255, 0, 0);
         pushMatrix();
