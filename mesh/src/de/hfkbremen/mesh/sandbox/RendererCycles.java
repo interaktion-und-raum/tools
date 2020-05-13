@@ -1,5 +1,6 @@
-package de.hfkbremen.mesh;
+package de.hfkbremen.mesh.sandbox;
 
+import de.hfkbremen.mesh.Location;
 import processing.core.PApplet;
 import processing.data.XML;
 import processing.opengl.PGraphics3D;

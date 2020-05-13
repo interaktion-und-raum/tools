@@ -1,6 +1,5 @@
-package de.hfkbremen.mesh.examples;
+package de.hfkbremen.mesh.sandbox;
 
-import de.hfkbremen.mesh.RendererCycles;
 import processing.core.PApplet;
 
 public class SketchRenderingWithCycles extends PApplet {
