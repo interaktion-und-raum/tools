@@ -1,5 +1,6 @@
-package de.hfkbremen.mesh.sandbox;
+package de.hfkbremen.mesh.examples;
 
+import de.hfkbremen.mesh.RendererCycles;
 import processing.core.PApplet;
 
 public class SketchRenderingWithCycles extends PApplet {
@@ -17,21 +18,41 @@ public class SketchRenderingWithCycles extends PApplet {
 
     public void draw() {
         if (record) {
-            RendererCycles mCycles = RendererCycles.beginRaw(this, System.getProperty("user.home") +  "/Desktop/foobar.xml");
-            mCycles.getXML().print();
+            // @TODO need to set path to cycles manually
+//            RendererCycles.CYCLES_BINARY_PATH = "/Users/dennisppaul/dev/tools/git/tools/mesh/lib/";
+            de.hfkbremen.mesh.RendererCycles.OPTION_NUMBER_OF_SAMPLES = 25;
+            de.hfkbremen.mesh.RendererCycles.OPTION_IMAGE_FILE_TYPE =
+                    de.hfkbremen.mesh.RendererCycles.IMAGE_FILE_TYPE_JPG;
+            de.hfkbremen.mesh.RendererCycles.RENDERING_PROCESS_BLOCKING = true;
+            de.hfkbremen.mesh.RendererCycles.DEBUG_PRINT_RENDER_PROGRESS = true;
+
+            String mOutputFile = System.getProperty("user.home") + "/Desktop/foobar" + frameCount + ".xml";
+            beginRaw(createGraphics(640 * 2, 480 * 2, RendererCycles.name(), mOutputFile));
         }
-        background(255);
+
+        // @TODO `background` is not handled yet
+        background(0);
+
         translate(width / 2.0f, height / 2.0f);
-        rotateX(0.5f);
+        rotateX(frameCount * 0.0133f);
         rotateY(0.9f);
         scale(1, 1, 1);
         fill(255, 127, 0);
         rect(-50, -50, 100, 100);
 
+        // @TODO `stroke` is not working yet
+        //        stroke(0);
+
         for (int i = 0; i < 5; i++) {
+            // @TODO `fill` is not handled yet
             fill(0, 127, i * 255 / 5.0f);
             translate(10, 5, 1);
             box(100);
+        }
+
+        // @TODO `line` is not handled yet
+        for (int i = 0; i < 100; i++) {
+            line(random(-width), random(-height), random(-width), random(width), random(height), random(width));
         }
 
         //        lights();

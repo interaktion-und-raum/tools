@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class SketchConvertLineToTriangles extends PApplet {
 
-    private ArrayList<PVector> mVerticeCloud = new ArrayList<>();
+    private final ArrayList<PVector> mVerticesCloud = new ArrayList<>();
 
     public void settings() {
         size(1024, 768, P3D);
@@ -19,15 +19,15 @@ public class SketchConvertLineToTriangles extends PApplet {
         ArcBall.setupRotateAroundCenter(this, false);
 
         for (int i = 0; i < 100; i++) {
-            PVector p = new PVector(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-250, 250));
-            mVerticeCloud.add(p);
+            PVector p = new PVector(random(-width / 2.0f, width / 2.0f), random(-height / 2.0f, height / 2.0f), random(-250, 250));
+            mVerticesCloud.add(p);
         }
     }
 
     public void draw() {
         background(0, 127, 255);
         lights();
-        translate(width / 2, height / 2);
+        translate(width / 2.0f, height / 2.0f);
 
         //        drawRandomLines();
         drawSpiralContinuous();
@@ -43,7 +43,7 @@ public class SketchConvertLineToTriangles extends PApplet {
     private void drawRandomLines() {
         noStroke();
         fill(255);
-        drawTriangles(Line3.triangles(mVerticeCloud, 1, true, null));
+        drawTriangles(Line3.triangles(mVerticesCloud, 1, true, null));
     }
 
     private void drawRing() {

@@ -1,6 +1,5 @@
-package de.hfkbremen.mesh.sandbox;
+package de.hfkbremen.mesh;
 
-import de.hfkbremen.mesh.Location;
 import processing.core.PApplet;
 import processing.data.XML;
 import processing.opengl.PGraphics3D;
@@ -20,7 +19,6 @@ public class RendererCycles extends PGraphics3D {
     /* [cycles](https://www.cycles-renderer.org/development/) */
     /* [Blender -- Command Line](https://docs.blender.org/manual/en/latest/advanced/command_line/index.html) */
 
-    private static final String EXEC_FILE_NAME = "cycles";
     private static final String XML_NODE_CYCLES = "cycles";
     private static final String XML_NODE_CAMERA = "camera";
     private static final String XML_NODE_BACKGROUND = "background";
@@ -46,18 +44,31 @@ public class RendererCycles extends PGraphics3D {
     private static final String SHADER_TYPE_DIFFUSE = "diffuse";
     private static final char DELIMITER = ' ';
     private static final String SHADER_NAME = "s_";
+    private static final String STREAM_NAME_ERR = "ERR";
+    private static final String STREAM_NAME_OUT = "OUT";
+    private static final String OPTION_SAMPLES = "--samples";
+    private static final String OPTION_BACKGROUND = "--background";
+    private static final String mOptionOutput = "--output";
+    public static String IMAGE_FILE_TYPE_PNG = ".png";
+    public static String IMAGE_FILE_TYPE_JPG = ".jpg";
+    public static String IMAGE_FILE_TYPE_TGA = ".tga";
+    public static String OPTION_IMAGE_FILE_TYPE = IMAGE_FILE_TYPE_PNG;
     public static String CYCLES_BINARY_NAME = "cycles";
+    public static String CYCLES_BINARY_PATH = null;
+    public static boolean RENDERING_PROCESS_BLOCKING = false;
+    public static int OPTION_NUMBER_OF_SAMPLES = 10;
+    public static boolean DEBUG_PRINT_RENDER_PROGRESS = false;
+    public static String CAMERA_TYPE_PERSPECTIVE = "perspective";
+    public static String CAMERA_TYPE = CAMERA_TYPE_PERSPECTIVE;
     private final ArrayList<Float> mTriangleList = new ArrayList<>();
     private final ArrayList<Float> mLineList = new ArrayList<>();
-    private boolean RENDERING_PROCESS_BLOCKING = false;
-    private String mCameraType = "perspective";
     private File mFile;
     private XML mXML;
     private String mExecPath;
     private int mShaderNameID = 0;
 
     public RendererCycles() {
-        this(getLocation() + "/" + CYCLES_BINARY_NAME);
+        this((CYCLES_BINARY_PATH == null ? getLocation() : CYCLES_BINARY_PATH) + "/" + CYCLES_BINARY_NAME);
     }
 
     private RendererCycles(String pPathToCycles) {
@@ -65,8 +76,8 @@ public class RendererCycles extends PGraphics3D {
         if (!exists(mExecPath)) {
             /* try default location */
             error("couldn t find `cycles` at location `" + mExecPath + "` trying default location `" + Location.get(
-                    EXEC_FILE_NAME) + "`");
-            mExecPath = Location.get(EXEC_FILE_NAME);
+                    CYCLES_BINARY_NAME) + "`");
+            mExecPath = Location.get(CYCLES_BINARY_NAME);
             if (!exists(mExecPath)) {
                 error("couldn t find `cycles` at default location.");
             }
@@ -74,6 +85,10 @@ public class RendererCycles extends PGraphics3D {
         if (exists(mExecPath)) {
             System.out.println("### found `cycles` at location " + mExecPath);
         }
+    }
+
+    public static String name() {
+        return RendererCycles.class.getName();
     }
 
     public static RendererCycles beginRaw(PApplet pParent, String pOutputPath) {
@@ -93,7 +108,7 @@ public class RendererCycles extends PGraphics3D {
             }
         }
         if (mFile == null) {
-            error("coulnd t create output file `" + pPath + "`");
+            error("could not create output file `" + pPath + "`");
         }
     }
 
@@ -119,8 +134,9 @@ public class RendererCycles extends PGraphics3D {
         }
     }
 
+    /* --- PGraphics --- */
+
     public void beginShape(int kind) {
-        System.out.println("beginShape"); // TODO `beginShape` only gets called once
         shape = kind;
 
         if ((shape != LINES) && (shape != TRIANGLES) && (shape != POLYGON)) {
@@ -137,7 +153,6 @@ public class RendererCycles extends PGraphics3D {
     }
 
     public void endShape(int mode) {
-        System.out.println("endShape"); // TODO `endShape` only gets called once, this creates a problem with shaders
         if (shape == POLYGON) {
             for (int i = 0; i < vertexCount - 1; i++) {
                 writeLine(i, i + 1);
@@ -164,6 +179,8 @@ public class RendererCycles extends PGraphics3D {
         /* TODO handle line list, build object */
         mLineList.clear();
     }
+
+    // ..............................................................
 
     public void vertex(float x, float y) {
         vertex(x, y, 0);
@@ -211,6 +228,8 @@ public class RendererCycles extends PGraphics3D {
         }
     }
 
+    // ..............................................................
+
     public boolean is2D() {
         return false;
     }
@@ -218,8 +237,6 @@ public class RendererCycles extends PGraphics3D {
     public boolean is3D() {
         return true;
     }
-
-    /* --- PGraphics --- */
 
     protected void writeLine(int index1, int index2) {
         mTriangleList.add(vertices[index1][X]);
@@ -240,8 +257,6 @@ public class RendererCycles extends PGraphics3D {
         vertexCount = 0;
     }
 
-    // ..............................................................
-
     private static String getLocation() {
         String mLocation = "";
         try {
@@ -249,7 +264,8 @@ public class RendererCycles extends PGraphics3D {
             mLocation = mFile.getParentFile().getAbsolutePath();
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("### @" + RendererCycles.class.getSimpleName() + " / " + "can not locate library location using relative path.");
+            System.err.println("### @" + RendererCycles.class.getSimpleName() + " / " + "can not locate library " +
+                               "location using relative path.");
         }
         return mLocation;
     }
@@ -257,8 +273,6 @@ public class RendererCycles extends PGraphics3D {
     private void error(String pErrorMessage) {
         System.err.println("### @" + getClass().getSimpleName() + " / " + pErrorMessage);
     }
-
-    // ..............................................................
 
     private void console(String pErrorMessage) {
         System.out.println("+++ @" + getClass().getSimpleName() + " / " + pErrorMessage);
@@ -297,7 +311,7 @@ public class RendererCycles extends PGraphics3D {
             XML mCameraTransform = new XML(XML_NODE_TRANSFORM);
             setMatrix4x4(mCameraTransform, mCameraMatrix);
             XML mCamera = new XML(XML_NODE_CAMERA);
-            mCamera.setString(XML_ATTR_TYPE, mCameraType);
+            mCamera.setString(XML_ATTR_TYPE, CAMERA_TYPE);
             mCameraTransform.addChild(mCamera);
             pXML.addChild(mCameraTransform);
         }
@@ -410,12 +424,26 @@ public class RendererCycles extends PGraphics3D {
 
     private void launchRenderer(String pXMLPath) {
         try {
-            Process mProcess = Runtime.getRuntime().exec(new String[]{mExecPath, pXMLPath});
+            final String mOptionSamplesValue = String.valueOf(OPTION_NUMBER_OF_SAMPLES);
+            final String mOptionOutputValue = path + OPTION_IMAGE_FILE_TYPE;
+            final String[] mCommandString = new String[]{mExecPath,
+                                                         OPTION_SAMPLES,
+                                                         mOptionSamplesValue,
+                                                         OPTION_BACKGROUND,
+                                                         mOptionOutput,
+                                                         mOptionOutputValue,
+                                                         pXMLPath};
+            Process mProcess = Runtime.getRuntime().exec(mCommandString);
 
-            console("executing command `" + mExecPath + " " + pXMLPath + "`");
+            StringBuilder sb = new StringBuilder();
+            for (String s : mCommandString) {
+                sb.append(s);
+                sb.append(' ');
+            }
+            console("start render process: `" + sb.toString() + "`");
 
-            StreamConsumer mErrorStream = new StreamConsumer(mProcess.getErrorStream(), "ERR");
-            StreamConsumer mOutputStream = new StreamConsumer(mProcess.getInputStream(), "OUT");
+            StreamConsumer mErrorStream = new StreamConsumer(mProcess.getErrorStream(), STREAM_NAME_ERR);
+            StreamConsumer mOutputStream = new StreamConsumer(mProcess.getInputStream(), STREAM_NAME_OUT);
             mErrorStream.start();
             mOutputStream.start();
 
@@ -427,11 +455,13 @@ public class RendererCycles extends PGraphics3D {
                 }
             }
 
-            console("done executing command");
+            console("finish render process");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
+
+    /* --- console output--- */
 
     private static float[] toArray(List<Float> pFloatList) {
         float[] mArray = new float[pFloatList.size()];
@@ -440,8 +470,6 @@ public class RendererCycles extends PGraphics3D {
         }
         return mArray;
     }
-
-    /* --- console output--- */
 
     private static class StreamConsumer extends Thread {
 
@@ -460,7 +488,9 @@ public class RendererCycles extends PGraphics3D {
                 final BufferedReader br = new BufferedReader(isr);
                 String line;
                 while ((line = br.readLine()) != null) {
-                    System.out.println(mStreamName + "> " + line);
+                    if (mStreamName.equalsIgnoreCase(STREAM_NAME_ERR) || DEBUG_PRINT_RENDER_PROGRESS) {
+                        System.out.println(mStreamName + "> " + line);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
