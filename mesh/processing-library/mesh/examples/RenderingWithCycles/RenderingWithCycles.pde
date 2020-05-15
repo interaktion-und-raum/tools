@@ -33,7 +33,7 @@ void draw() {
         RendererCycles.DEBUG_PRINT_RENDER_PROGRESS = false;
         RendererCycles.BACKGROUND_COLOR.set(1.0f, 0.5f, 1.0f);
         RendererCycles.RENDER_VIEWPORT_SCALE = 1.0f;
-        mOutputFile = System.getProperty("user.home") + "/Desktop/foobar/foobar" + frameCount + ".xml";
+        mOutputFile = "cycles" + frameCount + ".xml";
         beginRaw(createGraphics(width, height, RendererCycles.name(), mOutputFile));
     }
     background(255, 127, 255);
