@@ -17,8 +17,13 @@ import static de.hfkbremen.mesh.Location.exists;
 
 public class RendererCycles extends PGraphics3D {
 
-    /* [cycles](https://www.cycles-renderer.org/development/) */
-    /* [Blender -- Command Line](https://docs.blender.org/manual/en/latest/advanced/command_line/index.html) */
+    /**
+     * # Cycles Resources
+     *
+     * - [Cycles @ Blender](https://developer.blender.org/project/view/26/)
+     * - [Cycles Open Source Production Rendering](https://www.cycles-renderer.org/development/)
+     *
+     */
 
     private static final String XML_NODE_CYCLES = "cycles";
     private static final String XML_NODE_CAMERA = "camera";
@@ -49,23 +54,28 @@ public class RendererCycles extends PGraphics3D {
     private static final String STREAM_NAME_OUT = "OUT";
     private static final String OPTION_SAMPLES = "--samples";
     private static final String OPTION_BACKGROUND = "--background";
-    private static final String mOptionOutput = "--output";
+    private static final String OPTION_OUTPUT = "--output";
+    private static final String OPTION_WIDTH = "--width";
+    private static final String OPTION_HEIGHT = "--height";
+    public static float RENDER_VIEWPORT_SCALE = 1.0f;
+    public static boolean DEBUG_PRINT_CYCLES_BINARY_LOCATION = false;
+    public static boolean DEBUG_PRINT_RENDER_PROGRESS = false;
+    public static boolean DEBUG_PRINT_CAMERA_MATRIX = false;
     public static String IMAGE_FILE_TYPE_PNG = ".png";
     public static String IMAGE_FILE_TYPE_JPG = ".jpg";
     public static String IMAGE_FILE_TYPE_TGA = ".tga";
-    public static String OPTION_IMAGE_FILE_TYPE = IMAGE_FILE_TYPE_PNG;
+    public static String OUTPUT_IMAGE_FILE_TYPE = IMAGE_FILE_TYPE_PNG;
     public static String CYCLES_BINARY_NAME = "cycles";
     public static String CYCLES_BINARY_PATH = null;
+    public static boolean LINE_EXPAND_WITH_CLOSED_CAPS = true;
     public static boolean RENDERING_PROCESS_BLOCKING = false;
-    public static int OPTION_NUMBER_OF_SAMPLES = 10;
-    public static boolean DEBUG_PRINT_RENDER_PROGRESS = false;
+    public static int NUMBER_OF_SAMPLES = 10;
     public static String CAMERA_TYPE_PERSPECTIVE = "perspective";
     public static String CAMERA_TYPE = CAMERA_TYPE_PERSPECTIVE;
-    public static boolean DEBUG_PRINT_CAMERA_MATRIX = false;
     public static PVector BACKGROUND_COLOR = new PVector();
-    private final ArrayList<Float> mTriangleList = new ArrayList<>();
-    private final ArrayList<Float> mLineList = new ArrayList<>();
+    private final ArrayList<ShaderTriangleBucket> mShaderTriangleBuckets = new ArrayList<>();
     private final Color mColorFill = new Color();
+    private ShaderTriangleBucket mBucket = null;
     private File mFile;
     private XML mXML;
     private String mExecPath;
@@ -83,10 +93,10 @@ public class RendererCycles extends PGraphics3D {
                     CYCLES_BINARY_NAME) + "`");
             mExecPath = Location.get(CYCLES_BINARY_NAME);
             if (!exists(mExecPath)) {
-                error("couldn t find `cycles` at default location.");
+                error("couldn t find `cycles` at default location. try to set path manually via `RendererCycles.CYCLES_BINARY_PATH`.");
             }
         }
-        if (exists(mExecPath)) {
+        if (DEBUG_PRINT_CYCLES_BINARY_LOCATION && exists(mExecPath)) {
             System.out.println("### found `cycles` at location " + mExecPath);
         }
     }
@@ -130,6 +140,8 @@ public class RendererCycles extends PGraphics3D {
         }
     }
 
+    /* --- PGraphics --- */
+
     public void endDraw() {
         buildCamera(mXML);
         buildBackground(mXML);
@@ -141,8 +153,6 @@ public class RendererCycles extends PGraphics3D {
             mXML = null;
         }
     }
-
-    /* --- PGraphics --- */
 
     public void beginShape(int kind) {
         shape = kind;
@@ -159,6 +169,8 @@ public class RendererCycles extends PGraphics3D {
 
         vertexCount = 0;
     }
+
+    // ..............................................................
 
     public void endShape(int mode) {
         if (shape == POLYGON) {
@@ -177,22 +189,19 @@ public class RendererCycles extends PGraphics3D {
     }
     */
 
-        final String mCurrentShaderName = SHADER_NAME + mShaderNameID;
-        mShaderNameID++;
-
-        buildShader(mXML, mCurrentShaderName, fillR, fillG, fillB); // TODO fillA?
-        buildObject(mXML, mCurrentShaderName, toArray(mTriangleList));
-        mTriangleList.clear();
-
-        /* TODO handle line list, build object */
-        mLineList.clear();
+        for (ShaderTriangleBucket s : mShaderTriangleBuckets) {
+            final String mCurrentShaderName = SHADER_NAME + PApplet.nf(mShaderNameID++, 4);
+            buildShader(mXML, mCurrentShaderName, s.color.r, s.color.g, s.color.b); // @TODO fillA?
+            buildObject(mXML, mCurrentShaderName, toArray(s.triangles));
+        }
+        mShaderTriangleBuckets.clear();
     }
-
-    // ..............................................................
 
     public void vertex(float x, float y) {
         vertex(x, y, 0);
     }
+
+    // ..............................................................
 
     public void vertex(float x, float y, float z) {
         float[] vertex = vertices[vertexCount];
@@ -214,7 +223,6 @@ public class RendererCycles extends PGraphics3D {
             vertex[SB] = strokeB;
             vertex[SA] = strokeA;
             vertex[SW] = strokeWeight;
-//            System.out.println("stroke: " + strokeR + "," + strokeG + "," + strokeB);
         }
 
         if (textureImage != null) {  // for the future?
@@ -225,17 +233,12 @@ public class RendererCycles extends PGraphics3D {
 
         if ((shape == LINES) && (vertexCount == 2)) {
             writeLine(0, 1);
-            // @TODO look into `LINE_STRIP`
-            //        } else if ((shape == LINE_STRIP) && (vertexCount == 2)) {
-            //            writeLineStrip();
         } else if ((shape == TRIANGLES) && (vertexCount == 3)) {
             writeTriangle();
         } else if ((shape != TRIANGLES) && (shape != LINES)) {
             System.out.println("shape ( see `PConstants` ) not recognized: " + shape);
         }
     }
-
-    // ..............................................................
 
     public boolean is2D() {
         return false;
@@ -245,50 +248,67 @@ public class RendererCycles extends PGraphics3D {
         return true;
     }
 
-    protected void writeLine(int index1, int index2) {
-        // @TODO expand line into triangles
-        addTriangleVertex(vertices[index1][X], vertices[index1][Y], vertices[index1][Z]);
-        addTriangleVertex(vertices[index2][X], vertices[index2][Y], vertices[index2][Z]);
-        addTriangleVertex(vertices[index2][X] + 10.0f, vertices[index2][Y], vertices[index2][Z] + 10.0f);
-        vertexCount = 0;
+    protected void writeLine(int v0, int v1) {
+        if (stroke) {
+            float[] vertex = vertices[v0];
+            Color c = new Color(vertex[SR], vertex[SG], vertex[SB], vertex[SA]);
+            selectBucket(c);
+
+            PVector p0 = new PVector(vertices[v0][X], vertices[v0][Y], vertices[v0][Z]);
+            PVector p1 = new PVector(vertices[v1][X], vertices[v1][Y], vertices[v1][Z]);
+            final float mSize = strokeWeight / 2.0f;
+            ArrayList<PVector> pTriangles = Line3.triangles(p0, p1, mSize, LINE_EXPAND_WITH_CLOSED_CAPS, null);
+            for (PVector p : pTriangles) {
+                addTriangleVertex(p.x, p.y, p.z);
+            }
+            vertexCount = 0;
+        }
     }
 
     protected void writeTriangle() {
-        // @TODO vertex coloring is ignored. last vertex color is used to color triangle
-
-        float[] vertex = vertices[2];
-        detectMaterialChange(new Color(vertex[R], vertex[G], vertex[B], vertex[A]));
-
-        //        vertex[R] = fillR;
-        //        vertex[G] = fillG;
-        //        vertex[B] = fillB;
-        //        vertex[A] = fillA;
-        //        vertex[SR] = strokeR;
-        //        vertex[SG] = strokeG;
-        //        vertex[SB] = strokeB;
-        //        vertex[SA] = strokeA;
-
-        for (int i = 0; i < 3; i++) {
-            addTriangleVertex(vertices[i][X], vertices[i][Y], vertices[i][Z]);
+        if (fill) {
+            // @TODO individual vertex coloring is ignored. last vertex color is used to color triangle
+            float[] vertex = vertices[2];
+            Color c = new Color(vertex[R], vertex[G], vertex[B], vertex[A]);
+            selectBucket(c);
+            for (int i = 0; i < 3; i++) {
+                addTriangleVertex(vertices[i][X], vertices[i][Y], vertices[i][Z]);
+            }
         }
         vertexCount = 0;
     }
 
     private void addTriangleVertex(float x, float y, float z) {
-        mTriangleList.add(x);
-        mTriangleList.add(y);
-        mTriangleList.add(z);
+        if (mBucket != null) {
+            mBucket.triangles.add(x);
+            mBucket.triangles.add(y);
+            mBucket.triangles.add(z);
+        }
     }
 
-    private void detectMaterialChange(Color c) {
-        if (
-                mColorFill.r != c.r ||
-                mColorFill.g != c.g ||
-                mColorFill.b != c.b ||
-                mColorFill.a != c.a
-        ) {
+    private void selectBucket(Color c) {
+        if (detectShaderChange(c)) {
+            mBucket = findBucket(c);
+        }
+    }
+
+    private ShaderTriangleBucket findBucket(Color c) {
+        for (ShaderTriangleBucket s : mShaderTriangleBuckets) {
+            if (s.color.isEqual(c)) {
+                return s;
+            }
+        }
+        ShaderTriangleBucket s = new ShaderTriangleBucket(c);
+        mShaderTriangleBuckets.add(s);
+        return s;
+    }
+
+    private boolean detectShaderChange(Color c) {
+        if (mColorFill.isEqual(c)) {
+            return false;
+        } else {
             mColorFill.set(c);
-            System.out.println("material change " + mColorFill);
+            return true;
         }
     }
 
@@ -321,11 +341,10 @@ public class RendererCycles extends PGraphics3D {
         int mHeight = height;
         float[] mCameraMatrix = new float[16];
         getMatrix().get(mCameraMatrix);
-        mCameraMatrix[14] = -height * 2;// TODO find out why this is necessary / still off 105%
-        // TODO fix y-axis flip
+        mCameraMatrix[14] = height;// TODO find out why this is necessary / still off 105%
         mCameraMatrix[0] *= 1;
-        mCameraMatrix[5] *= 1;
-        mCameraMatrix[10] *= 1;
+        mCameraMatrix[5] *= -1;
+        mCameraMatrix[10] *= -1;
 
         float[] mParentCameraMatrix = new float[16];
         parent.g.getMatrix().get(mParentCameraMatrix);
@@ -464,13 +483,17 @@ public class RendererCycles extends PGraphics3D {
 
     private void launchRenderer(String pXMLPath) {
         try {
-            final String mOptionSamplesValue = String.valueOf(OPTION_NUMBER_OF_SAMPLES);
-            final String mOptionOutputValue = path + OPTION_IMAGE_FILE_TYPE;
+            final String mOptionSamplesValue = String.valueOf(NUMBER_OF_SAMPLES);
+            final String mOptionOutputValue = path + OUTPUT_IMAGE_FILE_TYPE;
             final String[] mCommandString = new String[]{mExecPath,
                                                          OPTION_SAMPLES,
                                                          mOptionSamplesValue,
                                                          OPTION_BACKGROUND,
-                                                         mOptionOutput,
+                                                         OPTION_WIDTH,
+                                                         String.valueOf(width * RENDER_VIEWPORT_SCALE),
+                                                         OPTION_HEIGHT,
+                                                         String.valueOf(height * RENDER_VIEWPORT_SCALE),
+                                                         OPTION_OUTPUT,
                                                          mOptionOutputValue,
                                                          pXMLPath};
             Process mProcess = Runtime.getRuntime().exec(mCommandString);
@@ -553,6 +576,10 @@ public class RendererCycles extends PGraphics3D {
             this(-1, -1, -1, -1);
         }
 
+        public Color(Color pColor) {
+            set(pColor);
+        }
+
         public void set(float pR, float pG, float pB, float pA) {
             r = pR;
             g = pG;
@@ -576,5 +603,23 @@ public class RendererCycles extends PGraphics3D {
             b = c.b;
             a = c.a;
         }
+
+        public boolean isEqual(Color c) {
+            return r == c.r
+                   && g == c.g
+                   && b == c.b
+                   && a == c.a;
+        }
+    }
+
+    private static class ShaderTriangleBucket {
+
+        final Color color;
+        final ArrayList<Float> triangles = new ArrayList<>();
+
+        ShaderTriangleBucket(Color pColor) {
+            color = new Color(pColor);
+        }
+
     }
 }
