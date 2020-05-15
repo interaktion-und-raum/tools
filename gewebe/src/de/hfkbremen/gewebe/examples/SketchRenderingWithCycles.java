@@ -17,6 +17,9 @@ public class SketchRenderingWithCycles extends PApplet {
      *
      * - if image size is not equal to sketch size the viewport is not scaled
      * - `lights()` does not work yet
+     * - Cycles materials can not be used
+     * - binary is currently only compiled for `macOS 10.15`
+     *
      */
 
     private boolean record = false;
