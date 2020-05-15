@@ -1,6 +1,7 @@
 package de.hfkbremen.mesh;
 
 import processing.core.PApplet;
+import processing.core.PVector;
 import processing.data.XML;
 import processing.opengl.PGraphics3D;
 
@@ -60,8 +61,11 @@ public class RendererCycles extends PGraphics3D {
     public static boolean DEBUG_PRINT_RENDER_PROGRESS = false;
     public static String CAMERA_TYPE_PERSPECTIVE = "perspective";
     public static String CAMERA_TYPE = CAMERA_TYPE_PERSPECTIVE;
+    public static boolean DEBUG_PRINT_CAMERA_MATRIX = false;
+    public static PVector BACKGROUND_COLOR = new PVector();
     private final ArrayList<Float> mTriangleList = new ArrayList<>();
     private final ArrayList<Float> mLineList = new ArrayList<>();
+    private final Color mColorFill = new Color();
     private File mFile;
     private XML mXML;
     private String mExecPath;
@@ -85,6 +89,10 @@ public class RendererCycles extends PGraphics3D {
         if (exists(mExecPath)) {
             System.out.println("### found `cycles` at location " + mExecPath);
         }
+    }
+
+    public static RendererCycles create(PApplet pApplet, int pWidth, int pHeight, String pOutputFile) {
+        return (RendererCycles) pApplet.createGraphics(pWidth, pHeight, name(), pOutputFile);
     }
 
     public static String name() {
@@ -206,6 +214,7 @@ public class RendererCycles extends PGraphics3D {
             vertex[SB] = strokeB;
             vertex[SA] = strokeA;
             vertex[SW] = strokeWeight;
+//            System.out.println("stroke: " + strokeR + "," + strokeG + "," + strokeB);
         }
 
         if (textureImage != null) {  // for the future?
@@ -216,15 +225,13 @@ public class RendererCycles extends PGraphics3D {
 
         if ((shape == LINES) && (vertexCount == 2)) {
             writeLine(0, 1);
-            vertexCount = 0;
-
-/*
-    } else if ((shape == LINE_STRIP) && (vertexCount == 2)) {
-      writeLineStrip();
-*/
-
+            // @TODO look into `LINE_STRIP`
+            //        } else if ((shape == LINE_STRIP) && (vertexCount == 2)) {
+            //            writeLineStrip();
         } else if ((shape == TRIANGLES) && (vertexCount == 3)) {
             writeTriangle();
+        } else if ((shape != TRIANGLES) && (shape != LINES)) {
+            System.out.println("shape ( see `PConstants` ) not recognized: " + shape);
         }
     }
 
@@ -239,22 +246,50 @@ public class RendererCycles extends PGraphics3D {
     }
 
     protected void writeLine(int index1, int index2) {
-        mTriangleList.add(vertices[index1][X]);
-        mTriangleList.add(vertices[index1][Y]);
-        mTriangleList.add(vertices[index1][Z]);
-
-        mTriangleList.add(vertices[index2][X]);
-        mTriangleList.add(vertices[index2][Y]);
-        mTriangleList.add(vertices[index2][Z]);
+        // @TODO expand line into triangles
+        addTriangleVertex(vertices[index1][X], vertices[index1][Y], vertices[index1][Z]);
+        addTriangleVertex(vertices[index2][X], vertices[index2][Y], vertices[index2][Z]);
+        addTriangleVertex(vertices[index2][X] + 10.0f, vertices[index2][Y], vertices[index2][Z] + 10.0f);
+        vertexCount = 0;
     }
 
     protected void writeTriangle() {
+        // @TODO vertex coloring is ignored. last vertex color is used to color triangle
+
+        float[] vertex = vertices[2];
+        detectMaterialChange(new Color(vertex[R], vertex[G], vertex[B], vertex[A]));
+
+        //        vertex[R] = fillR;
+        //        vertex[G] = fillG;
+        //        vertex[B] = fillB;
+        //        vertex[A] = fillA;
+        //        vertex[SR] = strokeR;
+        //        vertex[SG] = strokeG;
+        //        vertex[SB] = strokeB;
+        //        vertex[SA] = strokeA;
+
         for (int i = 0; i < 3; i++) {
-            mTriangleList.add(vertices[i][X]);
-            mTriangleList.add(vertices[i][Y]);
-            mTriangleList.add(vertices[i][Z]);
+            addTriangleVertex(vertices[i][X], vertices[i][Y], vertices[i][Z]);
         }
         vertexCount = 0;
+    }
+
+    private void addTriangleVertex(float x, float y, float z) {
+        mTriangleList.add(x);
+        mTriangleList.add(y);
+        mTriangleList.add(z);
+    }
+
+    private void detectMaterialChange(Color c) {
+        if (
+                mColorFill.r != c.r ||
+                mColorFill.g != c.g ||
+                mColorFill.b != c.b ||
+                mColorFill.a != c.a
+        ) {
+            mColorFill.set(c);
+            System.out.println("material change " + mColorFill);
+        }
     }
 
     private static String getLocation() {
@@ -294,10 +329,14 @@ public class RendererCycles extends PGraphics3D {
 
         float[] mParentCameraMatrix = new float[16];
         parent.g.getMatrix().get(mParentCameraMatrix);
-        for (int i = 0; i < mParentCameraMatrix.length; i++) {
-            System.out.print(mParentCameraMatrix[i] + ", ");
-            if (i % 4 == 3) {
-                System.out.println();
+
+        // @DEBUG
+        if (DEBUG_PRINT_CAMERA_MATRIX) {
+            for (int i = 0; i < mParentCameraMatrix.length; i++) {
+                System.out.print(mParentCameraMatrix[i] + ", ");
+                if (i % 4 == 3) {
+                    System.out.println();
+                }
             }
         }
 
@@ -331,7 +370,8 @@ public class RendererCycles extends PGraphics3D {
             XML mBackgroundPropertyNode = new XML(XML_NODE_BACKGROUND);
             mBackgroundPropertyNode.setString(XML_ATTR_NAME, BACKGROUND_NAME);
             mBackgroundPropertyNode.setFloat("strength", 2.0f);
-            mBackgroundPropertyNode.setString(XML_ATTR_COLOR, getColorAttr(0.5f, 0.5f, 0.5f));
+            mBackgroundPropertyNode.setString(XML_ATTR_COLOR,
+                                              getColorAttr(BACKGROUND_COLOR.x, BACKGROUND_COLOR.y, BACKGROUND_COLOR.z));
             mBackgroundPropertyNode.setFloat("SurfaceMixWeight", 1.0f);
             mBackgroundNode.addChild(mBackgroundPropertyNode);
 
@@ -461,8 +501,6 @@ public class RendererCycles extends PGraphics3D {
         }
     }
 
-    /* --- console output--- */
-
     private static float[] toArray(List<Float> pFloatList) {
         float[] mArray = new float[pFloatList.size()];
         for (int i = 0; i < mArray.length; i++) {
@@ -470,6 +508,8 @@ public class RendererCycles extends PGraphics3D {
         }
         return mArray;
     }
+
+    /* --- console output--- */
 
     private static class StreamConsumer extends Thread {
 
@@ -495,6 +535,46 @@ public class RendererCycles extends PGraphics3D {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static class Color {
+
+        float r, g, b, a;
+
+        public Color(float pR, float pG, float pB, float pA) {
+            r = pR;
+            g = pG;
+            b = pB;
+            a = pA;
+        }
+
+        public Color() {
+            this(-1, -1, -1, -1);
+        }
+
+        public void set(float pR, float pG, float pB, float pA) {
+            r = pR;
+            g = pG;
+            b = pB;
+            a = pA;
+        }
+
+        @Override
+        public String toString() {
+            return "Color{" +
+                   "r=" + r +
+                   ", g=" + g +
+                   ", b=" + b +
+                   ", a=" + a +
+                   '}';
+        }
+
+        public void set(Color c) {
+            r = c.r;
+            g = c.g;
+            b = c.b;
+            a = c.a;
         }
     }
 }
