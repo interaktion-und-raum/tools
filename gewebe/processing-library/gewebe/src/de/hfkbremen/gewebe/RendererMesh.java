@@ -31,29 +31,30 @@ public abstract class RendererMesh extends PGraphics3D {
         mShaderTriangleBuckets.clear();
     }
 
-    protected ArrayList<ShaderTriangleBucket> bucket() {
-        return mShaderTriangleBuckets;
-    }
-
     public void beginShape(int kind) {
         shape = kind;
+        if ((shape != LINES) &&
+            (shape != TRIANGLES) &&
+            (shape != POLYGON)) {
+            String err =
+                    "RawDXF can only be used with beginRaw(), " +
+                    "because it only supports lines and triangles";
+            throw new RuntimeException(err);
+        }
         beginFrame();
         vertexCount = 0;
-
-        //        if ((shape != LINES) && (shape != TRIANGLES) && (shape != POLYGON)) {
-        //            String err = "renderer can only be used with beginRaw(), " + "because it only supports lines
-        //            and " +
-        //                         "triangles_continuous";
-        //            throw new RuntimeException(err);
-        //        }
-        //
-        //        if ((shape == POLYGON) && fill) {
-        //            throw new RuntimeException("renderer only supports non-filled shapes.");
-        //        }
     }
 
     public void endShape(int mode) {
-        endFrame(mode);
+        if (shape == POLYGON) {
+            for (int i = 0; i < vertexCount - 1; i++) {
+                writeLine(i, i + 1);
+            }
+            if (mode == CLOSE) {
+                writeLine(vertexCount - 1, 0);
+            }
+        }
+        endFrame();
     }
 
     public void vertex(float x, float y) {
@@ -92,8 +93,6 @@ public abstract class RendererMesh extends PGraphics3D {
             writeLine(0, 1);
         } else if ((shape == TRIANGLES) && (vertexCount == 3)) {
             writeTriangle();
-        } else if ((shape != TRIANGLES) && (shape != LINES)) {
-            System.out.println("shape ( see `PConstants` ) not recognized: " + shape);
         }
     }
 
@@ -113,9 +112,13 @@ public abstract class RendererMesh extends PGraphics3D {
         return false;
     }
 
+    protected ArrayList<ShaderTriangleBucket> bucket() {
+        return mShaderTriangleBuckets;
+    }
+
     protected abstract void beginFrame();
 
-    protected abstract void endFrame(int mode);
+    protected abstract void endFrame();
 
     protected abstract void prepareFrame();
 
@@ -128,7 +131,10 @@ public abstract class RendererMesh extends PGraphics3D {
             RendererCycles.Color c = new RendererCycles.Color(vertex[R], vertex[G], vertex[B], vertex[A]);
             selectBucket(c);
             for (int i = 0; i < 3; i++) {
-                addTriangleVertex(vertices[i][X], vertices[i][Y], vertices[i][Z]);
+                addTriangleVertex(
+                        vertices[i][X], vertices[i][Y], vertices[i][Z],
+                        vertices[i][NX], vertices[i][NY], vertices[i][NZ]
+                                 );
             }
         }
         vertexCount = 0;
@@ -145,7 +151,7 @@ public abstract class RendererMesh extends PGraphics3D {
             final float mSize = strokeWeight / 2.0f;
             ArrayList<PVector> pTriangles = Line3.triangles(p0, p1, mSize, LINE_EXPAND_WITH_CLOSED_CAPS, null);
             for (PVector p : pTriangles) {
-                addTriangleVertex(p.x, p.y, p.z);
+                addTriangleVertex(p.x, p.y, p.z, 0, 0, 1);
             }
             vertexCount = 0;
         }
@@ -209,11 +215,14 @@ public abstract class RendererMesh extends PGraphics3D {
         }
     }
 
-    private void addTriangleVertex(float x, float y, float z) {
+    private void addTriangleVertex(float x, float y, float z, float nx, float ny, float nz) {
         if (mBucket != null) {
-            mBucket.triangles.add(x);
-            mBucket.triangles.add(y);
-            mBucket.triangles.add(z);
+            mBucket.vertices.add(x);
+            mBucket.vertices.add(y);
+            mBucket.vertices.add(z);
+            mBucket.normals.add(nx);
+            mBucket.normals.add(ny);
+            mBucket.normals.add(nz);
         }
     }
 
@@ -270,9 +279,16 @@ public abstract class RendererMesh extends PGraphics3D {
         }
     }
 
-    protected static class Color {
+    public static class Color {
 
         public float r, g, b, a;
+
+        public Color(float c) {
+            r = c;
+            g = c;
+            b = c;
+            a = 1.0f;
+        }
 
         public Color(float pR, float pG, float pB, float pA) {
             r = pR;
@@ -296,6 +312,12 @@ public abstract class RendererMesh extends PGraphics3D {
             a = pA;
         }
 
+        public void set(float pR, float pG, float pB) {
+            r = pR;
+            g = pG;
+            b = pB;
+        }
+
         @Override
         public String toString() {
             return "Color{" +
@@ -313,6 +335,13 @@ public abstract class RendererMesh extends PGraphics3D {
             a = c.a;
         }
 
+        public void set(float c) {
+            r = c;
+            g = c;
+            b = c;
+            a = 1.0f;
+        }
+
         public boolean isEqual(Color c) {
             return r == c.r
                    && g == c.g
@@ -324,7 +353,9 @@ public abstract class RendererMesh extends PGraphics3D {
     protected static class ShaderTriangleBucket {
 
         final Color color;
-        final ArrayList<Float> triangles = new ArrayList<>();
+        final ArrayList<Float> vertices = new ArrayList<>();
+        final ArrayList<Float> normals = new ArrayList<>();
+        // @TODO maybe add normals and UV coords
 
         ShaderTriangleBucket(Color pColor) {
             color = new Color(pColor);

@@ -19,10 +19,9 @@ public class SketchRenderingWithCycles extends PApplet {
      * - `lights()` does not work yet
      * - Cycles materials can not be used
      * - binary is currently only compiled for `macOS 10.15`
-     *
      */
 
-    private boolean record = false;
+    private boolean mRecord = false;
 
     public void settings() {
         size(640, 480, P3D);
@@ -35,15 +34,15 @@ public class SketchRenderingWithCycles extends PApplet {
 
     public void draw() {
         String mOutputFile = "";
-        if (record) {
+        if (mRecord) {
             RendererCycles.NUMBER_OF_SAMPLES = 25;
             RendererCycles.OUTPUT_IMAGE_FILE_TYPE = RendererCycles.IMAGE_FILE_TYPE_PNG;
             RendererCycles.RENDERING_PROCESS_BLOCKING = true;
             RendererCycles.DEBUG_PRINT_RENDER_PROGRESS = false;
             RendererCycles.BACKGROUND_COLOR.set(1.0f, 0.5f, 1.0f);
-            RendererCycles.RENDER_VIEWPORT_SCALE = 1.0f;
-            RendererCycles.KEEP_XML = false;
-            mOutputFile = "cycles" + frameCount + ".xml";
+            RendererCycles.RENDER_VIEWPORT_SCALE = 2.0f;
+            RendererCycles.KEEP_XML_SCENE_FILE = true;
+            mOutputFile = "cycles-" + nf(frameCount, 4);
             beginRaw(createGraphics(width, height, RendererCycles.name(), mOutputFile));
         }
 
@@ -82,8 +81,8 @@ public class SketchRenderingWithCycles extends PApplet {
         /* lines */
         noFill();
         stroke(255, 0, 127);
-        strokeWeight(2);
         for (int i = 0; i < 100; i++) {
+            strokeWeight(random(1, 10));
             line(random(-width, width), random(-height, height), random(-width, width),
                  random(-width, width), random(-height, height), random(-width, width));
         }
@@ -99,16 +98,16 @@ public class SketchRenderingWithCycles extends PApplet {
         vertex(100, -100, 10);
         endShape(CLOSE);
 
-        if (record) {
+        if (mRecord) {
             endRaw();
-            saveFrame(mOutputFile + "screen.png");
-            record = false;
+            saveFrame(mOutputFile + ".screen.png");
+            mRecord = false;
         }
     }
 
     public void keyPressed() {
-        if (key == 'R' || key == 'r') {
-            record = true;
+        if (key == ' ') {
+            mRecord = true;
         }
     }
 

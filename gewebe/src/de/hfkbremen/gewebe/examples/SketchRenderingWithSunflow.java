@@ -5,7 +5,21 @@ import processing.core.PApplet;
 
 public class SketchRenderingWithSunflow extends PApplet {
 
-    private boolean record = false;
+    /**
+     * # NOTES ON USING SUNFLOW RENDERER
+     *
+     * - `background()` is ignored. background color must be set manually via `RendererSunflow.BACKGROUND_COLOR`
+     * - image output file type ( png, tga ) can be selected via `RendererSunflow.OUTPUT_IMAGE_FILE_TYPE`
+     *
+     * ## KNOWN LIMITATIONS
+     *
+     * - floor object is not working as expected. use `camera` + `rect` instead for now
+     * - normal export not working
+     * - lighting is not working yet ( neither sky nor light )
+     * - material not working yet
+     */
+
+    private boolean mRecord = false;
 
     public void settings() {
         size(1024, 768, P3D);
@@ -16,14 +30,21 @@ public class SketchRenderingWithSunflow extends PApplet {
 
     public void draw() {
         String mOutputFile = "";
-        if (record) {
+        if (mRecord) {
             RendererSunflow.BACKGROUND_COLOR.set(0.2f);
-            mOutputFile = "sunflow" + nf(frameCount, 4);
+            RendererSunflow.RENDER_VIEWPORT_SCALE = 2.0f;
+            mOutputFile = "sunflow-" + nf(frameCount, 4);
             beginRaw(createGraphics(width, height, RendererSunflow.name(), mOutputFile));
         }
 
         background(50);
-        translate(width / 2.0f, height / 2.0f);
+        camera(height / 2.0f, height, width, 0, 0, 0, 0, 1, 0);
+
+        /* floor */
+        noStroke();
+        fill(200);
+        rect(-500, -500, 1000, 1000);
+
         rotateX(frameCount * 0.007f);
         rotateY(frameCount * 0.013f);
 
@@ -52,16 +73,16 @@ public class SketchRenderingWithSunflow extends PApplet {
         translate(100, 0);
         sphere(90);
 
-        if (record) {
+        if (mRecord) {
             endRaw();
             saveFrame(mOutputFile + ".screen.png");
-            record = false;
+            mRecord = false;
         }
     }
 
     public void keyPressed() {
         if (key == ' ') {
-            record = true;
+            mRecord = true;
         }
     }
 

@@ -22,10 +22,13 @@ import java.util.ArrayList;
 public class RendererSunflow extends RendererMesh {
 
     // @TODO(separate lines from triangles to make use of hair renderer)
+    // @TODO(find a way to export scene as `.sc` file. look into `renderObjects`)
 
-    public static final String SHADER_AMBIENT_OCCLUSION = "ambient_occlusion";
-    public static final String GI_PATH = "path";
-    static final String SHADER_NAME = "my_shader";
+    private static final String SHADER_AMBIENT_OCCLUSION = "ambient_occlusion";
+    private static final String GI_PATH = "path";
+    private static final String GI_FAKE = "fake";
+    private static final String SHADER_PHONG = "phong";
+    private static final String SHADER_NAME = "my_shader";
     private static final String SHADER_TEXTURED_PHONG = "textured_phong";
     private static final PVector _myFloor = new PVector();
     private static final float MAX_DIST = 600f;
@@ -43,13 +46,17 @@ public class RendererSunflow extends RendererMesh {
     private static final String FILTER_TRIANGLE = "triangle";
     private static final String FILTER_BSPLINE = "bspline";
     private static final String LIGHT_POINT = "point";
+    private static final boolean headless = true; // @TODO(bring back render preview)
+    public static String IMAGE_FILE_TYPE_PNG = ".png";
+    public static String IMAGE_FILE_TYPE_TGA = ".tga";
+    public static String SCENE_FILE_TYPE = ".xml";
+    public static String OUTPUT_IMAGE_FILE_TYPE = IMAGE_FILE_TYPE_PNG;
     public static boolean preview = true;
     public static boolean floor = false;
     public static boolean auto_dispose_frame = false;
     public static boolean start_in_extra_thread = false;
-    public static boolean headless = true;
     public static PVector floor_up = null;
-    public static float scale_viewport = 1;
+    public static float RENDER_VIEWPORT_SCALE = 1;
     public static Color BACKGROUND_COLOR = new Color(0.5f);
     public static int SAMPLES = 128;
     public static int AA_MIN = 1;
@@ -57,27 +64,12 @@ public class RendererSunflow extends RendererMesh {
     static int mShaderID = 0;
 
     static {
-        //        mTranslators.add(new MeshTranslator());
-        //        mTranslators.add(new ModelTranslator());
-        //        mTranslators.add(new CubeTranslator());
-        //        mTranslators.add(new QuadLineTranslator());
-        //        mTranslators.add(new QuadsTranslator());
-        //        mTranslators.add(new TrianglesTranslator());
-        //        mTranslators.add(new PlaneTranslator());
-        //        mTranslators.add(new LineTranslator());
-        //        mTranslators.add(new SphereTranslator());
-        //
-        //        mTranslators.add(new JoglDisposableBinTranslator());
-        //        mTranslators.add(new PersonTranslator());
-
         PluginRegistry.shaderPlugins.registerPlugin("my_test_shader", MyCustomShader.class);
         PluginRegistry.shaderPlugins.registerPlugin(ShaderTranslucent.name, ShaderTranslucent.class);
         PluginRegistry.shaderPlugins.registerPlugin(ShaderTranslucentSR.name, ShaderTranslucentSR.class);
         PluginRegistry.shaderPlugins.registerPlugin(ShaderStainedGlass.name, ShaderStainedGlass.class);
     }
 
-    public final String GI_FAKE = "fake";
-    public final String SHADER_PHONG = "phong";
     private final SunflowAPI mSunflow;
     private final String mColorSpace = COLORSPACE_SRGB_NONLINEAR;
     private Display _myDisplay;
@@ -113,12 +105,6 @@ public class RendererSunflow extends RendererMesh {
     //                myRenderer._render();
     //            }
     //        }
-
-    //    public static Vector<SunflowTranslator> translators() {
-    //        return mTranslators;
-    //    }
-    //    private int _myWidth = 1024;
-    //    private int _myHeight = 512;
 
     public RendererSunflow() {
         mSunflow = new SunflowAPI();
@@ -482,6 +468,7 @@ public class RendererSunflow extends RendererMesh {
 
         mSunflow.parameter("points", "point", "vertex", pVertices);
         mSunflow.parameter("triangles", mFaces);
+        // @TODO(sending normals hangs render process. why?)
         //        mSunflow.parameter("normals", "vector", "vertex", pNormals);
         //        mSunflow.parameter("uvs", "texcoord", "vertex", uvs);
         mSunflow.geometry(mGeometryName, "triangle_mesh");
@@ -551,14 +538,14 @@ public class RendererSunflow extends RendererMesh {
     @Override
     protected void finalizeFrame() {
         setupScene();
-        //        setSunSkyLight("my_sun");
+        //                setSunSkyLight("my_sun");
         setupCamera();
-        //        setupLight();
+        //                setupLight();
 
         if (headless) {
-            setDisplay(new FileDisplay(path + ".png"));
+            setDisplay(new FileDisplay(path + OUTPUT_IMAGE_FILE_TYPE));
         } else {
-            setDisplay(new MyFrameDisplay(path + ".png", this));
+            setDisplay(new MyFrameDisplay(path + OUTPUT_IMAGE_FILE_TYPE, this));
         }
 
         //        /* --- */
@@ -571,11 +558,9 @@ public class RendererSunflow extends RendererMesh {
         //                        new Color(0.8f));
         //                setPathTracingGIEngine(64);
 
-        //        setPhongShader(new Color(0.8f), new Color(0.8f), 0.9f, 16, null);
-        //        sendAmbientOcclusionMaterial(new Color(0.8f));
-
         for (ShaderTriangleBucket s : bucket()) {
             bumpShaderID();
+            // @TODO(integrate materials better)
             //            sendShaderPhong(s.color, s.color, 0.8f, 16, null);
             sendShaderAmbientOcclusion(s.color);
             sendTriangles(s.vertices, s.normals);
@@ -604,11 +589,16 @@ public class RendererSunflow extends RendererMesh {
         //        this.shiftX = shiftX;
         //        this.shiftY = shiftY;
 
-        float[] camMatrix = {cameraInv.m00, cameraInv.m01, cameraInv.m02, cameraInv.m03,
-                             cameraInv.m10, cameraInv.m11, cameraInv.m12, cameraInv.m13,
-                             cameraInv.m20, cameraInv.m21, cameraInv.m22, cameraInv.m23,
-                             cameraInv.m30, cameraInv.m31, cameraInv.m32, cameraInv.m33};
-        mSunflow.parameter("transform", new Matrix4(camMatrix, true));
+        float[] mCameraMatrix = {cameraInv.m00, cameraInv.m01, cameraInv.m02, cameraInv.m03,
+                                 cameraInv.m10, cameraInv.m11, cameraInv.m12, cameraInv.m13,
+                                 cameraInv.m20, cameraInv.m21, cameraInv.m22, cameraInv.m23,
+                                 cameraInv.m30, cameraInv.m31, cameraInv.m32, cameraInv.m33};
+        getMatrix().get(mCameraMatrix);
+        mCameraMatrix[0] *= 1;
+        mCameraMatrix[5] *= -1;
+        mCameraMatrix[10] *= 1;
+
+        mSunflow.parameter("transform", new Matrix4(mCameraMatrix, true));
         mSunflow.parameter("fov", fov);
         mSunflow.parameter("aspect", aspect);
         mSunflow.parameter("shift.x", shiftX);
@@ -674,8 +664,8 @@ public class RendererSunflow extends RendererMesh {
 
     private void _render() {
         mSunflow.parameter("camera", "my_camera");
-        mSunflow.parameter("resolutionX", (int) (width * scale_viewport));
-        mSunflow.parameter("resolutionY", (int) (height * scale_viewport));
+        mSunflow.parameter("resolutionX", (int) (width * RENDER_VIEWPORT_SCALE));
+        mSunflow.parameter("resolutionY", (int) (height * RENDER_VIEWPORT_SCALE));
 
         if (preview) {
             mSunflow.parameter("aa.min", -3);
@@ -690,39 +680,17 @@ public class RendererSunflow extends RendererMesh {
             mSunflow.parameter("filter", FILTER_MITCHELL);
         }
         mSunflow.options(SunflowAPI.DEFAULT_OPTIONS);
+
+        //        Hashtable<String, RenderObject> mScene = mSunflow.inspect();
+        //        for (Map.Entry<String, RenderObject> entry : mScene.entrySet()) {
+        //            String key = entry.getKey();
+        //            RenderObject value = entry.getValue();
+        //            System.out.println("Key: " + key + " Value: " + value);
+        //        }
+        //        System.out.println(mSunflow);
+
         mSunflow.render(SunflowAPI.DEFAULT_OPTIONS, _myDisplay);
     }
-
-    //    private void width(int theWidth) {
-    //        _myWidth = theWidth;
-    //    }
-    //
-    //    private void height(int theHeight) {
-    //        _myHeight = theHeight;
-    //    }
-
-    //    private void parse(final Bin theBin) {
-    //        Drawable[] mySortables = theBin.getDataRef();
-    //        for (int i = 0; i < theBin.size(); i++) {
-    //            final Drawable myDrawable = mySortables[i];
-    //            if (myDrawable != null) {
-    //                if (myDrawable.isActive()) {
-    //                    parseDrawables(myDrawable);
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    private void parseDrawables(final Drawable theDrawable) {
-    //        for (final SunflowTranslator myTranslator : mTranslators) {
-    //            if (myTranslator.isClass(theDrawable)) {
-    //                myTranslator.parse(this, theDrawable);
-    //                return;
-    //            }
-    //        }
-    //
-    //        System.out.println("### WARNING / drawable type unsupported. / " + theDrawable.getClass());
-    //    }
 
     public static class MyCustomShader
             implements org.sunflow.core.Shader {

@@ -50,6 +50,7 @@ public class RendererCycles extends RendererMesh {
     public static boolean DEBUG_PRINT_CYCLES_BINARY_LOCATION = false;
     public static boolean DEBUG_PRINT_CAMERA_MATRIX = false;
     public static String IMAGE_FILE_TYPE_PNG = ".png";
+    public static String SCENE_FILE_TYPE = ".xml";
     public static String IMAGE_FILE_TYPE_JPG = ".jpg";
     public static String IMAGE_FILE_TYPE_TGA = ".tga";
     public static String OUTPUT_IMAGE_FILE_TYPE = IMAGE_FILE_TYPE_PNG;
@@ -59,7 +60,7 @@ public class RendererCycles extends RendererMesh {
     public static String CAMERA_TYPE_PERSPECTIVE = "perspective";
     public static String CAMERA_TYPE = CAMERA_TYPE_PERSPECTIVE;
     public static Color BACKGROUND_COLOR = new Color(0.0f);
-    public static boolean KEEP_XML = true;
+    public static boolean KEEP_XML_SCENE_FILE = true;
     public static boolean RENDER_IMAGE = true;
     private XML mXML;
     private String mExecPath;
@@ -106,7 +107,7 @@ public class RendererCycles extends RendererMesh {
         File mXMLOutputFile = null;
 
         if (path != null) {
-            mXMLOutputFile = new File(path);
+            mXMLOutputFile = new File(path + SCENE_FILE_TYPE);
             if (!mXMLOutputFile.isAbsolute()) {
                 mXMLOutputFile = null;
             }
@@ -133,7 +134,7 @@ public class RendererCycles extends RendererMesh {
                 compileRenderCLICommands(mXMLOutputFile.getPath());
             }
             mXML = null;
-            if (!KEEP_XML) {
+            if (!KEEP_XML_SCENE_FILE) {
                 if (!mXMLOutputFile.delete()) { error("could not remove XML file at " + mXMLOutputFile.getPath()); }
             }
         }
