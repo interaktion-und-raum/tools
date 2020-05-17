@@ -42,6 +42,7 @@ public class SketchRenderingWithCycles extends PApplet {
             RendererCycles.DEBUG_PRINT_RENDER_PROGRESS = false;
             RendererCycles.BACKGROUND_COLOR.set(1.0f, 0.5f, 1.0f);
             RendererCycles.RENDER_VIEWPORT_SCALE = 1.0f;
+            RendererCycles.KEEP_XML = false;
             mOutputFile = "cycles" + frameCount + ".xml";
             beginRaw(createGraphics(width, height, RendererCycles.name(), mOutputFile));
         }
@@ -106,7 +107,7 @@ public class SketchRenderingWithCycles extends PApplet {
     }
 
     public void keyPressed() {
-        if (key == 'R' || key == 'r') {
+        if (key == ' ') {
             record = true;
         }
     }

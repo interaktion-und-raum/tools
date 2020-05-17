@@ -1,7 +1,6 @@
 package de.hfkbremen.gewebe;
 
 import processing.core.PApplet;
-import processing.core.PVector;
 import processing.data.XML;
 
 import java.io.File;
@@ -59,8 +58,9 @@ public class RendererCycles extends RendererMesh {
     public static int NUMBER_OF_SAMPLES = 10;
     public static String CAMERA_TYPE_PERSPECTIVE = "perspective";
     public static String CAMERA_TYPE = CAMERA_TYPE_PERSPECTIVE;
-    public static PVector BACKGROUND_COLOR = new PVector();
-    private File mXMLOutputFile;
+    public static Color BACKGROUND_COLOR = new Color(0.0f);
+    public static boolean KEEP_XML = true;
+    public static boolean RENDER_IMAGE = true;
     private XML mXML;
     private String mExecPath;
     private int mShaderNameID = 0;
@@ -96,21 +96,15 @@ public class RendererCycles extends RendererMesh {
     protected void beginFrame() {
     }
 
-    protected void endFrame(int mode) {
-        if (shape == POLYGON) {
-            for (int i = 0; i < vertexCount - 1; i++) {
-                writeLine(i, i + 1);
-            }
-            if (mode == CLOSE) {
-                writeLine(vertexCount - 1, 0);
-            }
-        }
+    protected void endFrame() {
     }
 
     protected void prepareFrame() {
     }
 
     protected void finalizeFrame() {
+        File mXMLOutputFile = null;
+
         if (path != null) {
             mXMLOutputFile = new File(path);
             if (!mXMLOutputFile.isAbsolute()) {
@@ -130,13 +124,18 @@ public class RendererCycles extends RendererMesh {
         for (ShaderTriangleBucket s : bucket()) {
             final String mCurrentShaderName = SHADER_NAME + PApplet.nf(mShaderNameID++, 4);
             buildShader(mXML, mCurrentShaderName, s.color.r, s.color.g, s.color.b); // @TODO fillA?
-            buildObject(mXML, mCurrentShaderName, toArray(s.triangles));
+            buildObject(mXML, mCurrentShaderName, toArray(s.vertices));
         }
 
         if (mXML != null && mXMLOutputFile != null) {
             mXML.save(mXMLOutputFile);
-            compileRenderCLICommands(mXMLOutputFile.getPath());
+            if (RENDER_IMAGE) {
+                compileRenderCLICommands(mXMLOutputFile.getPath());
+            }
             mXML = null;
+            if (!KEEP_XML) {
+                if (!mXMLOutputFile.delete()) { error("could not remove XML file at " + mXMLOutputFile.getPath()); }
+            }
         }
     }
 
@@ -197,7 +196,9 @@ public class RendererCycles extends RendererMesh {
             mBackgroundPropertyNode.setString(XML_ATTR_NAME, BACKGROUND_NAME);
             mBackgroundPropertyNode.setFloat("strength", 2.0f);
             mBackgroundPropertyNode.setString(XML_ATTR_COLOR,
-                                              getColorAttr(BACKGROUND_COLOR.x, BACKGROUND_COLOR.y, BACKGROUND_COLOR.z));
+                                              getColorAttr(BACKGROUND_COLOR.r,
+                                                           BACKGROUND_COLOR.g,
+                                                           BACKGROUND_COLOR.b));
             mBackgroundPropertyNode.setFloat("SurfaceMixWeight", 1.0f);
             mBackgroundNode.addChild(mBackgroundPropertyNode);
 

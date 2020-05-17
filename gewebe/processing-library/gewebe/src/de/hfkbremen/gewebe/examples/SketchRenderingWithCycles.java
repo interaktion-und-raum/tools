@@ -17,6 +17,9 @@ public class SketchRenderingWithCycles extends PApplet {
      *
      * - if image size is not equal to sketch size the viewport is not scaled
      * - `lights()` does not work yet
+     * - Cycles materials can not be used
+     * - binary is currently only compiled for `macOS 10.15`
+     *
      */
 
     private boolean record = false;
@@ -39,6 +42,7 @@ public class SketchRenderingWithCycles extends PApplet {
             RendererCycles.DEBUG_PRINT_RENDER_PROGRESS = false;
             RendererCycles.BACKGROUND_COLOR.set(1.0f, 0.5f, 1.0f);
             RendererCycles.RENDER_VIEWPORT_SCALE = 1.0f;
+            RendererCycles.KEEP_XML = false;
             mOutputFile = "cycles" + frameCount + ".xml";
             beginRaw(createGraphics(width, height, RendererCycles.name(), mOutputFile));
         }
