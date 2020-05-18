@@ -1,4 +1,4 @@
-package de.hfkbremen.mesh;
+package de.hfkbremen.gewebe;
 
 public class CGALAlphaShape3 {
     /**

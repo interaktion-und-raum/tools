@@ -23,7 +23,7 @@ typedef Kernel::Point_3                                         Point_3;
 typedef Polyhedron::Halfedge_around_facet_circulator            Halfedge_facet_circulator;
 //typedef CGAL::Inverse_index<Vertex_iterator>                    Index;
 
-#include "de_hfkbremen_mesh_CGALBooleanOperations3.h"
+#include "de_hfkbremen_gewebe_CGALBooleanOperations3.h"
 
 using namespace std;
 
@@ -152,7 +152,7 @@ void extract_vertices(vector<Point_3> & vertices, JNIEnv * env, jfloatArray & j_
     }
 }
 
-JNIEXPORT jfloatArray JNICALL Java_de_hfkbremen_mesh_CGALBooleanOperations3_boolean_1operation
+JNIEXPORT jfloatArray JNICALL Java_de_hfkbremen_gewebe_CGALBooleanOperations3_boolean_1operation
 (JNIEnv * env, jobject jobj, jint class_type, jfloatArray coords_A_array, jfloatArray coords_B_array )
 {
     if (M_DEBUG) cout << "--- boolean_operation" << endl;

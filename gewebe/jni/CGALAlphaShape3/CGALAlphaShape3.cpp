@@ -1,5 +1,5 @@
-#include <iostream>
-#include <fstream>
+//#include <iostream>
+//#include <fstream>
 
 //#include <sys/types.h>
 //#include <sys/ipc.h>
@@ -18,7 +18,7 @@
 #include <CGAL/Inverse_index.h>
 #include <CGAL/Linear_cell_complex.h>
 
-#include "de_hfkbremen_mesh_CGALAlphaShape3.h"
+#include "de_hfkbremen_gewebe_CGALAlphaShape3.h"
 
 /* --- */
 
@@ -42,7 +42,7 @@ typedef Alpha_shape_3::Vertex_handle                Vertex_handle;
 typedef Alpha_shape_3::Classification_type          Classification_type;
 typedef CGAL::Inverse_index<Vertex_iterator>        Index;
 
-JNIEXPORT jint JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_version
+JNIEXPORT jint JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_version
 (JNIEnv * env, jobject)
 {
     int mVersion = 20160625;
@@ -55,7 +55,7 @@ JNIEXPORT jint JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_version
  *  (coord), return a pointer to the c++ alpha_shape object for
  *  subsequent native method calls.
  */
-JNIEXPORT jlong JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_init_1alpha_1shape
+JNIEXPORT jlong JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_init_1alpha_1shape
 (JNIEnv * env, jobject jobj, jfloatArray coord)
 {
     jboolean iscopy;
@@ -104,7 +104,7 @@ JNIEXPORT jlong JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_init_1alpha_1shap
  * sets the alpha value of the alpha_shape to alpha. Returns the array
  * of facet indices from the alpha_shape.
  */
-JNIEXPORT jintArray JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha_1shape_1facets
+JNIEXPORT jintArray JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_get_1alpha_1shape_1facets
 (JNIEnv * env, jobject jobj, jstring class_type, jfloat alpha, jlong ptr)
 {
     bool M_DEBUG = false;
@@ -206,7 +206,7 @@ JNIEXPORT jintArray JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha_1s
  * smaller than nb_components. Returns the array of facet indices from
  * the alpha_shape.
  */
-JNIEXPORT jintArray JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha_1shape_1facets_1optimal
+JNIEXPORT jintArray JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_get_1alpha_1shape_1facets_1optimal
 (JNIEnv * env, jobject jobj, jstring class_type, jint nb_sc, jlong ptr)
 {
     Alpha_shape_3* as = (Alpha_shape_3*) ptr;
@@ -262,7 +262,7 @@ JNIEXPORT jintArray JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha_1s
 
 /* gives the alpha value of the current alpha_shape
  */
-JNIEXPORT jfloat JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha
+JNIEXPORT jfloat JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_get_1alpha
 (JNIEnv * env, jobject jobj, jlong ptr)
 {
     Alpha_shape_3* as = (Alpha_shape_3*) ptr;
@@ -272,14 +272,14 @@ JNIEXPORT jfloat JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha
 /*  Returns the number of solid components of the current alpha_shape,
  *   that is, the number of components of its regularized version.
  */
-JNIEXPORT jint JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_number_1of_1solid_1components
+JNIEXPORT jint JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_number_1of_1solid_1components
 (JNIEnv * env, jobject jobj, jlong ptr)
 {
     Alpha_shape_3* as = (Alpha_shape_3*) ptr;
     return as->number_of_solid_components();
 }
 
-JNIEXPORT jfloatArray JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha_1shape_1mesh
+JNIEXPORT jfloatArray JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_get_1alpha_1shape_1gewebe
 (JNIEnv * env, jobject jobj, jstring class_type, jfloat alpha, jlong ptr)
 {
     bool M_DEBUG = false;
@@ -357,7 +357,7 @@ JNIEXPORT jfloatArray JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1alpha_
     return result;
 }
 
-JNIEXPORT jfloat JNICALL Java_de_hfkbremen_mesh_CGALAlphaShape3_get_1optimal_1alpha
+JNIEXPORT jfloat JNICALL Java_de_hfkbremen_gewebe_CGALAlphaShape3_get_1optimal_1alpha
 (JNIEnv * env, jobject jobj, jint nb_sc, jlong ptr)
 {
     Alpha_shape_3* as = (Alpha_shape_3*) ptr;
