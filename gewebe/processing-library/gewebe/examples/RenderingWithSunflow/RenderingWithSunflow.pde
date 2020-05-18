@@ -1,14 +1,16 @@
 import de.hfkbremen.gewebe.*; 
-import java.awt.*; 
-import java.awt.geom.*; 
 import org.sunflow.*; 
 
 
 /**
+ * this example demonstrates how to render high-resolution images with the java-based renderer
+ * [Sunflow](http://sunflow.sourceforge.net/).
+ *
  * # NOTES ON USING SUNFLOW RENDERER
  *
  * - `background()` is ignored. background color must be set manually via `RendererSunflow.BACKGROUND_COLOR`
  * - image output file type ( png, tga ) can be selected via `RendererSunflow.OUTPUT_IMAGE_FILE_TYPE`
+ * - must only be used with `beginRaw/endRaw`
  *
  * ## KNOWN LIMITATIONS
  *
@@ -31,6 +33,19 @@ void draw() {
         mOutputFile = "sunflow-" + nf(frameCount, 4);
         beginRaw(createGraphics(width, height, RendererSunflow.name(), mOutputFile));
     }
+    drawScene();
+    if (mRecord) {
+        endRaw();
+        saveFrame(mOutputFile + ".screen.png");
+        mRecord = false;
+    }
+}
+void keyPressed() {
+    if (key == ' ') {
+        mRecord = true;
+    }
+}
+void drawScene() {
     background(50);
     camera(height / 2.0f, height, width, 0, 0, 0, 0, 1, 0);
     /* floor */
@@ -39,7 +54,7 @@ void draw() {
     rect(-500, -500, 1000, 1000);
     rotateX(frameCount * 0.007f);
     rotateY(frameCount * 0.013f);
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 100; i++) {
         pushMatrix();
         noStroke();
         fill(random(255), random(255), random(255));
@@ -59,14 +74,4 @@ void draw() {
     sphere(80);
     translate(100, 0);
     sphere(90);
-    if (mRecord) {
-        endRaw();
-        saveFrame(mOutputFile + ".screen.png");
-        mRecord = false;
-    }
-}
-void keyPressed() {
-    if (key == ' ') {
-        mRecord = true;
-    }
 }

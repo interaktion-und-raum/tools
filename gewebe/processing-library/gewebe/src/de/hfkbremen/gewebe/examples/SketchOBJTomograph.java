@@ -14,11 +14,15 @@ import java.util.ArrayList;
 
 public class SketchOBJTomograph extends PApplet {
 
+    /**
+     * this example demonstrates how to cut a slice out of a mesh.
+     */
+
     private ArrayList<Triangle> mTriangles;
     private ArcBall mArcBall;
 
     public void settings() {
-        size(640, 480, P3D);
+        size(1024, 768, P3D);
     }
 
     public void setup() {
@@ -37,6 +41,8 @@ public class SketchOBJTomograph extends PApplet {
         translate(width * 0.5f, height, -200);
         scale(1, -1, 1);
 
+        /* draw mesh */
+
         stroke(255, 16);
         noFill();
         beginShape(TRIANGLES);
@@ -47,10 +53,15 @@ public class SketchOBJTomograph extends PApplet {
         }
         endShape();
 
+        /* get slice */
+
         final float mTomographRadius = 250;
-        final float mHeight = mouseY * 2;
+        final float mHeight = 525.0f - 550.0f * mouseY / (float) height;
         final float mTomographScanPoints = 72;
         ArrayList<PVector> mOutline = scanSlice(mTriangles, mHeight, mTomographScanPoints, mTomographRadius);
+
+        /* draw slice onto mesh */
+
         stroke(255, 127, 0);
         noFill();
         beginShape();
@@ -60,9 +71,11 @@ public class SketchOBJTomograph extends PApplet {
         endShape(CLOSE);
         popMatrix();
 
+        /* draw slice in 2D */
+
         stroke(255, 192, 0);
         fill(255, 127, 0);
-        translate(width * 0.33f, height / 2);
+        translate(width * 0.33f, height / 2.0f);
         beginShape();
         for (PVector p : mOutline) {
             vertex(p.x, p.y);
@@ -70,7 +83,10 @@ public class SketchOBJTomograph extends PApplet {
         endShape(CLOSE);
     }
 
-    private ArrayList<PVector> scanSlice(ArrayList<Triangle> pTriangles, float pHeight, float pScanPoints, float pRadius) {
+    private ArrayList<PVector> scanSlice(ArrayList<Triangle> pTriangles,
+                                         float pHeight,
+                                         float pScanPoints,
+                                         float pRadius) {
         final ArrayList<PVector> mOutline = new ArrayList<>();
         for (float r = 0; r < TWO_PI; r += TWO_PI / pScanPoints) {
             PVector p0 = new PVector(sin(r) * pRadius, pHeight, cos(r) * pRadius);
@@ -94,7 +110,13 @@ public class SketchOBJTomograph extends PApplet {
         final PVector pRayDirection = PVector.sub(p1, p0);
         for (Triangle t : pTriangles) {
             final PVector mResult = new PVector();
-            boolean mSuccess = MeshUtil.findRayTriangleIntersectionPoint(pRayOrigin, pRayDirection, t.a, t.b, t.c, mResult, true);
+            boolean mSuccess = MeshUtil.findRayTriangleIntersectionPoint(pRayOrigin,
+                                                                         pRayDirection,
+                                                                         t.a,
+                                                                         t.b,
+                                                                         t.c,
+                                                                         mResult,
+                                                                         true);
             if (mSuccess) {
                 pResult.set(mResult);
                 return true;

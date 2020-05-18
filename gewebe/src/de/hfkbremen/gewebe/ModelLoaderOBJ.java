@@ -410,7 +410,7 @@ public class ModelLoaderOBJ {
         Vector<String> myNames = new Vector<String>();
 
         for (String myLine : pLines) {
-            String myLineElements[] = myLine.split("\\s+");
+            String[] myLineElements = myLine.split("\\s+");
             if (myLineElements.length > 0) {
                     /* get groups */
                 if (myLineElements[0].equals("g") || myLineElements[0].equals("o")) {
@@ -452,39 +452,39 @@ public class ModelLoaderOBJ {
                                 int v;
                                 v = Math.abs(Integer.valueOf(myFaceElements[0]));
                                 myTempVertexIndices.add(v);
-                            } catch (NumberFormatException e) {
+                            } catch (NumberFormatException ignored) {
                             }
                         } else if (myFaceElements.length == 2) {
                             try {
                                 int v;
                                 v = Math.abs(Integer.valueOf(myFaceElements[0]));
                                 myTempVertexIndices.add(v);
-                            } catch (NumberFormatException e) {
+                            } catch (NumberFormatException ignored) {
                             }
                             try {
                                 int t;
                                 t = Math.abs(Integer.valueOf(myFaceElements[1]));
                                 myTempTexCoordsIndices.add(t);
-                            } catch (NumberFormatException e) {
+                            } catch (NumberFormatException ignored) {
                             }
                         } else if (myFaceElements.length == 3) {
                             try {
                                 int v;
                                 v = Math.abs(Integer.valueOf(myFaceElements[0]));
                                 myTempVertexIndices.add(v);
-                            } catch (NumberFormatException e) {
+                            } catch (NumberFormatException ignored) {
                             }
                             try {
                                 int t;
                                 t = Math.abs(Integer.valueOf(myFaceElements[1]));
                                 myTempTexCoordsIndices.add(t);
-                            } catch (NumberFormatException e) {
+                            } catch (NumberFormatException ignored) {
                             }
                             try {
                                 int n;
                                 n = Math.abs(Integer.valueOf(myFaceElements[2]));
                                 myTempNormalIndices.add(n);
-                            } catch (NumberFormatException e) {
+                            } catch (NumberFormatException ignored) {
                             }
                         }
                     }

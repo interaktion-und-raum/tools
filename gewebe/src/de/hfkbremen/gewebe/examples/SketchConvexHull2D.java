@@ -8,10 +8,14 @@ import java.util.ArrayList;
 
 public class SketchConvexHull2D extends PApplet {
 
-    private ArrayList<PVector> mPoints = new ArrayList<>();
+    /**
+     * this example demonstrate how to find the *convex hull* around a set of 2D points.
+     */
+
+    private final ArrayList<PVector> mPoints = new ArrayList<>();
 
     public void settings() {
-        size(640, 480, P3D);
+        size(1024, 768, P3D);
     }
 
     public void setup() {
@@ -24,9 +28,10 @@ public class SketchConvexHull2D extends PApplet {
         }
 
         background(50);
-        stroke(255);
+
+        stroke(255, 127);
         for (PVector p : mPoints) {
-            point(p.x, p.y, p.z);
+            cross(p, 3.0f);
         }
 
         stroke(255, 127, 0);
@@ -36,6 +41,11 @@ public class SketchConvexHull2D extends PApplet {
             vertex(p.x, p.y, p.z);
         }
         endShape(CLOSE);
+    }
+
+    private void cross(PVector pPosition, float pDiameter) {
+        line(pPosition.x + pDiameter, pPosition.y + pDiameter, pPosition.x - pDiameter, pPosition.y - pDiameter);
+        line(pPosition.x - pDiameter, pPosition.y + pDiameter, pPosition.x + pDiameter, pPosition.y - pDiameter);
     }
 
     public static void main(String[] args) {

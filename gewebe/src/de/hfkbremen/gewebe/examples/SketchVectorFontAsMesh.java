@@ -10,25 +10,34 @@ import java.util.ArrayList;
 
 public class SketchVectorFontAsMesh extends PApplet {
 
+    /**
+     * this example demonstrates how to convert characters a collection of triangles.
+     */
+
     private VectorFont mPathCreator;
 
     public void settings() {
-        size(640, 480, P3D);
+        size(1024, 768, P3D);
     }
 
     public void setup() {
-        mPathCreator = new VectorFont("Helvetica", 128);
+        mPathCreator = new VectorFont("Helvetica", 200);
     }
 
     public void draw() {
-        mPathCreator.outline_flatness((float) mouseX / (float) width * 5);
+        mPathCreator.outline_flatness((float) mouseX / (float) width * 10);
         ArrayList<PVector> mVertices = mPathCreator.vertices("01.01.1970");
         Mesh mMesh = MeshUtil.mesh(mVertices);
 
-        background(255);
-        noFill();
-        stroke(0);
-        translate(0, mouseY);
+        background(50);
+        if (mousePressed) {
+            fill(255);
+            noStroke();
+        } else {
+            noFill();
+            stroke(255);
+        }
+        translate(15, mouseY);
         mMesh.draw(g);
     }
 

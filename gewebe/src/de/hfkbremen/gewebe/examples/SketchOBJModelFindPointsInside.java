@@ -13,13 +13,17 @@ import java.util.ArrayList;
 
 public class SketchOBJModelFindPointsInside extends PApplet {
 
+    /**
+     * this example demonstrates how test if a point is inside of a mesh.
+     */
+
     private static PVector mCenterOfMass;
     PVector mPoint = new PVector();
     private ArrayList<Triangle> mTriangles;
     private ArrayList<PVector> mPoints;
 
     public void settings() {
-        size(640, 480, P3D);
+        size(1024, 768, P3D);
     }
 
     public void setup() {
@@ -31,21 +35,35 @@ public class SketchOBJModelFindPointsInside extends PApplet {
     }
 
     public void draw() {
-        background(255);
+        background(50);
         prepareView();
-        drawMesh();
+        if (!mousePressed) { drawMesh(); }
         queryPointPosition();
         drawPointsInside();
     }
 
+    public void queryPointPosition() {
+        /* is random point inside mesh? */
+
+        final float r = 400;
+        mPoint.x = random(-r, r);
+        mPoint.y = random(-r, r);
+        mPoint.z = random(-r, r);
+
+        final PVector mDirection = PVector.sub(mCenterOfMass, mPoint);
+        if (MeshUtil.isPointInsideMesh(mTriangles, mPoint, mDirection)) {
+            mPoints.add(new PVector().set(mPoint));
+        }
+    }
+
     private void prepareView() {
-        translate(width / 2, height / 2, -200);
+        translate(width / 2.0f, height / 2.0f, -200);
         rotateX(sin(frameCount * 0.01f) * TWO_PI);
         rotateY(cos(frameCount * 0.0037f) * TWO_PI);
     }
 
     private void drawMesh() {
-        stroke(50);
+        stroke(255, 31);
         noFill();
         beginShape(TRIANGLES);
         for (Triangle t : mTriangles) {
@@ -64,20 +82,6 @@ public class SketchOBJModelFindPointsInside extends PApplet {
             translate(p.x, p.y, p.z);
             sphere(10);
             popMatrix();
-        }
-    }
-
-    public void queryPointPosition() {
-        /* is random point inside mesh? */
-
-        final float r = 400;
-        mPoint.x = random(-r, r);
-        mPoint.y = random(-r, r);
-        mPoint.z = random(-r, r);
-
-        final PVector mDirection = PVector.sub(mCenterOfMass, mPoint);
-        if (MeshUtil.isPointInsideMesh(mTriangles, mPoint, mDirection)) {
-            mPoints.add(new PVector().set(mPoint));
         }
     }
 

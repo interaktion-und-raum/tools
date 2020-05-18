@@ -6,10 +6,14 @@ import processing.core.PApplet;
 public class SketchRenderingWithSunflow extends PApplet {
 
     /**
+     * this example demonstrates how to render high-resolution images with the java-based renderer
+     * [Sunflow](http://sunflow.sourceforge.net/).
+     *
      * # NOTES ON USING SUNFLOW RENDERER
      *
      * - `background()` is ignored. background color must be set manually via `RendererSunflow.BACKGROUND_COLOR`
      * - image output file type ( png, tga ) can be selected via `RendererSunflow.OUTPUT_IMAGE_FILE_TYPE`
+     * - must only be used with `beginRaw/endRaw`
      *
      * ## KNOWN LIMITATIONS
      *
@@ -37,6 +41,22 @@ public class SketchRenderingWithSunflow extends PApplet {
             beginRaw(createGraphics(width, height, RendererSunflow.name(), mOutputFile));
         }
 
+        drawScene();
+
+        if (mRecord) {
+            endRaw();
+            saveFrame(mOutputFile + ".screen.png");
+            mRecord = false;
+        }
+    }
+
+    public void keyPressed() {
+        if (key == ' ') {
+            mRecord = true;
+        }
+    }
+
+    private void drawScene() {
         background(50);
         camera(height / 2.0f, height, width, 0, 0, 0, 0, 1, 0);
 
@@ -48,7 +68,7 @@ public class SketchRenderingWithSunflow extends PApplet {
         rotateX(frameCount * 0.007f);
         rotateY(frameCount * 0.013f);
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 100; i++) {
             pushMatrix();
             noStroke();
             fill(random(255), random(255), random(255));
@@ -72,18 +92,6 @@ public class SketchRenderingWithSunflow extends PApplet {
 
         translate(100, 0);
         sphere(90);
-
-        if (mRecord) {
-            endRaw();
-            saveFrame(mOutputFile + ".screen.png");
-            mRecord = false;
-        }
-    }
-
-    public void keyPressed() {
-        if (key == ' ') {
-            mRecord = true;
-        }
     }
 
     public static void main(String[] args) {

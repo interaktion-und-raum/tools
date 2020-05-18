@@ -6,6 +6,12 @@ import processing.core.PVector;
 
 public class SketchAlphaShape3Optimal extends PApplet {
 
+    /**
+     * @TODO(20200518, "Java-C/C++-Binding is currently broken")
+     * this example demonstrates how to use [Alpha Shapes](https://en.wikipedia.org/wiki/Alpha_shape) using a
+     * Java-C/C++-Binding to [CGAL](https://www.cgal.org/).
+     */
+
     private CGALAlphaShape3 cgal;
 
     private float[] mPoints3;
@@ -14,7 +20,7 @@ public class SketchAlphaShape3Optimal extends PApplet {
     private int mNumberOfSolidComponents = 1;
 
     public void settings() {
-        size(640, 480, P3D);
+        size(1024, 768, P3D);
     }
 
     public void setup() {
@@ -40,7 +46,7 @@ public class SketchAlphaShape3Optimal extends PApplet {
         directionalLight(126, 126, 126, 0, 0, -1);
         ambientLight(102, 102, 102);
 
-        translate(width / 2, height / 2);
+        translate(width / 2.0f, height / 2.0f);
         scale(100);
         rotateX(frameCount * 0.01f);
         rotateY(frameCount * 0.003f);

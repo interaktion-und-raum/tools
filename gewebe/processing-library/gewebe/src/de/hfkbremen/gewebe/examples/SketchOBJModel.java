@@ -8,10 +8,15 @@ import processing.core.PApplet;
 
 public class SketchOBJModel extends PApplet {
 
+    /**
+     * this example demonstrates how to load and draw a mesh from model data. note, that model data can also be loaded
+     * from external sources ( e.g hard drive or web ) with `loadStrings()`.
+     */
+
     private Mesh mModelMesh;
 
     public void settings() {
-        size(640, 480, P3D);
+        size(1024, 768, P3D);
     }
 
     public void setup() {
@@ -21,19 +26,22 @@ public class SketchOBJModel extends PApplet {
     }
 
     public void draw() {
-        background(255);
+        background(50);
+        lights();
+        lightFalloff(1.0f, 0.001f, 0.0f);
+        pointLight(255, 127, 0, width / -2.0f, height / 2.0f, 0);
 
         if (mousePressed) {
             noFill();
-            stroke(0);
+            stroke(255);
             mModelMesh.primitive(POINTS);
         } else {
-            fill(0, 127, 255);
+            fill(255, 127, 0);
             stroke(255);
             mModelMesh.primitive(TRIANGLES);
         }
 
-        translate(width / 2, height, -200);
+        translate(width / 2.0f, height - 125, -200);
         rotateX(PI);
         rotateY(cos(frameCount * 0.0037f) * TWO_PI);
 

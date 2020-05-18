@@ -1,12 +1,10 @@
 import de.hfkbremen.gewebe.*; 
-import java.awt.*; 
-import java.awt.geom.*; 
 import org.sunflow.*; 
 
 
 boolean mRecord = false;
 void settings() {
-    size(640, 480, P3D);
+    size(1024, 768, P3D);
 }
 void setup() {
 }

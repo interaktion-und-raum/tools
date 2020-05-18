@@ -9,12 +9,16 @@ import processing.core.PApplet;
 
 import java.util.ArrayList;
 
-public class SketchOBJModelToTriangles extends PApplet {
+public class SketchOBJModelAccessingMeshTriangles extends PApplet {
+
+    /**
+     * this example demonstrates how to manually access the triangles of a mesh.
+     */
 
     private ArrayList<Triangle> mTriangles;
 
     public void settings() {
-        size(640, 480, P3D);
+        size(1024, 768, P3D);
     }
 
     public void setup() {
@@ -24,16 +28,17 @@ public class SketchOBJModelToTriangles extends PApplet {
     }
 
     public void draw() {
-        background(255);
+        background(50);
 
-        translate(width / 2, height / 2, -200);
+        translate(width / 2.0f, height / 2.0f, -200);
         rotateX(sin(frameCount * 0.01f) * TWO_PI);
         rotateY(cos(frameCount * 0.0037f) * TWO_PI);
 
         stroke(255);
         beginShape(TRIANGLES);
         for (Triangle t : mTriangles) {
-            fill(0, random(127, 255), random(127, 255));
+            final float mRandom = random(255);
+            fill(0, mRandom / 2, mRandom);
             vertex(t.a.x, t.a.y, t.a.z);
             vertex(t.b.x, t.b.y, t.b.z);
             vertex(t.c.x, t.c.y, t.c.z);
@@ -42,6 +47,6 @@ public class SketchOBJModelToTriangles extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchOBJModelToTriangles.class.getName());
+        PApplet.main(SketchOBJModelAccessingMeshTriangles.class.getName());
     }
 }

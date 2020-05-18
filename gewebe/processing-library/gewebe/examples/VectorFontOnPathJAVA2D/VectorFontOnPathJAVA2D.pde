@@ -1,12 +1,14 @@
 import de.hfkbremen.gewebe.*; 
-import java.awt.*; 
-import java.awt.geom.*; 
 import org.sunflow.*; 
 
 
-Shape mCharacters;
+/**
+ * this example demonstrates how to arrange characters along a given path and return the result as a collection of
+ * vertices using Java2D.
+ */
+java.awt.Shape mCharacters;
 void settings() {
-    size(640, 480, P3D);
+    size(1024, 768, P3D);
 }
 void setup() {
     VectorFont mPathCreator = new VectorFont("Helvetica", 32);
@@ -14,29 +16,31 @@ void setup() {
     mPathCreator.outline_flatness(0.25f);
     mPathCreator.stretch_to_fit(true);
     mPathCreator.repeat(false);
-    final Ellipse2D.Float mPath = new Ellipse2D.Float();
-    mPath.x = width / 2 - 150;
-    mPath.y = height / 2 - 150;
-    mPath.width = 300;
-    mPath.height = 300;
-    mCharacters = mPathCreator.charactersJAVA2D("Since I was very young I realized ...", mPath);
+    final float mRadius = 550;
+    final String mText = "Since I was very young I realized I never wanted to be human size. ";
+    final java.awt.geom.Ellipse2D.Float mPath = new java.awt.geom.Ellipse2D.Float();
+    mPath.x = width / 2.0f - mRadius / 2;
+    mPath.y = height / 2.0f - mRadius / 2;
+    mPath.width = mRadius;
+    mPath.height = mRadius;
+    mCharacters = mPathCreator.charactersJAVA2D(mText, mPath);
 }
 void draw() {
-    background(255);
+    background(50);
     drawOutline(mCharacters);
 }
-void drawOutline(Shape pShape) {
-    stroke(0, 64);
+void drawOutline(java.awt.Shape pShape) {
+    stroke(255, 127);
     noFill();
     if (pShape != null) {
-        final PathIterator it = pShape.getPathIterator(null, 1.0f);
+        final java.awt.geom.PathIterator it = pShape.getPathIterator(null, 1.0f);
         int type;
         float[] points = new float[6];
         beginShape(POLYGON);
         while (!it.isDone()) {
             type = it.currentSegment(points);
             vertex(points[0], points[1]);
-            if (type == PathIterator.SEG_CLOSE) {
+            if (type == java.awt.geom.PathIterator.SEG_CLOSE) {
                 endShape(CLOSE);
                 beginShape();
             }

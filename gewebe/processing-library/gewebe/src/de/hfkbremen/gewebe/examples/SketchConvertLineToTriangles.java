@@ -9,6 +9,11 @@ import java.util.ArrayList;
 
 public class SketchConvertLineToTriangles extends PApplet {
 
+    /**
+     * this examples demonstrates how to convert a line ( of 2 or more points ) into a single 3D object or a series of
+     * unconnected 3D objects.
+     */
+
     public void settings() {
         size(1024, 768, P3D);
     }
@@ -18,14 +23,14 @@ public class SketchConvertLineToTriangles extends PApplet {
     }
 
     public void draw() {
-        background(0, 127, 255);
+        background(50);
         lights();
         lightFalloff(1.0f, 0.001f, 0.0f);
-        pointLight(0, 127, 255, 50, 50, 50);
-        translate(width / 2, height / 2);
+        pointLight(255, 127, 0, 50, 50, 50);
+        translate(width / 2.0f, height / 2.0f);
 
         noStroke();
-        fill(200);
+        fill(255, 127, 0);
         drawSpiral();
     }
 
@@ -38,11 +43,17 @@ public class SketchConvertLineToTriangles extends PApplet {
         ArrayList<PVector> mVertices = new ArrayList<>();
         for (int i = -360 * 3; i < 360 * 3; i += mStep) {
             float r = radians(i);
-            PVector p = new PVector(sin(r) * mRadius, cos(r) * mRadius, mHeightInc * i / mStep);
+            PVector p = new PVector(sin(r) * mRadius, cos(r) * mRadius, mHeightInc * i / (float) mStep);
             mVertices.add(p);
         }
 
-        ArrayList<PVector> mTriangles = Line3.triangles(mVertices, mLineWidth, true, null);
+        /* convert line to triangles */
+        ArrayList<PVector> mTriangles;
+        if (mousePressed) {
+            mTriangles = Line3.triangles_continuous(mVertices, mLineWidth, true, null);
+        } else {
+            mTriangles = Line3.triangles(mVertices, mLineWidth, true, null);
+        }
         drawTriangles(mTriangles);
     }
 
