@@ -19,6 +19,7 @@ public class SketchRenderingWithCycles extends PApplet {
      * - `lights()` does not work yet
      * - Cycles materials can not be used
      * - binary is currently only compiled for `macOS 10.15`
+     *
      */
 
     private boolean mRecord = false;

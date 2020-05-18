@@ -3,4 +3,4 @@ IO_EXAMPLE_PATHS=( examples )
 PROJECT_PACKAGE=de.hfkbremen
 SKETCH_IMPORTS=( java.awt.* java.awt.geom.* org.sunflow.* )
 BASE_COLOR=100
-ADDITIONAL_LIBS=( cycles j3dcore.jar j3dutils.jar vecmath.jar libCGALAlphaShape3.jnilib libCGALBooleanOperations3.jnilib )
+ADDITIONAL_LIBS=( cycles j3dcore.jar j3dutils.jar vecmath.jar libCGALAlphaShape3.jnilib libCGALBooleanOperations3.jnilib sunflow-0.07.3.jar sunflow--LICENSE sunflow-0.07.3-sources.jar )
