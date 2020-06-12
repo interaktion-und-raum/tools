@@ -1,12 +1,14 @@
 #!/bin/sh
-# v20180621
 
 source config.build
 
 ROOT=$(pwd)
-C0=$(tput sgr0)
-C1=$(tput setaf $(expr $BASE_COLOR + 72))
-C2=$(tput setaf $BASE_COLOR)
+
+if [[ "$TERM" != "dumb" ]]; then
+    C0=$(tput sgr0)
+    C1=$(tput setaf $(expr $BASE_COLOR + 72))
+    C2=$(tput setaf $BASE_COLOR)
+fi
 
 printJob()
 {
@@ -29,6 +31,8 @@ printJob "copying src"
 sh $ROOT/copy_src.sh $LIB_NAME
 printJob "copying README"
 sh $ROOT/copy_readme.sh $LIB_NAME
+printJob "copying reference"
+sh $ROOT/copy_reference.sh $LIB_NAME
 printJob "creating processing sketches"
 for i in ${IO_EXAMPLE_PATHS[@]}; do
 	sh $ROOT/create-processing-sketches.sh $LIB_NAME $i
