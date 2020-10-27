@@ -61,14 +61,15 @@ public final class SynthUtil {
     }
 
     public static void dumpAudioDeviceInfo(final JavaSoundAudioDevice mDevice) {
-        System.out.println("********");
-        System.out.println(mDevice.getDefaultOutputDeviceID());
-        System.out.println(mDevice.getDefaultInputDeviceID());
-        System.out.println("********");
+        System.out.println("+-------------------------------------------------------+");
+        System.out.println("AUDIO DEVICE INFO");
+        System.out.println("+-------------------------------------------------------+");
         for (int i = 0; i < mDevice.getDeviceCount(); i++) {
-            System.out.println(i + "\t" + mDevice.getDeviceName(i));
-            System.out.println("\tout\t" + mDevice.getMaxOutputChannels(i));
-            System.out.println("\tin\t" + mDevice.getMaxInputChannels(i));
+            System.out.println("ID ................ : " + i);
+            System.out.println("NAME .............. : " + mDevice.getDeviceName(i));
+            System.out.println("OUTPUT CHANNELS ... : " + mDevice.getMaxOutputChannels(i));
+            System.out.println("INPUT CHANNELS .... : " + mDevice.getMaxInputChannels(i));
+            System.out.println("+-------------------------------------------------------+");
         }
     }
 
@@ -76,10 +77,10 @@ public final class SynthUtil {
         final int mListWidth = 300, mListHeight = 300;
 
         DropdownList dl = controls.addDropdownList("Please select MIDI Device",
-                                                   (controls.papplet.width - mListWidth) / 2,
-                                                   (controls.papplet.height - mListHeight) / 2,
-                                                   mListWidth,
-                                                   mListHeight);
+                (controls.papplet.width - mListWidth) / 2,
+                (controls.papplet.height - mListHeight) / 2,
+                mListWidth,
+                mListHeight);
 
         //        dl.toUpperCase(true);
         dl.setItemHeight(16);

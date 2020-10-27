@@ -24,11 +24,22 @@ public class SynthesizerJSyn extends Synthesizer {
     private int mInstrumentID;
     private boolean mIsPlaying = false;
 
+    public static final int DEFAULT_DEVICE = -1;
+
     public SynthesizerJSyn() {
         this(INSTRUMENT_WITH_OSCILLATOR_ADSR);
     }
 
     public SynthesizerJSyn(int pDefaultInstrumentType) {
+        this(pDefaultInstrumentType, 44100, DEFAULT_DEVICE, 0, DEFAULT_DEVICE, 2);
+    }
+
+    public SynthesizerJSyn(int pDefaultInstrumentType,
+                           int pSamplingRate,
+                           int pInputDeviceID,
+                           int pInputChannels,
+                           int pOutputDeviceID,
+                           int pOutputChannels) {
         mSynth = new SynthesisEngine();
         prepareExitHandler();
 
@@ -63,8 +74,7 @@ public class SynthesizerJSyn extends Synthesizer {
 
         final JavaSoundAudioDevice mDevice = new JavaSoundAudioDevice();
         SynthUtil.dumpAudioDeviceInfo(mDevice);
-        mSynth.start(44100, mDevice.getDefaultInputDeviceID(), 2, mDevice.getDefaultOutputDeviceID(), 2);
-
+        mSynth.start(pSamplingRate, pInputDeviceID, pInputChannels, pOutputDeviceID, pOutputChannels);
         mTimer = new Timer();
     }
 
