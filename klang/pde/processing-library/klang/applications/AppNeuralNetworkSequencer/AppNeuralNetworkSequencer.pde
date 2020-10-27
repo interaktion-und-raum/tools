@@ -9,7 +9,7 @@ final ArrayList<Node> mNodes = new ArrayList();
 Node mRoot;
 Node mSelectedNode;
 void settings() {
-    size(1024, 768, P2D);
+    size(1024, 768);
 }
 void setup() {
     mSynth.instrument().osc_type(Instrument.SINE);

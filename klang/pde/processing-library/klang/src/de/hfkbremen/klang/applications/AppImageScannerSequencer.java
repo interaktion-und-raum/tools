@@ -13,7 +13,6 @@ import processing.core.PImage;
 import processing.video.Capture;
 
 public class AppImageScannerSequencer extends PApplet {
-//@add import processing.video.Capture;
 
     private final Synthesizer mSynth = new SynthesizerJSyn();
     private final ArrayList<ImageSampler> mSamplers = new ArrayList();
@@ -31,7 +30,7 @@ public class AppImageScannerSequencer extends PApplet {
 
         println("### available cameras:");
         printArray(Capture.list());
-        mCapture = new Capture(this, Capture.list()[1]);
+        mCapture = new Capture(this, Capture.list()[0]);
         mCapture.start();
 
         /* set ADSR parameters for current instrument */

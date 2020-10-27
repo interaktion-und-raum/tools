@@ -18,7 +18,7 @@ public class AppNeuralNetworkSequencer extends PApplet {
     private Node mSelectedNode;
 
     public void settings() {
-        size(1024, 768, P2D);
+        size(1024, 768);
     }
 
     public void setup() {

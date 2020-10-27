@@ -14,7 +14,7 @@ void settings() {
 void setup() {
     background(255);
     SynthUtil.dumpMidiOutputDevices();
-    mSynth = Synthesizer.getSynth("midi", "IAC-Driver"); // name of an available midi out device
+    mSynth = Synthesizer.getSynth("midi", "Bus 1"); // name of an available midi out device
 }
 void draw() {
     if (mIsPlaying) {

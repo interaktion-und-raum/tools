@@ -4,7 +4,6 @@ import ddf.minim.*;
 import com.jsyn.unitgen.*; 
 
 
- import processing.video.Capture;
 final Synthesizer mSynth = new SynthesizerJSyn();
 final ArrayList<ImageSampler> mSamplers = new ArrayList();
 Capture mCapture;
@@ -18,7 +17,7 @@ void setup() {
     background(255);
     println("### available cameras:");
     printArray(Capture.list());
-    mCapture = new Capture(this, Capture.list()[1]);
+    mCapture = new Capture(this, Capture.list()[0]);
     mCapture.start();
     /* set ADSR parameters for current instrument */
     Instrument mInstrument = mSynth.instrument();

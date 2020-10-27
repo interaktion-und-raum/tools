@@ -3,6 +3,7 @@ package de.hfkbremen.klang;
 import com.jsyn.devices.javasound.JavaSoundAudioDevice;
 import com.jsyn.engine.SynthesisEngine;
 import com.jsyn.unitgen.LineOut;
+import com.jsyn.unitgen.UnitOscillator;
 import com.softsynth.shared.time.TimeStamp;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import static processing.core.PApplet.constrain;
 
 public class SynthesizerJSyn extends Synthesizer {
 
+    public static final int DEFAULT_DEVICE = -1;
     private static final boolean USE_AMP_FRACTION = false;
     private final SynthesisEngine mSynth;
     private final LineOut mLineOut;
@@ -24,14 +26,12 @@ public class SynthesizerJSyn extends Synthesizer {
     private int mInstrumentID;
     private boolean mIsPlaying = false;
 
-    public static final int DEFAULT_DEVICE = -1;
-
     public SynthesizerJSyn() {
         this(INSTRUMENT_WITH_OSCILLATOR_ADSR);
     }
 
     public SynthesizerJSyn(int pDefaultInstrumentType) {
-        this(pDefaultInstrumentType, 44100, DEFAULT_DEVICE, 0, DEFAULT_DEVICE, 2);
+        this(pDefaultInstrumentType, 44100, DEFAULT_DEVICE, 1, DEFAULT_DEVICE, 2);
     }
 
     public SynthesizerJSyn(int pDefaultInstrumentType,
@@ -80,6 +80,10 @@ public class SynthesizerJSyn extends Synthesizer {
 
     public SynthesisEngine synth() {
         return mSynth;
+    }
+
+    public void add(UnitOscillator pOsc) {
+        synth().add(pOsc);
     }
 
     public LineOut line_out() {
