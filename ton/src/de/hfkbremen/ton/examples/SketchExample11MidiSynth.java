@@ -19,7 +19,7 @@ public class SketchExample11MidiSynth extends PApplet {
 
     private int mNote = Note.NOTE_A2;
 
-    private int mInstrument = 0;
+    private final int mInstrument = 0;
 
     public void settings() {
         size(640, 480);
