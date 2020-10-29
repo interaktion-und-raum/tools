@@ -5,7 +5,7 @@ import de.hfkbremen.ton.SpeechSynthesis;
 import processing.core.PApplet;
 
 /**
- this examples shows how to use the built in speech synthesis engine ( MacOS only )
+ * this examples shows how to use the built in speech synthesis engine ( MacOS only )
  */
 public class SketchExample13SpeechSynthesis extends PApplet {
 

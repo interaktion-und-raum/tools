@@ -13,23 +13,9 @@ public class AppAlgorithmicComposition extends PApplet {
     private int mBeatCounter = 0;
     private Beat mBeat;
 
-    public void settings() {
-        size(1280, 720);
-    }
-
-    public void setup() {
-        background(255);
-
-        /* set ADSR parameters for current instrument */
-        Instrument mInstrument = mSynth.instrument();
-        mInstrument.attack(0.01f);
-        mInstrument.decay(0.1f);
-        mInstrument.sustain(0.0f);
-        mInstrument.release(0.01f);
-        mInstrument.osc_type(Instrument.TRIANGLE);
-
-        mBeat = new Beat(this, 120 * 4);
-        mSynth.instrument().osc_type(Instrument.SAWTOOTH);
+    public void beat(int pBeat) {
+        mBeatCounter++;
+        play();
     }
 
     public void draw() {
@@ -54,9 +40,26 @@ public class AppAlgorithmicComposition extends PApplet {
         }
     }
 
-    public void beat(int pBeat) {
-        mBeatCounter++;
-        play();
+    public void settings() {
+        size(1280, 720);
+    }
+
+    public void setup() {
+        background(255);
+
+        /* set ADSR parameters for current instrument */
+        Instrument mInstrument = mSynth.instrument();
+        mInstrument.attack(0.01f);
+        mInstrument.decay(0.1f);
+        mInstrument.sustain(0.0f);
+        mInstrument.release(0.01f);
+        mInstrument.osc_type(Instrument.TRIANGLE);
+
+        mBeat = new Beat(this, 120 * 4);
+        mSynth.instrument().osc_type(Instrument.SAWTOOTH);
+    }
+
+    private void foobar() {
     }
 
     public static void main(String[] args) {

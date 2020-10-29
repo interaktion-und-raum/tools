@@ -6,12 +6,8 @@ import processing.core.PApplet;
 
 public class SketchExample31WriteToAudioBuffer extends PApplet {
 
-    public float freq = 440.0f;
-    public AudioBufferPlayer mAudioPlayer;
-
-    public static void main(String[] args) {
-        PApplet.main(SketchExample31WriteToAudioBuffer.class.getName());
-    }
+    private float freq = 440.0f;
+    private AudioBufferPlayer mAudioPlayer;
 
     public void settings() {
         size(640, 480);
@@ -38,6 +34,9 @@ public class SketchExample31WriteToAudioBuffer extends PApplet {
                 pSamples[i] = 0.5f * sin(2 * PI * freq * c++ / AudioBufferPlayer.SAMPLE_RATE);
             }
         }
+    }
 
+    public static void main(String[] args) {
+        PApplet.main(SketchExample31WriteToAudioBuffer.class.getName());
     }
 }

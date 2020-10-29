@@ -8,7 +8,7 @@ import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
 /**
- this examples shows how to use different oscillators in an instrument.
+ * this examples shows how to use different oscillators in an instrument.
  */
 public class SketchExample04Oscillators extends PApplet {
 

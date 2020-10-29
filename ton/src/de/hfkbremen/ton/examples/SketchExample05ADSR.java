@@ -8,7 +8,7 @@ import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
 /**
- this examples shows how to use an instrument with an amplitude envelope ( ADSR ).
+ * this examples shows how to use an instrument with an amplitude envelope ( ADSR ).
  */
 public class SketchExample05ADSR extends PApplet {
 

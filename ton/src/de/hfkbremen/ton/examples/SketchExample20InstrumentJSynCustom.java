@@ -37,9 +37,10 @@ public class SketchExample20InstrumentJSynCustom extends PApplet {
 
     private class InstrumentJSynCustom extends InstrumentJSyn {
 
-        private UnitOscillator mOsc1;
-        private UnitOscillator mOsc2;
-        private UnitOscillator mOsc3;
+        private final UnitOscillator mOsc1;
+        private final UnitOscillator mOsc2;
+        private final UnitOscillator mOsc3;
+
         private float mFreqOffset;
 
         public InstrumentJSynCustom(SynthesizerJSyn pSynth, int pID) {
@@ -84,6 +85,7 @@ public class SketchExample20InstrumentJSynCustom extends PApplet {
         public void set_freq_offset(float freq_offest) {
             mFreqOffset = freq_offest;
         }
+
     }
 
     public static void main(String[] args) {

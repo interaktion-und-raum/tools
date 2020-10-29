@@ -49,7 +49,7 @@ public class AppSixteenStepSequencer extends PApplet {
     public void keyPressed() {
         if (key == ' ') {
             for (int i = 0; i < mSequence.length; i++) {
-                mSequence[i] = (int)random(Note.NOTE_C3, Note.NOTE_C6);
+                mSequence[i] = (int) random(Note.NOTE_C3, Note.NOTE_C6);
             }
         }
     }

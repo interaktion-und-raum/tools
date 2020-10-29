@@ -99,6 +99,10 @@ public class AppNeuralNetworkSequencer extends PApplet {
         return null;
     }
 
+    public static void main(String[] args) {
+        PApplet.main(AppNeuralNetworkSequencer.class.getName());
+    }
+
     final class Node {
 
         float x;
@@ -170,9 +174,5 @@ public class AppNeuralNetworkSequencer extends PApplet {
         void schedule() {
             scheduled = true;
         }
-    }
-
-    public static void main(String[] args) {
-        PApplet.main(AppNeuralNetworkSequencer.class.getName());
     }
 }

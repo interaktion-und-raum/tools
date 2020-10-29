@@ -12,10 +12,6 @@ public class AppOscJibberish extends PApplet {
 
     private SoundSource mSoundSource;
 
-    public static void main(String[] args) {
-        PApplet.main(AppOscJibberish.class.getName());
-    }
-
     public void settings() {
         size(640, 480);
     }
@@ -64,6 +60,10 @@ public class AppOscJibberish extends PApplet {
         stroke(0, 127);
         ellipse(mSoundSource.triggerposition().x, mSoundSource.triggerposition().y,
                 mSoundSource.mMaxDistance * 2, mSoundSource.mMaxDistance * 2);
+    }
+
+    public static void main(String[] args) {
+        PApplet.main(AppOscJibberish.class.getName());
     }
 
     public class SoundSource {

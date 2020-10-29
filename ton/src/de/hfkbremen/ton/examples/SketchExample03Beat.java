@@ -6,14 +6,14 @@ import de.hfkbremen.ton.Synthesizer;
 import processing.core.PApplet;
 
 /**
- this examples shows how to use a beat. once instantiated the beat object calls the `beat(int)` at a defined *beats per
- minute* (bpm).
+ * this examples shows how to use a beat. once instantiated the beat object calls the `beat(int)` at a defined *beats per
+ * minute* (bpm).
  */
 public class SketchExample03Beat extends PApplet {
 
     private final Synthesizer mSynth = Synthesizer.getSynth();
     private int mBeatCount;
-    private int[] mNotes = {Note.NOTE_C3, Note.NOTE_C4, Note.NOTE_A2, Note.NOTE_A3};
+    private final int[] mNotes = {Note.NOTE_C3, Note.NOTE_C4, Note.NOTE_A2, Note.NOTE_A3};
 
     public void settings() {
         size(640, 480);
