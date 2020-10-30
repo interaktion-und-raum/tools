@@ -7,7 +7,7 @@ import processing.core.PApplet;
 /**
  * this examples shows how to use the built in speech synthesis engine ( MacOS only )
  */
-public class SketchExample13SpeechSynthesis extends PApplet {
+public class SketchExampleBasic06SpeechSynthesis extends PApplet {
 
     private SpeechSynthesis mSpeech;
 
@@ -41,6 +41,6 @@ public class SketchExample13SpeechSynthesis extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchExample13SpeechSynthesis.class.getName());
+        PApplet.main(SketchExampleBasic06SpeechSynthesis.class.getName());
     }
 }

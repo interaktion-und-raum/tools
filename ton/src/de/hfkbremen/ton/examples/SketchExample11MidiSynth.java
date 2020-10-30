@@ -1,59 +1,38 @@
 package de.hfkbremen.ton.examples;
 
-import de.hfkbremen.ton.Note;
-import de.hfkbremen.ton.Scale;
 import de.hfkbremen.ton.SynthUtil;
 import de.hfkbremen.ton.Synthesizer;
-import de.hfkbremen.ton.SynthesizerMidi;
 import processing.core.PApplet;
 
 /**
- * this examples shows how to control a midi instrument. make sure to set up the midi configuration properly in the
- * system control panel.
+ * this examples shows how to control a midi instrument. make sure to set up the midi configuration properly in system
+ * control.
  */
 public class SketchExample11MidiSynth extends PApplet {
-
-    private Synthesizer mSynth;
-
-    private boolean mIsPlaying = false;
-
-    private int mNote = Note.NOTE_A2;
-
-    private final int mInstrument = 0;
 
     public void settings() {
         size(640, 480);
     }
 
     public void setup() {
-        background(255);
         SynthUtil.dumpMidiOutputDevices();
-        mSynth = Synthesizer.getSynth("midi", "Bus 1"); // name of an available midi out device
+        Synthesizer.init("midi", "Bus 1"); // name of an available midi out device
     }
 
     public void draw() {
-        if (mIsPlaying) {
-            int mColor = (mNote - Note.NOTE_A2) * 5 + 50;
-            background(mColor);
-        } else {
-            background(255);
-        }
+        background(Synthesizer.isPlaying() ? 255 : 0);
     }
 
-    public void mouseMoved() {
-        mSynth.control_change(SynthesizerMidi.CC_MODULATION, (int) map(mouseX, 0, width, 0, 127));
-        mSynth.pitch_bend((int) map(mouseY, 0, height, 16383, 0));
+    public void mousePressed() {
+        /* `instrument` in this context is equivalent to *MIDI channels*. this also means that sound characteristics
+        ( e.g `osc_type` ) are not available. */
+        Synthesizer.instrument(mouseX > width / 2.0 ? 1 : 0);
+        int mNote = 45 + (int) random(0, 12);
+        Synthesizer.noteOn(mNote, 127);
     }
 
-    public void keyPressed() {
-        if (!mIsPlaying) {
-            mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) random(0, 10));
-            mSynth.instrument(mInstrument);
-            mSynth.noteOn(mNote, 127);
-        } else {
-            mSynth.noteOff();
-        }
-        mIsPlaying = !mIsPlaying;
+    public void mouseReleased() {
+        Synthesizer.noteOff();
     }
 
     public static void main(String[] args) {

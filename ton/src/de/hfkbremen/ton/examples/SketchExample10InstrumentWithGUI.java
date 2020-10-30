@@ -4,7 +4,7 @@ import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.Synthesizer;
+import de.hfkbremen.ton.SynthesizerManager;
 import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
@@ -14,7 +14,7 @@ import processing.core.PApplet;
 public class SketchExample10InstrumentWithGUI extends PApplet {
 
     private static final int NO = -1;
-    private Synthesizer mSynth;
+    private SynthesizerManager mSynth;
     private controlP5.ControlP5 cp5;
 
     private final int[] mSteps = {
@@ -33,7 +33,7 @@ public class SketchExample10InstrumentWithGUI extends PApplet {
     }
 
     public void setup() {
-        mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
+        mSynth = new SynthesizerJSyn(SynthesizerManager.INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
         mSynth.instrument().osc_type(Instrument.SQUARE);
         mSynth.instrument().attack(0.01f);
         mSynth.instrument().decay(0.2f);
@@ -44,7 +44,7 @@ public class SketchExample10InstrumentWithGUI extends PApplet {
         mSynth.instrument().filter_q(3.0f);
         mSynth.instrument().filter_freq(2048.0f);
 
-        cp5 = Synthesizer.createInstrumentsGUI(this, mSynth, 0);
+        cp5 = SynthesizerManager.createInstrumentsGUI(this, mSynth, 0);
 
         Beat mBeat = new Beat(this);
         mBeat.bpm(120 * 4);
@@ -63,7 +63,7 @@ public class SketchExample10InstrumentWithGUI extends PApplet {
             mSynth.noteOff();
         }
         mSynth.instrument().filter_freq(abs(sin(radians(pBeat))) * 3000 + 200);
-        Synthesizer.updateGUI(cp5, mSynth.instrument(), Synthesizer.GUI_FILTER_FREQ);
+        SynthesizerManager.updateGUI(cp5, mSynth.instrument(), SynthesizerManager.GUI_FILTER_FREQ);
     }
 
     public static void main(String[] args) {

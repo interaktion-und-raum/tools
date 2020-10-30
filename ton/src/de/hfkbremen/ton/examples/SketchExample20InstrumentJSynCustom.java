@@ -4,7 +4,7 @@ import com.jsyn.unitgen.MixerMono;
 import com.jsyn.unitgen.SawtoothOscillator;
 import com.jsyn.unitgen.UnitOscillator;
 import de.hfkbremen.ton.InstrumentJSyn;
-import de.hfkbremen.ton.Synthesizer;
+import de.hfkbremen.ton.SynthesizerManager;
 import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
@@ -21,7 +21,7 @@ public class SketchExample20InstrumentJSynCustom extends PApplet {
     }
 
     public void setup() {
-        SynthesizerJSyn mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_EMPTY);
+        SynthesizerJSyn mSynth = new SynthesizerJSyn(SynthesizerManager.INSTRUMENT_EMPTY);
         mInstrument = new InstrumentJSynCustom(mSynth, 0);
         mInstrument.set_amp(0.8f);
     }

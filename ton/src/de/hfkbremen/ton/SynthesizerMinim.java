@@ -11,7 +11,7 @@ import static de.hfkbremen.ton.Instrument.NUMBER_OF_OSCILLATORS;
 import static de.hfkbremen.ton.SynthUtil.clamp127;
 import static de.hfkbremen.ton.SynthUtil.note_to_frequency;
 
-public class SynthesizerMinim extends Synthesizer {
+public class SynthesizerMinim extends SynthesizerManager {
 
     private static final boolean USE_AMP_FRACTION = false;
     private final ArrayList<Instrument> mInstruments;

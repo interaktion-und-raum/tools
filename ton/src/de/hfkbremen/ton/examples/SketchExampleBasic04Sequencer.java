@@ -3,17 +3,17 @@ package de.hfkbremen.ton.examples;
 import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.Synthesizer;
+import de.hfkbremen.ton.SynthesizerManager;
 import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
 /**
  * this examples shows how to implement the concept of a sequencer to repeatedly play a pattern..
  */
-public class SketchExample14Sequencer extends PApplet {
+public class SketchExampleBasic04Sequencer extends PApplet {
 
     private static final int NO = -1;
-    private Synthesizer mSynth;
+    private SynthesizerManager mSynth;
     private int mNote;
     private Beat mBeat;
     private final int[] mSteps = {
@@ -57,7 +57,7 @@ public class SketchExample14Sequencer extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchExample14Sequencer.class.getName());
+        PApplet.main(SketchExampleBasic04Sequencer.class.getName());
     }
 }
 

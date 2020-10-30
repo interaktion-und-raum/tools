@@ -4,15 +4,12 @@ import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
 import de.hfkbremen.ton.Synthesizer;
-import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
 /**
  * this examples shows how to use an instrument with an amplitude envelope ( ADSR ).
  */
 public class SketchExample05ADSR extends PApplet {
-
-    private Synthesizer mSynth;
 
     private Instrument mInstrument;
 
@@ -26,11 +23,10 @@ public class SketchExample05ADSR extends PApplet {
 
     public void setup() {
         background(255);
-        mSynth = new SynthesizerJSyn();
 
         /* set ADSR parameters for current instrument */
         println(Instrument.ADSR_DIAGRAM);
-        mInstrument = mSynth.instrument();
+        mInstrument = Synthesizer.instrument();
         mInstrument.attack(3.0f);
         mInstrument.decay(0.0f);
         mInstrument.sustain(1.0f);
@@ -66,7 +62,7 @@ public class SketchExample05ADSR extends PApplet {
         }
 
         /* draw ADSR */
-        float mY = height / 2;
+        float mY = height / 2.0f;
         float mRadiusA = 10;
         float mRadiusB = 50;
         fill(255);
@@ -78,12 +74,12 @@ public class SketchExample05ADSR extends PApplet {
 
     public void mousePressed() {
         mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) random(0, 10));
-        mSynth.noteOn(mNote, 127);
+        Synthesizer.noteOn(mNote, 127);
         mIsPlaying = true;
     }
 
     public void mouseReleased() {
-        mSynth.noteOff();
+        Synthesizer.noteOff();
         mIsPlaying = false;
     }
 

@@ -4,15 +4,12 @@ import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
 import de.hfkbremen.ton.Synthesizer;
-import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
 /**
  * this examples shows how to use different oscillators in an instrument.
  */
 public class SketchExample04Oscillators extends PApplet {
-
-    private Synthesizer mSynth;
 
     private Instrument mInstrument;
 
@@ -26,10 +23,9 @@ public class SketchExample04Oscillators extends PApplet {
 
     public void setup() {
         background(255);
-        mSynth = new SynthesizerJSyn();
 
         /* select instrument #2 */
-        mInstrument = mSynth.instrument(2);
+        mInstrument = Synthesizer.instrument(2);
     }
 
     public void draw() {
@@ -44,10 +40,10 @@ public class SketchExample04Oscillators extends PApplet {
     public void keyPressed() {
         if (key == ' ') {
             if (mIsPlaying) {
-                mSynth.noteOff();
+                Synthesizer.noteOff();
             } else {
                 mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) random(0, 10));
-                mSynth.noteOn(mNote, 127);
+                Synthesizer.noteOn(mNote, 127);
             }
             mIsPlaying = !mIsPlaying;
         }

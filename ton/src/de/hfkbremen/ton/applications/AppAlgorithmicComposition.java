@@ -3,13 +3,13 @@ package de.hfkbremen.ton.applications;
 import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
-import de.hfkbremen.ton.Synthesizer;
+import de.hfkbremen.ton.SynthesizerManager;
 import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
 public class AppAlgorithmicComposition extends PApplet {
 
-    private final Synthesizer mSynth = new SynthesizerJSyn();
+    private final SynthesizerManager mSynth = new SynthesizerJSyn();
     private int mBeatCounter = 0;
     private Beat mBeat;
 

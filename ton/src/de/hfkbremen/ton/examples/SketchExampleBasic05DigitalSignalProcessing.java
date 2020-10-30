@@ -4,7 +4,7 @@ import de.hfkbremen.ton.AudioBufferPlayer;
 import de.hfkbremen.ton.AudioBufferRenderer;
 import processing.core.PApplet;
 
-public class SketchExample31WriteToAudioBuffer extends PApplet {
+public class SketchExampleBasic05DigitalSignalProcessing extends PApplet {
 
     private float freq = 440.0f;
     private AudioBufferPlayer mAudioPlayer;
@@ -37,6 +37,6 @@ public class SketchExample31WriteToAudioBuffer extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchExample31WriteToAudioBuffer.class.getName());
+        PApplet.main(SketchExampleBasic05DigitalSignalProcessing.class.getName());
     }
 }

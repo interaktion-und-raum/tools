@@ -4,7 +4,7 @@ import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.Synthesizer;
+import de.hfkbremen.ton.SynthesizerManager;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class AppNeuralNetworkSequencer extends PApplet {
 
-    private final Synthesizer mSynth = Synthesizer.getSynth();
+    private final SynthesizerManager mSynth = SynthesizerManager.createSynth();
     private final ArrayList<Node> mNodes = new ArrayList();
     private Node mRoot;
     private Node mSelectedNode;

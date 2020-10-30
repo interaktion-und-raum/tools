@@ -5,7 +5,7 @@ import java.util.Timer;
 
 import static processing.core.PApplet.constrain;
 
-public class SynthesizerMidi extends Synthesizer {
+public class SynthesizerMidi extends SynthesizerManager {
 
     public static final int CC_MODULATION = 1;
     public final MidiOut mMidiOut;
@@ -17,6 +17,17 @@ public class SynthesizerMidi extends Synthesizer {
         mTimer = new Timer();
         mMidiOut = new MidiOut(getProperDeviceName(pMidiOutputDeviceName));
         prepareExitHandler();
+    }
+
+    public static String getProperDeviceName(String pMidiOutputDeviceName) {
+        String[] mDevices = MidiOut.availableOutputs();
+        for (String mDevice : mDevices) {
+            if (mDevice.startsWith(pMidiOutputDeviceName)) {
+                return mDevice;
+            }
+        }
+        System.err.println("### couldn t find midi device");
+        return null;
     }
 
     public void noteOn(int note, int velocity, float duration) {
@@ -78,16 +89,5 @@ public class SynthesizerMidi extends Synthesizer {
                 mMidiOut.close();
             }
         }));
-    }
-
-    public static String getProperDeviceName(String pMidiOutputDeviceName) {
-        String[] mDevices = MidiOut.availableOutputs();
-        for (String mDevice : mDevices) {
-            if (mDevice.startsWith(pMidiOutputDeviceName)) {
-                return mDevice;
-            }
-        }
-        System.err.println("### couldn t find midi device");
-        return null;
     }
 }

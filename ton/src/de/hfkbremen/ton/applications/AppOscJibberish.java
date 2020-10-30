@@ -3,7 +3,7 @@ package de.hfkbremen.ton.applications;
 import com.jsyn.unitgen.MixerMono;
 import com.jsyn.unitgen.SawtoothOscillator;
 import com.jsyn.unitgen.UnitOscillator;
-import de.hfkbremen.ton.Synthesizer;
+import de.hfkbremen.ton.SynthesizerManager;
 import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -25,7 +25,7 @@ public class AppOscJibberish extends PApplet {
         smooth();
 
         /* start jsyn */
-        SynthesizerJSyn mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_EMPTY);
+        SynthesizerJSyn mSynth = new SynthesizerJSyn(SynthesizerManager.INSTRUMENT_EMPTY);
 
         MixerMono mMixerMono = new MixerMono(1);
         mMixerMono.amplitude.set(0.85f);

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SynthesizerOSC extends Synthesizer {
+public class SynthesizerOSC extends SynthesizerManager {
 
     private final OscP5 mOscP5;
     private final NetAddress mRemoteLocation;

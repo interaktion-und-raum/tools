@@ -3,17 +3,17 @@ package de.hfkbremen.ton.examples;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.Synthesizer;
 import de.hfkbremen.ton.SynthesizerMinim;
 import processing.core.PApplet;
 
 /**
  * this examples shows how to use the minim library for sound synthesis ( note that the basic concept of sound synthesis
- * is very similar to the jsyn library ) note: if running this sketch from processing PDE add `import ddf.minim.*;` to the imports.
+ * is very similar to the jsyn library ) note: if running this sketch from processing PDE add `import ddf.minim.*;` to
+ * the imports.
  */
 public class SketchExample12MinimSynth extends PApplet {
 
-    private Synthesizer mSynth;
+    private SynthesizerMinim mSynth;
 
     private Instrument mInstrument;
 

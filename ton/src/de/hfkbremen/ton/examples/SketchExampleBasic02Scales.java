@@ -3,17 +3,15 @@ package de.hfkbremen.ton.examples;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
 import de.hfkbremen.ton.Synthesizer;
-import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 
 /**
  * this examples shows how to use musical scales. there are a selection of predefined scales but custom ones can also be
  * created.
  */
-public class SketchExample02Scales extends PApplet {
+public class SketchExampleBasic02Scales extends PApplet {
 
     private static final int NO = -1;
-    private Synthesizer mSynth;
     private int mNote;
     private int mStep;
     private int[] mScale;
@@ -23,7 +21,6 @@ public class SketchExample02Scales extends PApplet {
     }
 
     public void setup() {
-        mSynth = new SynthesizerJSyn();
         mScale = Scale.HALF_TONE;
     }
 
@@ -36,7 +33,7 @@ public class SketchExample02Scales extends PApplet {
             mStep++;
             mStep %= 12;
             mNote = Scale.note(mScale, Note.NOTE_C3, mStep);
-            mSynth.noteOn(mNote, 127);
+            Synthesizer.noteOn(mNote, 127);
         }
         if (key == '1') {
             mScale = Scale.HALF_TONE;
@@ -50,6 +47,6 @@ public class SketchExample02Scales extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchExample02Scales.class.getName());
+        PApplet.main(SketchExampleBasic02Scales.class.getName());
     }
 }

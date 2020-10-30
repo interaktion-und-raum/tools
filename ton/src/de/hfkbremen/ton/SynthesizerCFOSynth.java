@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import static de.hfkbremen.ton.SynthUtil.clamp127;
 
-public class SynthesizerCFOSynth extends Synthesizer {
+public class SynthesizerCFOSynth extends SynthesizerManager {
 
     public static final int PRESET_SAVE = 0;
     public static final int PRESET_RECALL = 1;

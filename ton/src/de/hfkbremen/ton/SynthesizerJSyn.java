@@ -15,7 +15,7 @@ import static de.hfkbremen.ton.SynthUtil.clamp127;
 import static de.hfkbremen.ton.SynthUtil.note_to_frequency;
 import static processing.core.PApplet.constrain;
 
-public class SynthesizerJSyn extends Synthesizer {
+public class SynthesizerJSyn extends SynthesizerManager {
 
     public static final int DEFAULT_DEVICE = -1;
     private static final boolean USE_AMP_FRACTION = false;
