@@ -4,7 +4,7 @@ import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.SynthesizerManager;
+import de.hfkbremen.ton.Synthesizer;
 import de.hfkbremen.ton.SynthesizerJSyn;
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class AppImageScannerSequencer extends PApplet {
 
-    private final SynthesizerManager mSynth = new SynthesizerJSyn();
-    private final ArrayList<ImageSampler> mSamplers = new ArrayList();
+    private final Synthesizer mSynth = new SynthesizerJSyn();
+    private final ArrayList<ImageSampler> mSamplers = new ArrayList<>();
     private Capture mCapture;
     private int mCurrentSampler = 0;
     private Beat mBeat;

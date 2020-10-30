@@ -2,13 +2,11 @@ package de.hfkbremen.ton.applications;
 
 import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Note;
-import de.hfkbremen.ton.SynthesizerManager;
-import de.hfkbremen.ton.SynthesizerJSyn;
+import de.hfkbremen.ton.Ton;
 import processing.core.PApplet;
 
 public class AppSixteenStepSequencer extends PApplet {
 
-    private final SynthesizerManager mSynth = new SynthesizerJSyn();
     private final int[] mSequence = new int[16];
     private int mBeatCount = 0;
     private Beat mBeat = new Beat(this, 240);
@@ -58,7 +56,7 @@ public class AppSixteenStepSequencer extends PApplet {
         mBeatCount = pBeatCount;
         int mIndex = mBeatCount % mSequence.length;
         int mNote = mSequence[mIndex];
-        mSynth.noteOn(mNote, 127);
+        Ton.noteOn(mNote, 127);
     }
 
     public static void main(String[] args) {

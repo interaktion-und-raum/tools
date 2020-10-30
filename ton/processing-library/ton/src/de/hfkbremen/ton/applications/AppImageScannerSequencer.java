@@ -6,16 +6,17 @@ import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
 import de.hfkbremen.ton.Synthesizer;
 import de.hfkbremen.ton.SynthesizerJSyn;
-import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.video.Capture;
 
+import java.util.ArrayList;
+
 public class AppImageScannerSequencer extends PApplet {
 
     private final Synthesizer mSynth = new SynthesizerJSyn();
-    private final ArrayList<ImageSampler> mSamplers = new ArrayList();
+    private final ArrayList<ImageSampler> mSamplers = new ArrayList<>();
     private Capture mCapture;
     private int mCurrentSampler = 0;
     private Beat mBeat;
@@ -67,6 +68,25 @@ public class AppImageScannerSequencer extends PApplet {
             mSampler.draw(g);
             mSampler.active = mSampler.ID == mCurrentSampler;
         }
+    }
+
+    public void beat(int pBeat) {
+        mCurrentSampler++;
+        mCurrentSampler %= mSamplers.size();
+        for (ImageSampler mSampler : mSamplers) {
+            mSampler.sample(mCapture);
+        }
+        float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
+        final int mSteps = 10;
+        final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) (mBrightnessNorm * mSteps));
+        if (mNote != mLastNote) {
+            mSynth.noteOn(mNote, 127);
+        }
+        mLastNote = mNote;
+    }
+
+    public static void main(String[] args) {
+        PApplet.main(AppImageScannerSequencer.class.getName());
     }
 
     class ImageSampler {
@@ -130,24 +150,5 @@ public class AppImageScannerSequencer extends PApplet {
             g.ellipse(x, y, radius * 2, radius * 2);
 
         }
-    }
-
-    public void beat(int pBeat) {
-        mCurrentSampler++;
-        mCurrentSampler %= mSamplers.size();
-        for (ImageSampler mSampler : mSamplers) {
-            mSampler.sample(mCapture);
-        }
-        float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
-        final int mSteps = 10;
-        final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) (mBrightnessNorm * mSteps));
-        if (mNote != mLastNote) {
-            mSynth.noteOn(mNote, 127);
-        }
-        mLastNote = mNote;
-    }
-
-    public static void main(String[] args) {
-        PApplet.main(AppImageScannerSequencer.class.getName());
     }
 }

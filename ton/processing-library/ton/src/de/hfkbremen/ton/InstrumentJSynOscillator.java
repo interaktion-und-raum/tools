@@ -63,31 +63,32 @@ public class InstrumentJSynOscillator extends InstrumentJSyn {
         }
     }
 
-    public void set_amp(float pAmp) {
+    public void amplitude(float pAmp) {
+        System.out.println("set_amp");
         mAmp = pAmp;
         if (mOsc instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) mOsc;
-            uo.amplitude.set(pAmp);
+            uo.amplitude.set(mAmp);
         } else if (mOsc instanceof WhiteNoise) {
             WhiteNoise uo = (WhiteNoise) mOsc;
-            uo.amplitude.set(pAmp);
+            uo.amplitude.set(mAmp);
         }
     }
 
-    public void set_freq(float freq) {
+    public void frequency(float freq) {
         mFreq = freq;
         update_freq();
     }
 
     public void noteOff() {
-        set_amp(0);
+        amplitude(0);
     }
 
     public void noteOn(float pFreq, float pAmp) {
         TimeStamp mTimeStamp = new TimeStamp(mSynth.getCurrentTime());
         mFreq = pFreq;
         update_freq();
-        set_amp(1);
+        amplitude(1);
     }
 
     @ControlElement(properties = {"min=0.0",

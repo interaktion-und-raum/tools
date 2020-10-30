@@ -24,52 +24,6 @@ public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
         super(mSynthesizerJSyn, pID);
     }
 
-    protected void setupModules() {
-        if (mEnvPlayer == null) {
-            update_env_data();
-            mEnvPlayer = new VariableRateMonoReader();
-            mSynth.add(mEnvPlayer);
-            mEnvPlayer.start();
-        }
-    }
-
-    protected void connectModules(UnitGenerator o) {
-        setupModules();
-        mSynth.add(o);
-        if (o instanceof UnitOscillator) {
-            UnitOscillator uo = (UnitOscillator) o;
-            uo.amplitude.set(0);
-            uo.frequency.set(220);
-            uo.output.connect(0, mLineOut.input, 0);
-            uo.output.connect(0, mLineOut.input, 1);
-            mEnvPlayer.output.connect(uo.amplitude);
-        } else if (o instanceof WhiteNoise) {
-            WhiteNoise uo = (WhiteNoise) o;
-            uo.amplitude.set(0);
-            uo.output.connect(0, mLineOut.input, 0);
-            uo.output.connect(0, mLineOut.input, 1);
-            mEnvPlayer.output.connect(uo.amplitude);
-        }
-    }
-
-    protected void disconnectModules(UnitGenerator o) {
-        o.stop();
-        if (o instanceof UnitOscillator) {
-            UnitOscillator uo = (UnitOscillator) o;
-            uo.amplitude.set(0);
-            uo.output.disconnect(mLineOut.input);
-            uo.output.disconnectAll();
-            mEnvPlayer.output.disconnect(uo.amplitude);
-        } else if (o instanceof WhiteNoise) {
-            WhiteNoise uo = (WhiteNoise) o;
-            uo.amplitude.set(0);
-            uo.output.disconnect(mLineOut.input);
-            uo.output.disconnectAll();
-            mEnvPlayer.output.disconnect(uo.amplitude);
-        }
-        mSynth.remove(o);
-    }
-
     public void update_freq() {
         if (mOsc instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) mOsc;
@@ -77,7 +31,7 @@ public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
         }
     }
 
-    public void set_amp(float pAmp) {
+    public void amplitude(float pAmp) {
         mAmp = pAmp;
         if (mOsc instanceof UnitOscillator) {
             UnitOscillator uo = (UnitOscillator) mOsc;
@@ -88,7 +42,7 @@ public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
         }
     }
 
-    public void set_freq(float freq) {
+    public void frequency(float freq) {
         mFreq = freq;
         update_freq();
     }
@@ -109,10 +63,10 @@ public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
     }
 
     @ControlElement(properties = {"min=0.0",
-                                  "max=" + (NUMBER_OF_OSCILLATORS - 1),
-                                  "type=knob",
-                                  "radius=20",
-                                  "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
+            "max=" + (NUMBER_OF_OSCILLATORS - 1),
+            "type=knob",
+            "radius=20",
+            "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
     public void osc_type(int pOsc) {
         disconnectModules(mOsc);
         /*
@@ -235,15 +189,6 @@ public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
         super.release(pRelease);
     }
 
-    protected void update_env_data() {
-        double[] mData = {mAttack, 1.0 * mAmp, // get_attack
-                          mDecay, // get_decay
-                          mSustain * mAmp, // get_sustain
-                          mRelease, 0.0, // get_release
-        };
-        mEnvData = new SegmentedEnvelope(mData);
-    }
-
     public void trigger() {
         mEnvPlayer.dataQueue.clear();
         update_env_data();
@@ -252,5 +197,60 @@ public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
 
     VariableRateMonoReader env() {
         return mEnvPlayer;
+    }
+
+    protected void setupModules() {
+        if (mEnvPlayer == null) {
+            update_env_data();
+            mEnvPlayer = new VariableRateMonoReader();
+            mSynth.add(mEnvPlayer);
+            mEnvPlayer.start();
+        }
+    }
+
+    protected void connectModules(UnitGenerator o) {
+        setupModules();
+        mSynth.add(o);
+        if (o instanceof UnitOscillator) {
+            UnitOscillator uo = (UnitOscillator) o;
+            uo.amplitude.set(0);
+            uo.frequency.set(220);
+            uo.output.connect(0, mLineOut.input, 0);
+            uo.output.connect(0, mLineOut.input, 1);
+            mEnvPlayer.output.connect(uo.amplitude);
+        } else if (o instanceof WhiteNoise) {
+            WhiteNoise uo = (WhiteNoise) o;
+            uo.amplitude.set(0);
+            uo.output.connect(0, mLineOut.input, 0);
+            uo.output.connect(0, mLineOut.input, 1);
+            mEnvPlayer.output.connect(uo.amplitude);
+        }
+    }
+
+    protected void disconnectModules(UnitGenerator o) {
+        o.stop();
+        if (o instanceof UnitOscillator) {
+            UnitOscillator uo = (UnitOscillator) o;
+            uo.amplitude.set(0);
+            uo.output.disconnect(mLineOut.input);
+            uo.output.disconnectAll();
+            mEnvPlayer.output.disconnect(uo.amplitude);
+        } else if (o instanceof WhiteNoise) {
+            WhiteNoise uo = (WhiteNoise) o;
+            uo.amplitude.set(0);
+            uo.output.disconnect(mLineOut.input);
+            uo.output.disconnectAll();
+            mEnvPlayer.output.disconnect(uo.amplitude);
+        }
+        mSynth.remove(o);
+    }
+
+    protected void update_env_data() {
+        double[] mData = {mAttack, 1.0 * mAmp, // get_attack
+                mDecay, // get_decay
+                mSustain * mAmp, // get_sustain
+                mRelease, 0.0, // get_release
+        };
+        mEnvData = new SegmentedEnvelope(mData);
     }
 }

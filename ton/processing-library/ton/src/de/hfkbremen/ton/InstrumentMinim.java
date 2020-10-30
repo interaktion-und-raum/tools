@@ -23,15 +23,11 @@ public class InstrumentMinim extends Instrument {
         minim = pMinim;
         out = minim.getLineOut(Minim.MONO);
 
-        mOsc = new Oscil(mFreq, mAmp, Waves.TRIANGLE);
+        mOsc = new Oscil(mFreq, mAmp, Waves.SINE);
         adsr = new ADSR(1.0f, mAttack, mDecay, mSustain, mRelease, 0.0f, 0.0f);
 
         mOsc.patch(adsr);
         adsr.patch(out);
-    }
-
-    private void setADSR() {
-        adsr.setParameters(1.0f, mAttack, mDecay, mSustain, mRelease <= 0 ? 0.001f : mRelease, 0.0f, 0.0f);
     }
 
     public void noteOff() {
@@ -39,18 +35,18 @@ public class InstrumentMinim extends Instrument {
     }
 
     public void noteOn(float pFrequency, float pAmplitude) {
-        set_freq(pFrequency);
-        set_amp(pAmplitude);
+        frequency(pFrequency);
+        amplitude(pAmplitude);
         setADSR();
         adsr.noteOn();
     }
 
-    public void set_freq(float pFreq) {
+    public void frequency(float pFreq) {
         mFreq = pFreq;
         mOsc.setFrequency(mFreq);
     }
 
-    public void set_amp(float pAmp) {
+    public void amplitude(float pAmp) {
         mAmp = pAmp;
         mOsc.setAmplitude(mAmp);
     }
@@ -77,12 +73,11 @@ public class InstrumentMinim extends Instrument {
     }
 
     @ControlElement(properties = {"min=0.0",
-                                  "max=" + (NUMBER_OF_OSCILLATORS - 1),
-                                  "type=knob",
-                                  "radius=20",
-                                  "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
+            "max=" + (NUMBER_OF_OSCILLATORS - 1),
+            "type=knob",
+            "radius=20",
+            "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
     public void osc_type(int pOsc) {
-        System.out.println("minim pOsc: " + pOsc);
         switch (pOsc) {
             case SINE:
                 mOsc.setWaveform(Waves.SINE);
@@ -173,5 +168,9 @@ public class InstrumentMinim extends Instrument {
     @Override
     public void pitch_bend(float freq_offset) {
 
+    }
+
+    private void setADSR() {
+        adsr.setParameters(1.0f, mAttack, mDecay, mSustain, mRelease <= 0 ? 0.001f : mRelease, 0.0f, 0.0f);
     }
 }

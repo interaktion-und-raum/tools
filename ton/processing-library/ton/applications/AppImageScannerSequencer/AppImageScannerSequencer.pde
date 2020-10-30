@@ -49,6 +49,20 @@ void draw() {
         mSampler.active = mSampler.ID == mCurrentSampler;
     }
 }
+void beat(int pBeat) {
+    mCurrentSampler++;
+    mCurrentSampler %= mSamplers.size();
+    for (ImageSampler mSampler : mSamplers) {
+        mSampler.sample(mCapture);
+    }
+    float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
+    final int mSteps = 10;
+    final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) (mBrightnessNorm * mSteps));
+    if (mNote != mLastNote) {
+        mSynth.noteOn(mNote, 127);
+    }
+    mLastNote = mNote;
+}
 class ImageSampler {
     int x = 0;
     int y = 0;
@@ -101,18 +115,4 @@ class ImageSampler {
         g.stroke(0, 127);
         g.ellipse(x, y, radius * 2, radius * 2);
     }
-}
-void beat(int pBeat) {
-    mCurrentSampler++;
-    mCurrentSampler %= mSamplers.size();
-    for (ImageSampler mSampler : mSamplers) {
-        mSampler.sample(mCapture);
-    }
-    float mBrightnessNorm = mSamplers.get(mCurrentSampler).sample(mCapture);
-    final int mSteps = 10;
-    final int mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) (mBrightnessNorm * mSteps));
-    if (mNote != mLastNote) {
-        mSynth.noteOn(mNote, 127);
-    }
-    mLastNote = mNote;
 }

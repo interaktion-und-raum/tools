@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static de.hfkbremen.ton.Instrument.NUMBER_OF_OSCILLATORS;
 import static de.hfkbremen.ton.SynthUtil.clamp127;
 import static de.hfkbremen.ton.SynthUtil.note_to_frequency;
 
@@ -27,8 +26,7 @@ public class SynthesizerMinim extends Synthesizer {
         mInstruments = new ArrayList<>();
         for (int i = 0; i < NUMBERS_OF_INSTRUMENTS; i++) {
             mInstruments.add(new InstrumentMinim(mMinim, i));
-            mInstruments.get(i).osc_type(i % NUMBER_OF_OSCILLATORS);
-            ((InstrumentMinim) mInstruments.get(i)).set_amp(1.0f);
+            ((InstrumentMinim) mInstruments.get(i)).amplitude(1.0f);
         }
     }
 

@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static de.hfkbremen.ton.Instrument.NUMBER_OF_OSCILLATORS;
 import static de.hfkbremen.ton.SynthUtil.clamp127;
 import static de.hfkbremen.ton.SynthUtil.note_to_frequency;
 import static processing.core.PApplet.constrain;
 
-public class SynthesizerJSyn extends SynthesizerManager {
+public class SynthesizerJSyn extends Synthesizer {
 
     public static final int DEFAULT_DEVICE = -1;
     private static final boolean USE_AMP_FRACTION = false;
@@ -35,11 +34,11 @@ public class SynthesizerJSyn extends SynthesizerManager {
     }
 
     public SynthesizerJSyn(int pDefaultInstrumentType,
-                           int pSamplingRate,
-                           int pInputDeviceID,
-                           int pInputChannels,
-                           int pOutputDeviceID,
-                           int pOutputChannels) {
+            int pSamplingRate,
+            int pInputDeviceID,
+            int pInputChannels,
+            int pOutputDeviceID,
+            int pOutputChannels) {
         mSynth = new SynthesisEngine();
         prepareExitHandler();
 
@@ -66,8 +65,7 @@ public class SynthesizerJSyn extends SynthesizerManager {
                 default:
                     mInstrumentJSyn = new InstrumentJSynOscillatorADSR(this, i);
             }
-            mInstrumentJSyn.osc_type(i % NUMBER_OF_OSCILLATORS);
-            mInstrumentJSyn.set_amp(1.0f);
+            mInstrumentJSyn.amplitude(0.75f);
             mInstruments.add(mInstrumentJSyn);
         }
         mInstrumentID = 0;
@@ -90,15 +88,6 @@ public class SynthesizerJSyn extends SynthesizerManager {
         return mLineOut;
     }
 
-    private void prepareExitHandler() {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            public void run() {
-                System.out.println("### shutting down JSyn");
-                mSynth.stop();
-            }
-        }));
-    }
-
     public void noteOn(int note, int velocity, float duration) {
         TimerTask mTask = new NoteOffTask();
         mTimer.schedule(mTask, (long) (duration * 1000));
@@ -111,8 +100,8 @@ public class SynthesizerJSyn extends SynthesizerManager {
         TimeStamp mOnTime = new TimeStamp(mSynth.getCurrentTime());
         TimeStamp mOffTime = mOnTime.makeRelative(duration);
         InstrumentJSyn mInstrument = getInstrument(getInstrumentID());
-        mInstrument.set_amp(mAmp);
-        mInstrument.set_freq(mFreq);
+        mInstrument.amplitude(mAmp);
+        mInstrument.frequency(mFreq);
         if (mInstrument instanceof InstrumentJSynOscillatorADSR) {
             InstrumentJSynOscillatorADSR mInstrumentJSynBasic = (InstrumentJSynOscillatorADSR) mInstrument;
             mInstrumentJSynBasic.env().start(mOnTime);
@@ -141,7 +130,7 @@ public class SynthesizerJSyn extends SynthesizerManager {
     }
 
     public void control_change(int pCC, int pValue) {
-        // not used in jsyn klang
+        // not used in jsyn
     }
 
     public void pitch_bend(int pValue) {
@@ -185,6 +174,15 @@ public class SynthesizerJSyn extends SynthesizerManager {
         } else {
             return null;
         }
+    }
+
+    private void prepareExitHandler() {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                System.out.println("### shutting down JSyn");
+                mSynth.stop();
+            }
+        }));
     }
 
     private int getInstrumentID() {

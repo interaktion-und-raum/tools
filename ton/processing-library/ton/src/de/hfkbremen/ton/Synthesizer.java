@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public abstract class Synthesizer {
 
+    // @TODO(add javadoc to abstract classes)
+
     public static final int INSTRUMENT_EMPTY = 0;
     public static final int INSTRUMENT_WITH_OSCILLATOR = 1;
     public static final int INSTRUMENT_WITH_OSCILLATOR_ADSR = 2;
@@ -38,64 +40,31 @@ public abstract class Synthesizer {
         INSTRUMENT_FIELDS[GUI_FILTER_FREQ] = "filter_freq";
     }
 
-    /**
-     * play a note
-     *
-     * @param note     pitch of note ranging from 0 to 127
-     * @param velocity volume of note ranging from 0 to 127
-     * @param duration duration in seconds before the note is turned off ( noteOff() ) again
-     */
-    public abstract void noteOn(int note, int velocity, float duration);
-
-    /**
-     * play a note
-     *
-     * @param note     pitch of note ranging from 0 to 127
-     * @param velocity volume of note ranging from 0 to 127
-     */
-    public abstract void noteOn(int note, int velocity);
-
-    /**
-     * turn off a note
-     *
-     * @param note pitch of note to turn off
-     */
-    public abstract void noteOff(int note);
-
-    /**
-     * turns off the last played note.
-     */
-    public abstract void noteOff();
-
-    public abstract void control_change(int pCC, int pValue);
-
-    public abstract void pitch_bend(int pValue);
-
-    public abstract boolean isPlaying();
-
-    public abstract Instrument instrument(int pInstrumentID);
-
-    public abstract Instrument instrument();
-
-    public abstract ArrayList<? extends Instrument> instruments();
-
-    public static Synthesizer getSynth() {
+    public static Synthesizer createSynth() {
+        System.out.println("createSynth()");
         return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR);
     }
 
-    public static Synthesizer getSynth(String... pName) {
-        if (pName[0].equalsIgnoreCase("minim")) {
-            return new SynthesizerMinim();
-        } else if (pName[0].equalsIgnoreCase("jsyn")) {
-            return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR);
-        } else if (pName[0].equalsIgnoreCase("jsyn-filter+lfo")) {
-            return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
-        } else if (pName[0].equalsIgnoreCase("midi") && pName.length >= 2) {
-            return new SynthesizerMidi(pName[1]);
-        } else if (pName[0].equalsIgnoreCase("osc") && pName.length >= 2) {
-            return new SynthesizerOSC(pName[1]);
+    public static Synthesizer createSynth(String... pName) {
+        System.out.println("createSynth(String... pName)");
+        if (pName.length > 0) {
+            if (pName[0].equalsIgnoreCase("minim")) {
+                return new SynthesizerMinim();
+            } else if (pName[0].equalsIgnoreCase("jsyn-minimal")) {
+                return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR);
+            } else if (pName[0].equalsIgnoreCase("jsyn")) {
+                return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR);
+            } else if (pName[0].equalsIgnoreCase("jsyn-filter+lfo")) {
+                return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
+            } else if (pName[0].equalsIgnoreCase("midi") && pName.length >= 2) {
+                return new SynthesizerMidi(pName[1]);
+            } else if (pName[0].equalsIgnoreCase("osc") && pName.length >= 2) {
+                return new SynthesizerOSC(pName[1]);
+            }
+            System.out.println("+++ could not find specified synthesizer engine: " + pName[0]);
+            System.out.println("+++ hint: check number of parameters");
         }
-        return getSynth();
+        return createSynth();
     }
 
     public static ControlP5 createInstrumentsGUI(PApplet p, Synthesizer mSynth) {
@@ -163,4 +132,45 @@ public abstract class Synthesizer {
             updateGUI(cp5, mInstrument, i);
         }
     }
+
+    /**
+     * play a note
+     *
+     * @param note     pitch of note ranging from 0 to 127
+     * @param velocity volume of note ranging from 0 to 127
+     * @param duration duration in seconds before the note is turned off ( noteOff() ) again
+     */
+    public abstract void noteOn(int note, int velocity, float duration);
+
+    /**
+     * play a note
+     *
+     * @param note     pitch of note ranging from 0 to 127
+     * @param velocity volume of note ranging from 0 to 127
+     */
+    public abstract void noteOn(int note, int velocity);
+
+    /**
+     * turn off a note
+     *
+     * @param note pitch of note to turn off
+     */
+    public abstract void noteOff(int note);
+
+    /**
+     * turns off the last played note.
+     */
+    public abstract void noteOff();
+
+    public abstract void control_change(int pCC, int pValue);
+
+    public abstract void pitch_bend(int pValue);
+
+    public abstract boolean isPlaying();
+
+    public abstract Instrument instrument(int pInstrumentID);
+
+    public abstract Instrument instrument();
+
+    public abstract ArrayList<? extends Instrument> instruments();
 }

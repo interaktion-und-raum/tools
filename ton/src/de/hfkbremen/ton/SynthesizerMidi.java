@@ -5,7 +5,7 @@ import java.util.Timer;
 
 import static processing.core.PApplet.constrain;
 
-public class SynthesizerMidi extends SynthesizerManager {
+public class SynthesizerMidi extends Synthesizer {
 
     public static final int CC_MODULATION = 1;
     public final MidiOut mMidiOut;
@@ -19,19 +19,8 @@ public class SynthesizerMidi extends SynthesizerManager {
         prepareExitHandler();
     }
 
-    public static String getProperDeviceName(String pMidiOutputDeviceName) {
-        String[] mDevices = MidiOut.availableOutputs();
-        for (String mDevice : mDevices) {
-            if (mDevice.startsWith(pMidiOutputDeviceName)) {
-                return mDevice;
-            }
-        }
-        System.err.println("### couldn t find midi device");
-        return null;
-    }
-
     public void noteOn(int note, int velocity, float duration) {
-        mTimer.schedule(new MidiTimerNoteOffTask(mMidiOut, mChannel, note, velocity), (int) duration * 1000);
+        mTimer.schedule(new MidiTimerNoteOffTask(mMidiOut, mChannel, note, velocity), (long) duration * 1000);
         noteOn(note, velocity);
     }
 
@@ -89,5 +78,16 @@ public class SynthesizerMidi extends SynthesizerManager {
                 mMidiOut.close();
             }
         }));
+    }
+
+    public static String getProperDeviceName(String pMidiOutputDeviceName) {
+        String[] mDevices = MidiOut.availableOutputs();
+        for (String mDevice : mDevices) {
+            if (mDevice.startsWith(pMidiOutputDeviceName)) {
+                return mDevice;
+            }
+        }
+        System.err.println("### couldn t find midi device");
+        return null;
     }
 }

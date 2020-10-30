@@ -2,26 +2,23 @@ package de.hfkbremen.ton;
 
 public abstract class Instrument {
 
-    protected final float DEFAULT_ATTACK = 0.001f;
-    protected final float DEFAULT_DECAY = 0.0f;
-    protected final float DEFAULT_SUSTAIN = 1.0f;
-    protected final float DEFAULT_RELEASE = 0.1f;
-
     public static final int SINE = 0;
     public static final int TRIANGLE = 1;
     public static final int SAWTOOTH = 2;
     public static final int SQUARE = 3;
     public static final int NOISE = 4;
     public static final int NUMBER_OF_OSCILLATORS = 5;
-
     public static final String ADSR_DIAGRAM = "    ^    /\\\n"
-                                              + "    |   /  \\\n"
-                                              + "    |  /    \\______\n"
-                                              + "    | /            \\\n"
-                                              + "    |/              \\\n"
-                                              + "    +---------------------->\n"
-                                              + "    [A   ][D][S   ][R]\n";
-
+            + "    |   /  \\\n"
+            + "    |  /    \\______\n"
+            + "    | /            \\\n"
+            + "    |/              \\\n"
+            + "    +---------------------->\n"
+            + "    [A   ][D][S   ][R]\n";
+    protected final float DEFAULT_ATTACK = 0.001f;
+    protected final float DEFAULT_DECAY = 0.0f;
+    protected final float DEFAULT_SUSTAIN = 1.0f;
+    protected final float DEFAULT_RELEASE = 0.1f;
     /**
      * time parameter defining the time it takes for the set_amp to reach maximum
      * level.
@@ -109,4 +106,12 @@ public abstract class Instrument {
     public abstract float get_filter_freq();
 
     public abstract void pitch_bend(float freq_offset);
+
+    public abstract void amplitude(float pAmp);
+
+    public abstract void frequency(float freq);
+
+    public abstract void noteOff();
+
+    public abstract void noteOn(float pFreq, float pAmp);
 }

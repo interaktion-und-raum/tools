@@ -4,7 +4,7 @@ import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.SynthesizerManager;
+import de.hfkbremen.ton.Ton;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
@@ -12,8 +12,7 @@ import java.util.ArrayList;
 
 public class AppNeuralNetworkSequencer extends PApplet {
 
-    private final SynthesizerManager mSynth = SynthesizerManager.createSynth();
-    private final ArrayList<Node> mNodes = new ArrayList();
+    private final ArrayList<Node> mNodes = new ArrayList<>();
     private Node mRoot;
     private Node mSelectedNode;
 
@@ -22,9 +21,9 @@ public class AppNeuralNetworkSequencer extends PApplet {
     }
 
     public void setup() {
-        mSynth.instrument().osc_type(Instrument.SINE);
+        Ton.instrument().osc_type(Instrument.SINE);
 
-        mRoot = node(width / 2, height / 2, mNodes.size());
+        mRoot = node(width / 2.0f, height / 2.0f, mNodes.size());
         Beat mBeat = new Beat(this);
         mBeat.bpm(120 * 2);
     }
@@ -99,10 +98,6 @@ public class AppNeuralNetworkSequencer extends PApplet {
         return null;
     }
 
-    public static void main(String[] args) {
-        PApplet.main(AppNeuralNetworkSequencer.class.getName());
-    }
-
     final class Node {
 
         float x;
@@ -111,8 +106,8 @@ public class AppNeuralNetworkSequencer extends PApplet {
         boolean scheduled = false;
         boolean trigger = false;
         boolean playing = false;
-        ArrayList<Node> children = new ArrayList();
-        int note = 0;
+        ArrayList<Node> children = new ArrayList<>();
+        int note;
 
         Node(float pX, float pY, int pNote) {
             xy(pX, pY);
@@ -151,7 +146,7 @@ public class AppNeuralNetworkSequencer extends PApplet {
             if (trigger) {
                 trigger = false;
                 playing = true;
-                mSynth.noteOn(note, 32);
+                Ton.noteOn(note, 32);
 
                 /* activate child */
                 if (children.size() > 0) {
@@ -160,7 +155,7 @@ public class AppNeuralNetworkSequencer extends PApplet {
                 }
             } else {
                 playing = false;
-                mSynth.noteOff();
+                Ton.noteOff();
             }
         }
 
@@ -174,5 +169,9 @@ public class AppNeuralNetworkSequencer extends PApplet {
         void schedule() {
             scheduled = true;
         }
+    }
+
+    public static void main(String[] args) {
+        PApplet.main(AppNeuralNetworkSequencer.class.getName());
     }
 }

@@ -3,18 +3,14 @@ package de.hfkbremen.ton.applications;
 import com.jsyn.unitgen.MixerMono;
 import com.jsyn.unitgen.SawtoothOscillator;
 import com.jsyn.unitgen.UnitOscillator;
-import de.hfkbremen.ton.Synthesizer;
 import de.hfkbremen.ton.SynthesizerJSyn;
+import de.hfkbremen.ton.Synthesizer;
 import processing.core.PApplet;
 import processing.core.PVector;
 
 public class AppOscJibberish extends PApplet {
 
-    private SoundSource mSoundSource;
-
-    public static void main(String[] args) {
-        PApplet.main(AppOscJibberish.class.getName());
-    }
+    private Jibberer mJibberer;
 
     public void settings() {
         size(640, 480);
@@ -36,37 +32,37 @@ public class AppOscJibberish extends PApplet {
         mMixerMono.output.connect(0, mSynth.line_out().input, 0);
         mMixerMono.output.connect(0, mSynth.line_out().input, 1);
 
-        mSoundSource = new SoundSource(mSynth, mMixerMono, 0);
-        mSoundSource.triggerposition().set(width / 2.0f, height / 2.0f, 0);
-        mSoundSource.position().set(random(width), random(height), 0);
+        mJibberer = new Jibberer(mSynth, mMixerMono, 0);
+        mJibberer.triggerposition().set(width / 2.0f, height / 2.0f, 0);
+        mJibberer.position().set(random(width), random(height), 0);
     }
 
     public void draw() {
         /* compute */
         if (mousePressed) {
-            if (mouseX > mSoundSource.position().x - 30
-                    && mouseX < mSoundSource.position().x + 30
-                    && mouseY > mSoundSource.position().y - 30
-                    && mouseY < mSoundSource.position().y + 30) {
-                mSoundSource.position().set(mouseX, mouseY, 0);
+            if (mouseX > mJibberer.position().x - 30
+                    && mouseX < mJibberer.position().x + 30
+                    && mouseY > mJibberer.position().y - 30
+                    && mouseY < mJibberer.position().y + 30) {
+                mJibberer.position().set(mouseX, mouseY, 0);
             }
         }
 
-        mSoundSource.update();
+        mJibberer.update();
 
         /* draw */
         background(255);
         stroke(0, 32);
-        line(mSoundSource.triggerposition().x, mSoundSource.triggerposition().y,
-                mSoundSource.position().x, mSoundSource.position().y);
+        line(mJibberer.triggerposition().x, mJibberer.triggerposition().y,
+                mJibberer.position().x, mJibberer.position().y);
         stroke(255, 127, 0, 127);
-        ellipse(mSoundSource.position().x, mSoundSource.position().y, 20, 20);
+        ellipse(mJibberer.position().x, mJibberer.position().y, 20, 20);
         stroke(0, 127);
-        ellipse(mSoundSource.triggerposition().x, mSoundSource.triggerposition().y,
-                mSoundSource.mMaxDistance * 2, mSoundSource.mMaxDistance * 2);
+        ellipse(mJibberer.triggerposition().x, mJibberer.triggerposition().y,
+                mJibberer.mMaxDistance * 2, mJibberer.mMaxDistance * 2);
     }
 
-    public class SoundSource {
+    public class Jibberer {
 
         private final UnitOscillator mOsc;
 
@@ -80,7 +76,7 @@ public class AppOscJibberish extends PApplet {
 
         private float mAmpPointer = 0;
 
-        public SoundSource(SynthesizerJSyn pSynth, MixerMono pMixerMono, int pMixerChannel) {
+        public Jibberer(SynthesizerJSyn pSynth, MixerMono pMixerMono, int pMixerChannel) {
             myPosition = new PVector();
             mTriggerPosition = new PVector();
 
@@ -120,5 +116,9 @@ public class AppOscJibberish extends PApplet {
             float mFreq = noise(mFreqPointer);
             mOsc.frequency.set(400 * mFreq + 75);
         }
+    }
+
+    public static void main(String[] args) {
+        PApplet.main(AppOscJibberish.class.getName());
     }
 }

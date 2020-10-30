@@ -1,10 +1,11 @@
 package de.hfkbremen.ton;
 
+import processing.core.PApplet;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Timer;
 import java.util.TimerTask;
-import processing.core.PApplet;
 
 public class Beat {
 
@@ -12,7 +13,7 @@ public class Beat {
 
     private Method mMethod = null;
 
-    private PApplet mPApplet;
+    private final PApplet mPApplet;
 
     private final Timer mTimer;
 
@@ -38,11 +39,19 @@ public class Beat {
         if (mTask != null) {
             mTask.cancel();
         }
-        mTask = new BeatTimerTask();
+        mTask = new BeatTimerTaskP5();
         mTimer.scheduleAtFixedRate(mTask, 1000, mPeriod);
     }
 
-    public class BeatTimerTask extends TimerTask {
+    public static Beat start(PApplet pPApplet, int pBPM) {
+        return new Beat(pPApplet, pBPM);
+    }
+
+    public static Beat start(PApplet pPApplet) {
+        return new Beat(pPApplet);
+    }
+
+    private class BeatTimerTaskP5 extends TimerTask {
 
         @Override
         public void run() {

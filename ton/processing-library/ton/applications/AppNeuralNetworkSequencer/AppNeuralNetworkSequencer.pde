@@ -4,7 +4,6 @@ import ddf.minim.*;
 import com.jsyn.unitgen.*; 
 
 
-final Synthesizer mSynth = Synthesizer.getSynth();
 final ArrayList<Node> mNodes = new ArrayList();
 Node mRoot;
 Node mSelectedNode;
@@ -12,8 +11,8 @@ void settings() {
     size(1024, 768);
 }
 void setup() {
-    mSynth.instrument().osc_type(Instrument.SINE);
-    mRoot = node(width / 2, height / 2, mNodes.size());
+    Ton.instrument().osc_type(Instrument.SINE);
+    mRoot = node(width / 2.0f, height / 2.0f, mNodes.size());
     Beat mBeat = new Beat(this);
     mBeat.bpm(120 * 2);
 }
@@ -86,7 +85,7 @@ final class Node {
     boolean trigger = false;
     boolean playing = false;
     ArrayList<Node> children = new ArrayList();
-    int note = 0;
+    int note;
     Node(float pX, float pY, int pNote) {
         xy(pX, pY);
         note = pNote;
@@ -120,7 +119,7 @@ final class Node {
         if (trigger) {
             trigger = false;
             playing = true;
-            mSynth.noteOn(note, 32);
+            Ton.noteOn(note, 32);
             /* activate child */
             if (children.size() > 0) {
                 int mChildID = (int) random(0, children.size());
@@ -128,7 +127,7 @@ final class Node {
             }
         } else {
             playing = false;
-            mSynth.noteOff();
+            Ton.noteOff();
         }
     }
     void scheduled() {

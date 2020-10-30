@@ -4,7 +4,7 @@ import de.hfkbremen.ton.Beat;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.SynthesizerManager;
+import de.hfkbremen.ton.Synthesizer;
 import processing.core.PApplet;
 
 public class AppPercussiveSynth extends PApplet {
@@ -15,7 +15,7 @@ public class AppPercussiveSynth extends PApplet {
     private static final int SNARE = 1;
     private static final int HIHAT = 2;
     private static final int NUMBER_OF_INSTRUMENTS = 3;
-    private SynthesizerManager mSynth;
+    private Synthesizer mSynth;
     private Beat mBeat;
     private final int[][] mSteps = new int[NUMBER_OF_INSTRUMENTS][];
 
@@ -24,7 +24,7 @@ public class AppPercussiveSynth extends PApplet {
     }
 
     public void setup() {
-        mSynth = SynthesizerManager.createSynth("jsyn");
+        mSynth = Synthesizer.createSynth("jsyn");
 
         mSynth.instrument(BASS).osc_type(Instrument.SQUARE);
         mSynth.instrument(BASS).attack(0.01f);
@@ -59,7 +59,7 @@ public class AppPercussiveSynth extends PApplet {
                 I, O, I, O,
                 I, I, I, I,};
 
-        SynthesizerManager.createInstrumentsGUI(this, mSynth, BASS, SNARE, HIHAT);
+        Synthesizer.createInstrumentsGUI(this, mSynth, BASS, SNARE, HIHAT);
 
         mBeat = new Beat(this);
         mBeat.bpm(130 * 4);

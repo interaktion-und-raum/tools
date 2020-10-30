@@ -18,21 +18,25 @@ public class InstrumentJSyn extends Instrument {
         mFreq = 0.0f;
     }
 
-    public void set_amp(float pAmp) {
+    @Override
+    public void amplitude(float pAmp) {
         mAmp = pAmp;
     }
 
-    public void set_freq(float freq) {
+    @Override
+    public void frequency(float freq) {
         mFreq = freq;
     }
 
+    @Override
     public void noteOff() {
-        set_amp(0);
+        amplitude(0);
     }
 
+    @Override
     public void noteOn(float pFreq, float pAmp) {
-        set_amp(pAmp);
-        set_freq(pFreq);
+        amplitude(pAmp);
+        frequency(pFreq);
     }
 
     @Override
@@ -77,7 +81,6 @@ public class InstrumentJSyn extends Instrument {
 
     @Override
     public void filter_freq(float f) {
-
     }
 
     @Override
@@ -87,6 +90,5 @@ public class InstrumentJSyn extends Instrument {
 
     @Override
     public void pitch_bend(float freq_offset) {
-
     }
 }

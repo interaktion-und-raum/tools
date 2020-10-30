@@ -4,7 +4,7 @@ import ddf.minim.*;
 import com.jsyn.unitgen.*; 
 
 
-SoundSource mSoundSource;
+Jibberer mJibberer;
 void settings() {
     size(640, 480);
 }
@@ -21,40 +21,40 @@ void setup() {
     mMixerMono.amplitude.set(0.85f);
     mMixerMono.output.connect(0, mSynth.line_out().input, 0);
     mMixerMono.output.connect(0, mSynth.line_out().input, 1);
-    mSoundSource = new SoundSource(mSynth, mMixerMono, 0);
-    mSoundSource.triggerposition().set(width / 2.0f, height / 2.0f, 0);
-    mSoundSource.position().set(random(width), random(height), 0);
+    mJibberer = new Jibberer(mSynth, mMixerMono, 0);
+    mJibberer.triggerposition().set(width / 2.0f, height / 2.0f, 0);
+    mJibberer.position().set(random(width), random(height), 0);
 }
 void draw() {
     /* compute */
     if (mousePressed) {
-        if (mouseX > mSoundSource.position().x - 30
-                && mouseX < mSoundSource.position().x + 30
-                && mouseY > mSoundSource.position().y - 30
-                && mouseY < mSoundSource.position().y + 30) {
-            mSoundSource.position().set(mouseX, mouseY, 0);
+        if (mouseX > mJibberer.position().x - 30
+                && mouseX < mJibberer.position().x + 30
+                && mouseY > mJibberer.position().y - 30
+                && mouseY < mJibberer.position().y + 30) {
+            mJibberer.position().set(mouseX, mouseY, 0);
         }
     }
-    mSoundSource.update();
+    mJibberer.update();
     /* draw */
     background(255);
     stroke(0, 32);
-    line(mSoundSource.triggerposition().x, mSoundSource.triggerposition().y,
-            mSoundSource.position().x, mSoundSource.position().y);
+    line(mJibberer.triggerposition().x, mJibberer.triggerposition().y,
+            mJibberer.position().x, mJibberer.position().y);
     stroke(255, 127, 0, 127);
-    ellipse(mSoundSource.position().x, mSoundSource.position().y, 20, 20);
+    ellipse(mJibberer.position().x, mJibberer.position().y, 20, 20);
     stroke(0, 127);
-    ellipse(mSoundSource.triggerposition().x, mSoundSource.triggerposition().y,
-            mSoundSource.mMaxDistance * 2, mSoundSource.mMaxDistance * 2);
+    ellipse(mJibberer.triggerposition().x, mJibberer.triggerposition().y,
+            mJibberer.mMaxDistance * 2, mJibberer.mMaxDistance * 2);
 }
-class SoundSource {
+class Jibberer {
     final UnitOscillator mOsc;
     final PVector myPosition;
     final PVector mTriggerPosition;
     final float mMaxDistance = 100;
     float mFreqPointer = 0;
     float mAmpPointer = 0;
-    SoundSource(SynthesizerJSyn pSynth, MixerMono pMixerMono, int pMixerChannel) {
+    Jibberer(SynthesizerJSyn pSynth, MixerMono pMixerMono, int pMixerChannel) {
         myPosition = new PVector();
         mTriggerPosition = new PVector();
         /* create oscillators */

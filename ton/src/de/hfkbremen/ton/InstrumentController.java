@@ -102,7 +102,7 @@ public class InstrumentController {
         update(mControlP5, this);
     }
 
-    public static ArrayList<InstrumentController> setup(ControlP5 pControlP5, SynthesizerManager pSynth, int mX, int mY) {
+    public static ArrayList<InstrumentController> setup(ControlP5 pControlP5, Synthesizer pSynth, int mX, int mY) {
         ArrayList<InstrumentController> mInstrumentControllers = new ArrayList<InstrumentController>();
         final int mColumnSpace = 400;
         final int mRowSpace = 75;

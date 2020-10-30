@@ -20,7 +20,7 @@ public class SynthesizerMidi extends Synthesizer {
     }
 
     public void noteOn(int note, int velocity, float duration) {
-        mTimer.schedule(new MidiTimerNoteOffTask(mMidiOut, mChannel, note, velocity), (int) duration * 1000);
+        mTimer.schedule(new MidiTimerNoteOffTask(mMidiOut, mChannel, note, velocity), (long) duration * 1000);
         noteOn(note, velocity);
     }
 
