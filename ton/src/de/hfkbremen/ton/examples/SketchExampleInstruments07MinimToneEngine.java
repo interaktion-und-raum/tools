@@ -3,7 +3,7 @@ package de.hfkbremen.ton.examples;
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.Note;
 import de.hfkbremen.ton.Scale;
-import de.hfkbremen.ton.SynthesizerMinim;
+import de.hfkbremen.ton.ToneEngineMinim;
 import processing.core.PApplet;
 
 /**
@@ -11,9 +11,9 @@ import processing.core.PApplet;
  * is very similar to the jsyn library ) note: if running this sketch from processing PDE add `import ddf.minim.*;` to
  * the imports.
  */
-public class SketchExampleInstrumentsXXMinimSynth extends PApplet {
+public class SketchExampleInstruments07MinimToneEngine extends PApplet {
 
-    private SynthesizerMinim mSynth;
+    private ToneEngineMinim mToneEngine;
 
     private Instrument mInstrument;
 
@@ -27,13 +27,13 @@ public class SketchExampleInstrumentsXXMinimSynth extends PApplet {
 
     public void setup() {
         background(255);
-        mSynth = new SynthesizerMinim();
+        mToneEngine = new ToneEngineMinim();
 
         /* select instrument #2 */
-        mSynth.instrument(2);
+        mToneEngine.instrument(2);
 
         /* set ADSR parameters for current instrument */
-        mInstrument = mSynth.instrument();
+        mInstrument = mToneEngine.instrument();
         mInstrument.attack(0.5f);
         mInstrument.decay(1.0f);
         mInstrument.sustain(1.0f);
@@ -56,10 +56,10 @@ public class SketchExampleInstrumentsXXMinimSynth extends PApplet {
     public void keyPressed() {
         if (key == ' ') {
             if (mIsPlaying) {
-                mSynth.noteOff();
+                mToneEngine.noteOff();
             } else {
                 mNote = Scale.note(Scale.MAJOR_CHORD_7, Note.NOTE_A2, (int) random(0, 10));
-                mSynth.noteOn(mNote, 127);
+                mToneEngine.noteOn(mNote, 127);
             }
             mIsPlaying = !mIsPlaying;
         }
@@ -81,6 +81,6 @@ public class SketchExampleInstrumentsXXMinimSynth extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchExampleInstrumentsXXMinimSynth.class.getName());
+        PApplet.main(SketchExampleInstruments07MinimToneEngine.class.getName());
     }
 }

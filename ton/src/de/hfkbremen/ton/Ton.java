@@ -4,16 +4,16 @@ import java.util.ArrayList;
 
 public class Ton {
 
-    private static Synthesizer instance = null;
+    private static ToneEngine instance = null;
 
     private Ton() {
     }
 
     public static void init(String... pName) {
         if (instance != null) {
-            System.err.println("+++ @init / Synthesizer already initialized");
+            System.err.println("+++ @init / tone engine already initialized. make sure that `init` is the first call to `Ton`.");
         }
-        instance = Synthesizer.createSynth(pName);
+        instance = ToneEngine.createEngine(pName);
     }
 
     public static void noteOn(int note, int velocity) {
@@ -52,9 +52,9 @@ public class Ton {
         return instance().instruments();
     }
 
-    private static Synthesizer instance() {
+    private static ToneEngine instance() {
         if (instance == null) {
-            instance = Synthesizer.createSynth();
+            instance = ToneEngine.createEngine();
         }
         return instance;
     }

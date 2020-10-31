@@ -4,8 +4,8 @@ import com.jsyn.unitgen.MixerMono;
 import com.jsyn.unitgen.SawtoothOscillator;
 import com.jsyn.unitgen.UnitOscillator;
 import de.hfkbremen.ton.InstrumentJSyn;
-import de.hfkbremen.ton.Synthesizer;
-import de.hfkbremen.ton.SynthesizerJSyn;
+import de.hfkbremen.ton.ToneEngine;
+import de.hfkbremen.ton.ToneEngineJSyn;
 import processing.core.PApplet;
 
 /**
@@ -21,8 +21,8 @@ public class SketchExampleInstruments04InstrumentJSynCustom extends PApplet {
     }
 
     public void setup() {
-        SynthesizerJSyn mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_EMPTY);
-        mInstrument = new InstrumentJSynCustom(mSynth, 0);
+        ToneEngineJSyn mToneEngine = new ToneEngineJSyn(ToneEngine.INSTRUMENT_EMPTY);
+        mInstrument = new InstrumentJSynCustom(mToneEngine, 0);
         mInstrument.amplitude(0.8f);
     }
 
@@ -35,7 +35,7 @@ public class SketchExampleInstruments04InstrumentJSynCustom extends PApplet {
         mInstrument.set_freq_offset(map(mouseY, 0, height, -10.0f, 10.0f));
     }
 
-    private class InstrumentJSynCustom extends InstrumentJSyn {
+    private static class InstrumentJSynCustom extends InstrumentJSyn {
 
         private final UnitOscillator mOsc1;
         private final UnitOscillator mOsc2;
@@ -43,8 +43,8 @@ public class SketchExampleInstruments04InstrumentJSynCustom extends PApplet {
 
         private float mFreqOffset;
 
-        public InstrumentJSynCustom(SynthesizerJSyn pSynth, int pID) {
-            super(pSynth, pID);
+        public InstrumentJSynCustom(ToneEngineJSyn pToneEngine, int pID) {
+            super(pToneEngine, pID);
 
             mOsc1 = new SawtoothOscillator();
             mSynth.add(mOsc1);

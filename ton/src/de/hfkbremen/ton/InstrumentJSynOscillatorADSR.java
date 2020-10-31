@@ -20,7 +20,7 @@ public class InstrumentJSynOscillatorADSR extends InstrumentJSynOscillator {
     private boolean mDumpWarningLFO = true;
     private boolean mDumpWarningFILTER = true;
 
-    public InstrumentJSynOscillatorADSR(SynthesizerJSyn mSynthesizerJSyn, int pID) {
+    public InstrumentJSynOscillatorADSR(ToneEngineJSyn mSynthesizerJSyn, int pID) {
         super(mSynthesizerJSyn, pID);
     }
 

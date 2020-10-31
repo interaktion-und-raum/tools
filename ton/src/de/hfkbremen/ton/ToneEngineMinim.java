@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static de.hfkbremen.ton.SynthUtil.clamp127;
-import static de.hfkbremen.ton.SynthUtil.note_to_frequency;
+import static de.hfkbremen.ton.Note.note_to_frequency;
+import static de.hfkbremen.ton.TonUtil.clamp127;
 
-public class SynthesizerMinim extends Synthesizer {
+public class ToneEngineMinim extends ToneEngine {
 
     private static final boolean USE_AMP_FRACTION = false;
     private final ArrayList<Instrument> mInstruments;
@@ -18,7 +18,7 @@ public class SynthesizerMinim extends Synthesizer {
     private int mInstrumentID;
     private boolean mIsPlaying = false;
 
-    public SynthesizerMinim() {
+    public ToneEngineMinim() {
         Minim mMinim = new Minim(this);
         AudioOutput mOut = mMinim.getLineOut(Minim.MONO, 2048);
         mTimer = new Timer();

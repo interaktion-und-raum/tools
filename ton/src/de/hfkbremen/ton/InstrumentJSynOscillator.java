@@ -15,7 +15,7 @@ public class InstrumentJSynOscillator extends InstrumentJSyn {
     protected UnitGenerator mOsc;
     protected float mFreqOffset;
 
-    public InstrumentJSynOscillator(SynthesizerJSyn mSynthesizerJSyn, int pID) {
+    public InstrumentJSynOscillator(ToneEngineJSyn mSynthesizerJSyn, int pID) {
         super(mSynthesizerJSyn, pID);
 
         mFreqOffset = 0.0f;

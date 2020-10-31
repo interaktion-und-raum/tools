@@ -10,7 +10,7 @@ import javax.sound.midi.Transmitter;
 import javax.swing.*;
 import java.util.ArrayList;
 
-import static de.hfkbremen.ton.SynthUtil.dumpMidiInputDevices;
+import static de.hfkbremen.ton.TonUtil.dumpMidiInputDevices;
 
 public class MidiIn implements Receiver {
 

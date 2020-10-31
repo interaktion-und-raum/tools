@@ -9,7 +9,7 @@ import processing.core.PApplet;
  * this examples shows how to use a beat. once instantiated the beat object calls the `beat(int)` at a defined *beats
  * per minute* (bpm).
  */
-public class SketchExampleBasic03Beat extends PApplet {
+public class SketchExampleBasics03Beat extends PApplet {
 
     private final int[] mNotes = {Note.NOTE_C3, Note.NOTE_C4, Note.NOTE_A2, Note.NOTE_A3};
     private int mBeatCount;
@@ -37,6 +37,6 @@ public class SketchExampleBasic03Beat extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchExampleBasic03Beat.class.getName());
+        PApplet.main(SketchExampleBasics03Beat.class.getName());
     }
 }

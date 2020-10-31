@@ -4,7 +4,7 @@ import de.hfkbremen.ton.Ton;
 import processing.core.PApplet;
 
 /**
- * this examples shows how to use the default synthesizer to play notes.
+ * this examples shows how to use the default tone engine to play notes.
  */
 public class SketchExampleBasics01Notes extends PApplet {
 

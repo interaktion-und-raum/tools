@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SynthesizerOSC extends Synthesizer {
+public class ToneEngineOSC extends ToneEngine {
 
     private final OscP5 mOscP5;
     private final NetAddress mRemoteLocation;
@@ -16,13 +16,17 @@ public class SynthesizerOSC extends Synthesizer {
     private int mChannel;
     private boolean mIsPlaying = false;
 
-    public SynthesizerOSC(String pHostIP) {
-        mOscP5 = new OscP5(this, 12000);
-        mRemoteLocation = new NetAddress(pHostIP, 7400);
+    public ToneEngineOSC(String pHostIP, int pPortReceive, int pPortTransmit) {
+        mOscP5 = new OscP5(this, pPortReceive);
+        mRemoteLocation = new NetAddress(pHostIP, pPortTransmit);
         mTimer = new Timer();
     }
 
-    public SynthesizerOSC() {
+    public ToneEngineOSC(String pHostIP) {
+        this(pHostIP, 12000, 7400);
+    }
+
+    public ToneEngineOSC() {
         this("127.0.0.1");
     }
 
@@ -34,14 +38,15 @@ public class SynthesizerOSC extends Synthesizer {
 
     public void noteOn(int note, int velocity) {
         mIsPlaying = true;
-        OscMessage m = new OscMessage("/note" + mChannel + "/on");
+        OscMessage m = new OscMessage("/note/" + mChannel + "/on");
         m.add(note);
+        m.add(velocity);
         mOscP5.send(m, mRemoteLocation);
     }
 
     public void noteOff(int note) {
         mIsPlaying = false;
-        OscMessage m = new OscMessage("/note" + mChannel + "/off");
+        OscMessage m = new OscMessage("/note/" + mChannel + "/off");
         m.add(note);
         mOscP5.send(m, mRemoteLocation);
     }
@@ -51,9 +56,16 @@ public class SynthesizerOSC extends Synthesizer {
     }
 
     public void control_change(int pCC, int pValue) {
+        OscMessage m = new OscMessage("/controlchange/" + mChannel);
+        m.add(pCC);
+        m.add(pValue);
+        mOscP5.send(m, mRemoteLocation);
     }
 
     public void pitch_bend(int pValue) {
+        OscMessage m = new OscMessage("/pitchbend/" + mChannel);
+        m.add(pValue);
+        mOscP5.send(m, mRemoteLocation);
     }
 
     public boolean isPlaying() {

@@ -15,7 +15,7 @@ public class InstrumentJSynOscillatorADSRFilterLFO extends InstrumentJSynOscilla
     private SineOscillator mLFO;
     private Add mAddUnit;
 
-    public InstrumentJSynOscillatorADSRFilterLFO(SynthesizerJSyn mSynthesizerJSyn, int pID) {
+    public InstrumentJSynOscillatorADSRFilterLFO(ToneEngineJSyn mSynthesizerJSyn, int pID) {
         super(mSynthesizerJSyn, pID);
     }
 

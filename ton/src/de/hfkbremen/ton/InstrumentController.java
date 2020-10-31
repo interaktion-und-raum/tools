@@ -11,12 +11,12 @@ public class InstrumentController {
     private final Instrument mInstrument;
     private final ControlP5 mControlP5;
     @ControlElement(x = 0, y = -10, properties = {"type=textlabel"})
-    public String name = "S";
+    public String name;
 
     public InstrumentController(ControlP5 pControlP5, Instrument pInstrument) {
         mControlP5 = pControlP5;
         mInstrument = pInstrument;
-        name = "SYNTH" + PApplet.nf(mInstrument.ID(), 2);
+        name = "TONE" + PApplet.nf(mInstrument.ID(), 2);
     }
 
     @ControlElement(x = 0, y = 0, label = "attack", properties = {"min=0",
@@ -102,14 +102,14 @@ public class InstrumentController {
         update(mControlP5, this);
     }
 
-    public static ArrayList<InstrumentController> setup(ControlP5 pControlP5, Synthesizer pSynth, int mX, int mY) {
-        ArrayList<InstrumentController> mInstrumentControllers = new ArrayList<InstrumentController>();
+    public static ArrayList<InstrumentController> setup(ControlP5 pControlP5, ToneEngine pToneEngine, int mX, int mY) {
+        ArrayList<InstrumentController> mInstrumentControllers = new ArrayList<>();
         final int mColumnSpace = 400;
         final int mRowSpace = 75;
-        final int mElementsPerRow = pSynth.instruments().size() / 2;
-        for (int i = 0; i < pSynth.instruments().size(); i++) {
+        final int mElementsPerRow = pToneEngine.instruments().size() / 2;
+        for (int i = 0; i < pToneEngine.instruments().size(); i++) {
             final int mOffset = i / mElementsPerRow;
-            final Instrument mInstrument = pSynth.instruments().get(i);
+            final Instrument mInstrument = pToneEngine.instruments().get(i);
             final InstrumentController mController = new InstrumentController(pControlP5, mInstrument);
             pControlP5.addControllersFor("instrument " + PApplet.nf(i, 2), mController)
                       .setPosition(mOffset * mColumnSpace + mX, (i % mElementsPerRow) * mRowSpace + mY, mController);

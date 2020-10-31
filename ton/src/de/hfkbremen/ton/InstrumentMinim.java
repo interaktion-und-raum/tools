@@ -30,53 +30,37 @@ public class InstrumentMinim extends Instrument {
         adsr.patch(out);
     }
 
-    public void noteOff() {
-        adsr.noteOff();
-    }
-
-    public void noteOn(float pFrequency, float pAmplitude) {
-        frequency(pFrequency);
-        amplitude(pAmplitude);
-        setADSR();
-        adsr.noteOn();
-    }
-
-    public void frequency(float pFreq) {
-        mFreq = pFreq;
-        mOsc.setFrequency(mFreq);
-    }
-
-    public void amplitude(float pAmp) {
-        mAmp = pAmp;
-        mOsc.setAmplitude(mAmp);
-    }
-
     /* --- */
+    @Override
     @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 0, y = 0)
     public void attack(float pAttack) {
         super.attack(pAttack);
     }
 
+    @Override
     @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 50, y = 0)
     public void decay(float pDecay) {
         super.decay(pDecay);
     }
 
+    @Override
     @ControlElement(properties = {"min=0.0", "max=1.0", "type=knob", "radius=20", "resolution=100"}, x = 100, y = 0)
     public void sustain(float pSustain) {
         super.sustain(pSustain);
     }
 
+    @Override
     @ControlElement(properties = {"min=0.0", "max=10.0", "type=knob", "radius=20", "resolution=1000"}, x = 150, y = 0)
     public void release(float pRelease) {
         super.release(pRelease);
     }
 
     @ControlElement(properties = {"min=0.0",
-            "max=" + (NUMBER_OF_OSCILLATORS - 1),
-            "type=knob",
-            "radius=20",
-            "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
+                                  "max=" + (NUMBER_OF_OSCILLATORS - 1),
+                                  "type=knob",
+                                  "radius=20",
+                                  "resolution=" + (NUMBER_OF_OSCILLATORS - 1)}, x = 200, y = 0)
+    @Override
     public void osc_type(int pOsc) {
         switch (pOsc) {
             case SINE:
@@ -97,6 +81,7 @@ public class InstrumentMinim extends Instrument {
         }
     }
 
+    @Override
     public int get_osc_type() {
         int mOscID;
         if (mOsc.getWaveform() == Waves.SINE) {
@@ -168,6 +153,41 @@ public class InstrumentMinim extends Instrument {
     @Override
     public void pitch_bend(float freq_offset) {
 
+    }
+
+    @Override
+    public void amplitude(float pAmp) {
+        mAmp = pAmp;
+        mOsc.setAmplitude(mAmp);
+    }
+
+    @Override
+    public float get_amplitude() {
+        return mAmp;
+    }
+
+    @Override
+    public void frequency(float pFreq) {
+        mFreq = pFreq;
+        mOsc.setFrequency(mFreq);
+    }
+
+    @Override
+    public float get_frequency() {
+        return mFreq;
+    }
+
+    @Override
+    public void noteOff() {
+        adsr.noteOff();
+    }
+
+    @Override
+    public void noteOn(float pFrequency, float pAmplitude) {
+        frequency(pFrequency);
+        amplitude(pAmplitude);
+        setADSR();
+        adsr.noteOn();
     }
 
     private void setADSR() {

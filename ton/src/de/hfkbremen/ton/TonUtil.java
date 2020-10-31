@@ -6,39 +6,8 @@ import controlP5.DropdownList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public final class SynthUtil {
+public final class TonUtil {
 
-    private static final int NOTE_OFFSET = (69 - 12);
-
-    public static float note_to_frequency(int pMidiNote, float pBaseFreq) {
-        return pBaseFreq * (float) Math.pow(2.0, (pMidiNote / 12.0));
-    }
-
-    public static float note_to_frequency(int pMidiNote) {
-        return note_to_frequency(pMidiNote - NOTE_OFFSET, 440); // A4 440 Hz
-    }
-
-    public static String note_to_string(int noteNum) {
-        final String notes = "C C#D D#E F F#G G#A A#B ";
-        int octave;
-        String note;
-
-        octave = noteNum / 12 - 1;
-        note = notes.substring((noteNum % 12) * 2, (noteNum % 12) * 2 + 2);
-        return PApplet.trim(note) + octave;
-    }
-
-    public static int frequency_to_note(int pFreq) {
-        return frequency_to_note(pFreq, 440, NOTE_OFFSET);
-    }
-
-    public static int frequency_to_note(int pFreq, float pBaseFreq, int pOffset) {
-        return (int) (Math.round(12 * log2(pFreq / pBaseFreq)) + pOffset);
-    }
-
-    public static double log2(double num) {
-        return (Math.log(num) / Math.log(2));
-    }
 
     public static int clamp127(int pValue) {
         return Math.max(0, Math.min(127, pValue));
@@ -46,10 +15,13 @@ public final class SynthUtil {
 
     public static void dumpMidiOutputDevices() {
         final String[] mOutputNames = MidiOut.availableOutputs();
-        System.out.println("### Midi Output Devices\n");
+        System.out.println("+-------------------------------------------------------+");
+        System.out.println("+ Midi Output Devices ( aka Ports or Buses )");
+        System.out.println("+-------------------------------------------------------+");
         for (String mOutputName : mOutputNames) {
-            System.out.println("  - " + mOutputName);
+            System.out.println("+ " + mOutputName);
         }
+            System.out.println("+-------------------------------------------------------+");
     }
 
     public static void dumpMidiInputDevices() {
@@ -65,10 +37,10 @@ public final class SynthUtil {
         System.out.println("AUDIO DEVICE INFO");
         System.out.println("+-------------------------------------------------------+");
         for (int i = 0; i < mDevice.getDeviceCount(); i++) {
-            System.out.println("ID ................ : " + i);
-            System.out.println("NAME .............. : " + mDevice.getDeviceName(i));
-            System.out.println("OUTPUT CHANNELS ... : " + mDevice.getMaxOutputChannels(i));
-            System.out.println("INPUT CHANNELS .... : " + mDevice.getMaxInputChannels(i));
+            System.out.println("+ " + "ID ................ : " + i);
+            System.out.println("+ " + "NAME .............. : " + mDevice.getDeviceName(i));
+            System.out.println("+ " + "OUTPUT CHANNELS ... : " + mDevice.getMaxOutputChannels(i));
+            System.out.println("+ " + "INPUT CHANNELS .... : " + mDevice.getMaxInputChannels(i));
             System.out.println("+-------------------------------------------------------+");
         }
     }
@@ -77,10 +49,10 @@ public final class SynthUtil {
         final int mListWidth = 300, mListHeight = 300;
 
         DropdownList dl = controls.addDropdownList("Please select MIDI Device",
-                (controls.papplet.width - mListWidth) / 2,
-                (controls.papplet.height - mListHeight) / 2,
-                mListWidth,
-                mListHeight);
+                                                   (controls.papplet.width - mListWidth) / 2,
+                                                   (controls.papplet.height - mListHeight) / 2,
+                                                   mListWidth,
+                                                   mListHeight);
 
         //        dl.toUpperCase(true);
         dl.setItemHeight(16);
@@ -111,6 +83,6 @@ public final class SynthUtil {
     }
 
     public static void main(String[] args) {
-        SynthUtil.dumpMidiOutputDevices();
+        TonUtil.dumpMidiOutputDevices();
     }
 }

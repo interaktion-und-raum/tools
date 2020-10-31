@@ -10,33 +10,12 @@ public class InstrumentJSyn extends Instrument {
     protected float mAmp;
     protected float mFreq;
 
-    public InstrumentJSyn(SynthesizerJSyn mSynthesizerJSyn, int pID) {
+    public InstrumentJSyn(ToneEngineJSyn mSynthesizerJSyn, int pID) {
         super(pID);
         mSynth = mSynthesizerJSyn.synth();
         mLineOut = mSynthesizerJSyn.line_out();
         mAmp = 0.9f;
         mFreq = 0.0f;
-    }
-
-    @Override
-    public void amplitude(float pAmp) {
-        mAmp = pAmp;
-    }
-
-    @Override
-    public void frequency(float freq) {
-        mFreq = freq;
-    }
-
-    @Override
-    public void noteOff() {
-        amplitude(0);
-    }
-
-    @Override
-    public void noteOn(float pFreq, float pAmp) {
-        amplitude(pAmp);
-        frequency(pFreq);
     }
 
     @Override
@@ -90,5 +69,36 @@ public class InstrumentJSyn extends Instrument {
 
     @Override
     public void pitch_bend(float freq_offset) {
+    }
+
+    @Override
+    public void amplitude(float pAmp) {
+        mAmp = pAmp;
+    }
+
+    @Override
+    public float get_amplitude() {
+        return mAmp;
+    }
+
+    @Override
+    public void frequency(float freq) {
+        mFreq = freq;
+    }
+
+    @Override
+    public float get_frequency() {
+        return mFreq;
+    }
+
+    @Override
+    public void noteOff() {
+        amplitude(0);
+    }
+
+    @Override
+    public void noteOn(float pFreq, float pAmp) {
+        amplitude(pAmp);
+        frequency(pFreq);
     }
 }

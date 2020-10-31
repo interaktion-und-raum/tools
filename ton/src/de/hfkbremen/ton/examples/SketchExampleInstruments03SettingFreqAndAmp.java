@@ -2,13 +2,13 @@ package de.hfkbremen.ton.examples;
 
 import de.hfkbremen.ton.Instrument;
 import de.hfkbremen.ton.InstrumentJSynOscillator;
-import de.hfkbremen.ton.Synthesizer;
-import de.hfkbremen.ton.SynthesizerJSyn;
+import de.hfkbremen.ton.ToneEngine;
+import de.hfkbremen.ton.ToneEngineJSyn;
 import processing.core.PApplet;
 
 public class SketchExampleInstruments03SettingFreqAndAmp extends PApplet {
 
-    private final SynthesizerJSyn mSynth = new SynthesizerJSyn(Synthesizer.INSTRUMENT_EMPTY);
+    private final ToneEngineJSyn mToneEngine = new ToneEngineJSyn(ToneEngine.INSTRUMENT_EMPTY);
     private InstrumentJSynOscillator mInstrument;
 
     public void settings() {
@@ -17,7 +17,7 @@ public class SketchExampleInstruments03SettingFreqAndAmp extends PApplet {
 
     public void setup() {
         background(255);
-        mInstrument = new InstrumentJSynOscillator(mSynth, 0);
+        mInstrument = new InstrumentJSynOscillator(mToneEngine, 0);
         mInstrument.osc_type(Instrument.SAWTOOTH);
     }
 

@@ -9,7 +9,7 @@ import processing.core.PApplet;
  * this examples shows how to use musical scales. there are a selection of predefined scales but custom ones can also be
  * created.
  */
-public class SketchExampleBasic02Scales extends PApplet {
+public class SketchExampleBasics02Scales extends PApplet {
 
     private static final int NO = -1;
     private int mNote;
@@ -47,6 +47,6 @@ public class SketchExampleBasic02Scales extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(SketchExampleBasic02Scales.class.getName());
+        PApplet.main(SketchExampleBasics02Scales.class.getName());
     }
 }

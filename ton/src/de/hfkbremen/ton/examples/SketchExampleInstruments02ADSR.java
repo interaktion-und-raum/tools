@@ -12,9 +12,7 @@ import processing.core.PApplet;
 public class SketchExampleInstruments02ADSR extends PApplet {
 
     private Instrument mInstrument;
-
     private boolean mIsPlaying = false;
-
     private int mNote;
 
     public void settings() {
@@ -66,10 +64,22 @@ public class SketchExampleInstruments02ADSR extends PApplet {
         float mRadiusA = 10;
         float mRadiusB = 50;
         fill(255);
-        ellipse(width * 0.2f, mY, mRadiusA + mRadiusB * mInstrument.get_attack(), mRadiusA + mRadiusB * mInstrument.get_attack());
-        ellipse(width * 0.4f, mY, mRadiusA + mRadiusB * mInstrument.get_decay(), mRadiusA + mRadiusB * mInstrument.get_decay());
-        ellipse(width * 0.6f, mY, mRadiusA + mRadiusB * mInstrument.get_sustain(), mRadiusA + mRadiusB * mInstrument.get_sustain());
-        ellipse(width * 0.8f, mY, mRadiusA + mRadiusB * mInstrument.get_release(), mRadiusA + mRadiusB * mInstrument.get_release());
+        ellipse(width * 0.2f,
+                mY,
+                mRadiusA + mRadiusB * mInstrument.get_attack(),
+                mRadiusA + mRadiusB * mInstrument.get_attack());
+        ellipse(width * 0.4f,
+                mY,
+                mRadiusA + mRadiusB * mInstrument.get_decay(),
+                mRadiusA + mRadiusB * mInstrument.get_decay());
+        ellipse(width * 0.6f,
+                mY,
+                mRadiusA + mRadiusB * mInstrument.get_sustain(),
+                mRadiusA + mRadiusB * mInstrument.get_sustain());
+        ellipse(width * 0.8f,
+                mY,
+                mRadiusA + mRadiusB * mInstrument.get_release(),
+                mRadiusA + mRadiusB * mInstrument.get_release());
     }
 
     public void mousePressed() {

@@ -1,7 +1,7 @@
 package de.hfkbremen.ton.examples;
 
-import de.hfkbremen.ton.SynthUtil;
 import de.hfkbremen.ton.Ton;
+import de.hfkbremen.ton.TonUtil;
 import processing.core.PApplet;
 
 /**
@@ -15,8 +15,11 @@ public class SketchExampleBasics06MidiSynth extends PApplet {
     }
 
     public void setup() {
-        SynthUtil.dumpMidiOutputDevices();
-        Ton.init("midi", "Bus 1"); // name of an available midi out device
+        TonUtil.dumpMidiOutputDevices();
+        /* ton enginges can be selected with `init`. in this case MIDI engine is selected with the first argument.
+        the second argument selects the MIDI bus. note `init` must be the first call to `Ton` otherwise a default
+         enginge is automatically selected. */
+        Ton.init("midi", "Bus 1");
     }
 
     public void draw() {

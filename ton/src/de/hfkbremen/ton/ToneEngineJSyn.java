@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static de.hfkbremen.ton.SynthUtil.clamp127;
-import static de.hfkbremen.ton.SynthUtil.note_to_frequency;
+import static de.hfkbremen.ton.Note.note_to_frequency;
+import static de.hfkbremen.ton.TonUtil.clamp127;
 import static processing.core.PApplet.constrain;
 
-public class SynthesizerJSyn extends Synthesizer {
+public class ToneEngineJSyn extends ToneEngine {
 
     public static final int DEFAULT_DEVICE = -1;
     private static final boolean USE_AMP_FRACTION = false;
@@ -25,20 +25,20 @@ public class SynthesizerJSyn extends Synthesizer {
     private int mInstrumentID;
     private boolean mIsPlaying = false;
 
-    public SynthesizerJSyn() {
+    public ToneEngineJSyn() {
         this(INSTRUMENT_WITH_OSCILLATOR_ADSR);
     }
 
-    public SynthesizerJSyn(int pDefaultInstrumentType) {
+    public ToneEngineJSyn(int pDefaultInstrumentType) {
         this(pDefaultInstrumentType, 44100, DEFAULT_DEVICE, 1, DEFAULT_DEVICE, 2);
     }
 
-    public SynthesizerJSyn(int pDefaultInstrumentType,
-            int pSamplingRate,
-            int pInputDeviceID,
-            int pInputChannels,
-            int pOutputDeviceID,
-            int pOutputChannels) {
+    public ToneEngineJSyn(int pDefaultInstrumentType,
+                          int pSamplingRate,
+                          int pInputDeviceID,
+                          int pInputChannels,
+                          int pOutputDeviceID,
+                          int pOutputChannels) {
         mSynth = new SynthesisEngine();
         prepareExitHandler();
 
@@ -71,7 +71,7 @@ public class SynthesizerJSyn extends Synthesizer {
         mInstrumentID = 0;
 
         final JavaSoundAudioDevice mDevice = new JavaSoundAudioDevice();
-        SynthUtil.dumpAudioDeviceInfo(mDevice);
+        TonUtil.dumpAudioDeviceInfo(mDevice);
         mSynth.start(pSamplingRate, pInputDeviceID, pInputChannels, pOutputDeviceID, pOutputChannels);
         mTimer = new Timer();
     }

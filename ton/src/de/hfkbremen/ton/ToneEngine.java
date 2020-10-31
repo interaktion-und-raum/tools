@@ -5,7 +5,7 @@ import processing.core.PApplet;
 
 import java.util.ArrayList;
 
-public abstract class Synthesizer {
+public abstract class ToneEngine {
 
     // @TODO(add javadoc to abstract classes)
 
@@ -40,51 +40,54 @@ public abstract class Synthesizer {
         INSTRUMENT_FIELDS[GUI_FILTER_FREQ] = "filter_freq";
     }
 
-    public static Synthesizer createSynth() {
-        System.out.println("createSynth()");
-        return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR);
+    public static ToneEngine createEngine() {
+        return new ToneEngineJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR);
     }
 
-    public static Synthesizer createSynth(String... pName) {
-        System.out.println("createSynth(String... pName)");
+    public static ToneEngine createEngine(String... pName) {
         if (pName.length > 0) {
             if (pName[0].equalsIgnoreCase("minim")) {
-                return new SynthesizerMinim();
+                return new ToneEngineMinim();
             } else if (pName[0].equalsIgnoreCase("jsyn-minimal")) {
-                return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR);
+                return new ToneEngineJSyn(INSTRUMENT_WITH_OSCILLATOR);
             } else if (pName[0].equalsIgnoreCase("jsyn")) {
-                return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR);
+                return new ToneEngineJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR);
             } else if (pName[0].equalsIgnoreCase("jsyn-filter+lfo")) {
-                return new SynthesizerJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
+                return new ToneEngineJSyn(INSTRUMENT_WITH_OSCILLATOR_ADSR_FILTER_LFO);
             } else if (pName[0].equalsIgnoreCase("midi") && pName.length >= 2) {
-                return new SynthesizerMidi(pName[1]);
+                return new ToneEngineMidi(pName[1]);
             } else if (pName[0].equalsIgnoreCase("osc") && pName.length >= 2) {
-                return new SynthesizerOSC(pName[1]);
+                if (pName.length == 2) {
+                    return new ToneEngineOSC(pName[1]);
+                } else if (pName.length == 4) {
+                    try {
+                        final int mPortReceive = Integer.parseInt(pName[2]);
+                        final int mPortTransmit = Integer.parseInt(pName[3]);
+                        return new ToneEngineOSC(pName[1], mPortReceive, mPortTransmit);
+                    } catch (NumberFormatException e) {
+                        System.err.println("+++ could not parse ports");
+                    }
+                }
+                return new ToneEngineOSC();
             }
-            System.out.println("+++ could not find specified synthesizer engine: " + pName[0]);
-            System.out.println("+++ hint: check number of parameters");
+            System.err.println("+++ could not find specified tone engine: " + pName[0]);
+            System.err.println("+++ hint: check number of parameters");
         }
-        return createSynth();
+        return createEngine();
     }
 
-    public static ControlP5 createInstrumentsGUI(PApplet p, Synthesizer mSynth) {
-        return createInstrumentsGUI(p, mSynth, NUMBERS_OF_INSTRUMENTS);
+    public static ControlP5 createInstrumentsGUI(PApplet p, ToneEngine pToneEngine) {
+        return createInstrumentsGUI(p, pToneEngine, NUMBERS_OF_INSTRUMENTS);
     }
 
-    public static ControlP5 createInstrumentsGUI(PApplet p, Synthesizer mSynth, int... mInstruments) {
+    public static ControlP5 createInstrumentsGUI(PApplet p, ToneEngine pToneEngine, int... mInstruments) {
         ControlP5 cp5 = new ControlP5(p);
-        //        System.out.println("### creating instruments ");
-        if (mSynth instanceof SynthesizerJSyn || mSynth instanceof SynthesizerMinim) {
+        if (pToneEngine instanceof ToneEngineJSyn || pToneEngine instanceof ToneEngineMinim) {
             for (int i = 0; i < mInstruments.length; i++) {
-                //                System.out.println("### creating instrument #" + i);
                 final int mID = mInstruments[i];
                 final String mInstrumentStr = INSTRUMENT_STR + mID;
-                final Instrument mInstrument = mSynth.instrument(mID);
+                final Instrument mInstrument = pToneEngine.instrument(mID);
                 cp5.addControllersFor(mInstrumentStr, mInstrument);
-                //                for (int j = 0; j < GUI_NUMBER_OF_ELEMENTS; j++) {
-                //                    System.out.println("found parameter " + INSTRUMENT_FIELDS[j] + ": " + cp5.get
-                // (mInstrumentStr + "/" + INSTRUMENT_FIELDS[j]));
-                //                }
                 updateGUI(cp5, mInstrument);
                 cp5.setPosition(10, 10 + i * 60, mInstrument);
             }

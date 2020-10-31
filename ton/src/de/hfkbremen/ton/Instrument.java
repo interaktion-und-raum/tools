@@ -9,41 +9,37 @@ public abstract class Instrument {
     public static final int NOISE = 4;
     public static final int NUMBER_OF_OSCILLATORS = 5;
     public static final String ADSR_DIAGRAM = "    ^    /\\\n"
-            + "    |   /  \\\n"
-            + "    |  /    \\______\n"
-            + "    | /            \\\n"
-            + "    |/              \\\n"
-            + "    +---------------------->\n"
-            + "    [A   ][D][S   ][R]\n";
+                                              + "    |   /  \\\n"
+                                              + "    |  /    \\______\n"
+                                              + "    | /            \\\n"
+                                              + "    |/              \\\n"
+                                              + "    +---------------------->\n"
+                                              + "    [A   ][D][S   ][R]\n";
     protected final float DEFAULT_ATTACK = 0.001f;
     protected final float DEFAULT_DECAY = 0.0f;
     protected final float DEFAULT_SUSTAIN = 1.0f;
     protected final float DEFAULT_RELEASE = 0.1f;
+    private final int mID;
     /**
      * time parameter defining the time it takes for the set_amp to reach maximum
      * level.
      */
     protected float mAttack = DEFAULT_ATTACK;
-
     /**
      * time parameter defining the time it takes to go from maximum to
      * get_sustain
      * level.
      */
     protected float mDecay = DEFAULT_DECAY;
-
     /**
      * level parameter defining the level hold while note is still played.
      */
     protected float mSustain = DEFAULT_SUSTAIN;
-
     /**
      * time parameter defining the time it takes for the set_amp to reach zero after
      * note is off.
      */
     protected float mRelease = DEFAULT_RELEASE;
-
-    private final int mID;
 
     public Instrument(int pID) {
         mID = pID;
@@ -109,7 +105,11 @@ public abstract class Instrument {
 
     public abstract void amplitude(float pAmp);
 
+    public abstract float get_amplitude();
+
     public abstract void frequency(float freq);
+
+    public abstract float get_frequency();
 
     public abstract void noteOff();
 
