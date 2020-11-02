@@ -1,6 +1,6 @@
 # netzwerk
 
-*netzwerk* is a star-shaped network library built ontop of [Open Sound Control](https://en.wikipedia.org/wiki/Open_Sound_Control) (OSC) to send simple messages from one client to many.
+*netzwerk* is a star-shaped network library built on top of [Open Sound Control](https://en.wikipedia.org/wiki/Open_Sound_Control) (OSC) to send simple messages from one client to many.
 
 ![](./graphics/netzwerk-schaubilder-starshaped.jpg)
 
