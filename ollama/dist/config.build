@@ -1,0 +1,7 @@
+LIB_NAME=ollama
+IO_EXAMPLE_PATHS=( examples )
+PROJECT_PACKAGE=de.dennisppaul.ollama
+# @NOTE(no need to include PROJECT_PACKAGE in SKETCH_IMPORTS)
+SKETCH_IMPORTS=( )
+BASE_COLOR=42
+ADDITIONAL_LIBS=( json-20230618.jar )
