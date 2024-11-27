@@ -1,6 +1,0 @@
-LIB_NAME=simulators
-IO_EXAMPLE_PATHS=( examples )
-PROJECT_PACKAGE=de.hfkbremen
-SKETCH_IMPORTS=( de.hfkbremen.mesh.* )
-BASE_COLOR=101
-ADDITIONAL_LIBS=( )
